@@ -1673,3 +1673,105 @@ And continuously improves its representation of Choco
 **Choco AI**
 
 > A continuously evolving digital representation of Choco, built under Choco's control.
+
+
+---
+
+# 51. Deployment Reference for Other AI Agents
+
+Bagian ini menjadi sumber informasi arsitektur deployment untuk AI lain yang ikut mengembangkan proyek AIKEPRIBADIAN.
+
+Deployment awal yang ditetapkan:
+
+```text
+Application Hosting:
+Render Free Tier
+
+Database:
+Supabase Free Tier
+PostgreSQL
+
+Source Code:
+GitHub
+
+Backend:
+Python-compatible application
+
+Frontend:
+Admin Panel + Chat Interface
+
+Secrets:
+Environment variables
+```
+
+Pembagian tanggung jawab:
+
+```text
+GitHub
+→ Source code + version control
+
+Render
+→ Application runtime / backend hosting
+
+Supabase
+→ Persistent PostgreSQL database
+
+AI Model
+→ Generation + reasoning
+
+AIKEPRIBADIAN application
+→ Identity + Personality + Memory + Behavior +
+  Knowledge + Relationships + Context + Corrections
+```
+
+AI lain yang membaca repository ini harus menggunakan konfigurasi tersebut sebagai deployment target awal. Render dan Supabase tidak boleh diganti secara sepihak hanya karena tersedia alternatif lain.
+
+Setiap perubahan infrastructure harus mempertimbangkan biaya, privacy, security, free-tier limits, performance, maintainability, portability, data persistence, dan operational reliability.
+
+Data personal tidak boleh dipindahkan ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, kebutuhan, data yang dikirim, alasan penggunaan, security impact, biaya, dan fallback harus ditentukan terlebih dahulu.
+
+---
+
+# 52. Infrastructure Change Policy
+
+Infrastructure merupakan bagian dari arsitektur proyek dan tidak boleh berubah secara diam-diam.
+
+Perubahan terhadap:
+
+* Render
+* Supabase
+* database provider
+* AI provider
+* authentication provider
+* storage provider
+* deployment architecture
+
+harus dicatat dan diuji.
+
+Urutan perubahan:
+
+```text
+Identify Need
+      ↓
+Document Reason
+      ↓
+Analyze Impact
+      ↓
+Check Cost
+      ↓
+Check Privacy
+      ↓
+Check Security
+      ↓
+Check Compatibility
+      ↓
+Implement
+      ↓
+Test
+      ↓
+Document
+```
+
+Free tier adalah target biaya awal, bukan jaminan resource tidak terbatas. Batas penggunaan dan ketentuan layanan harus diverifikasi kembali ketika deployment dilakukan.
+
+**Current Deployment Target: Render Free Tier + Supabase Free Tier.**
