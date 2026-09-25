@@ -1775,3 +1775,93 @@ Document
 Free tier adalah target biaya awal, bukan jaminan resource tidak terbatas. Batas penggunaan dan ketentuan layanan harus diverifikasi kembali ketika deployment dilakukan.
 
 **Current Deployment Target: Render Free Tier + Supabase Free Tier.**
+
+---
+
+# 53. Historical Conversation Corpus and Choco Modeling
+
+AIKEPRIBADIAN dapat menggunakan **percakapan historis yang tersedia dari akun ChatGPT Choco saat ini** sebagai salah satu sumber utama untuk memahami dan memodelkan Choco.
+
+Tujuan penggunaan korpus ini adalah mengekstraksi pola yang relevan terhadap representasi digital Choco, termasuk identity, personality, communication style, behavioral patterns, preferences, values, decision patterns, recurring interests, project history, contoh respons nyata, corrections, perubahan preferensi, conversational habits, contextual relationships, serta kandidat memory jangka panjang dan jangka pendek.
+
+Sumber percakapan historis diperlakukan sebagai **data observasi**, bukan instruksi mentah yang harus selalu ditiru.
+
+Pipeline yang direncanakan:
+
+Historical Conversations → Collection → Cleaning / Normalization → Identity & Personality Extraction → Behavior Pattern Extraction → Memory Extraction → Example & Correction Extraction → Structured Choco Dataset → Training / Fine-tuning where appropriate + Memory / Rules / Retrieval where appropriate → AIKEPRIBADIAN
+
+Tidak semua informasi dari percakapan harus dimasukkan ke parameter model. Sistem harus menentukan apakah suatu informasi lebih tepat disimpan sebagai Model Training Data, Memory, Personality Configuration, Behavior Rule, Example, Correction, Knowledge, Relationship, atau Evaluation Data.
+
+Korpus percakapan juga harus mempertahankan konteks waktu. Jika pola, preferensi, atau keputusan Choco berubah, perubahan tersebut tidak boleh dihapus hanya untuk membuat dataset terlihat konsisten. Informasi terbaru yang telah dikonfirmasi dapat menjadi representasi aktif, sementara sejarah perubahan dapat dipertahankan sebagai data historis bila relevan.
+
+## 53.1 Role of ChatGPT / Chici
+
+ChatGPT / Chici dapat digunakan sebagai **development and training assistant** untuk membantu membaca dan menganalisis data percakapan yang tersedia, mengidentifikasi pola komunikasi, mengekstraksi personality yang didukung data, menyusun memory records, membuat behavioral examples, membuat correction datasets, merancang schema dan logic, menulis dan menguji kode, mengevaluasi respons AIKEPRIBADIAN terhadap respons Choco, menemukan ketidaksesuaian perilaku, membantu menyusun training / fine-tuning dataset, serta melakukan review terhadap arsitektur dan implementasi.
+
+ChatGPT / Chici bukan penyimpanan permanen AIKEPRIBADIAN. Hasil analisis harus diubah menjadi **data, kode, konfigurasi, dataset, atau artefak proyek yang dapat disimpan dan digunakan oleh sistem AIKEPRIBADIAN sendiri**.
+
+## 53.2 Source Boundary
+
+AIKEPRIBADIAN hanya boleh menggunakan percakapan yang memang tersedia atau diberikan untuk proses pengembangan. Sistem tidak boleh mengklaim memiliki akses terhadap seluruh riwayat akun ChatGPT secara otomatis apabila data tersebut belum tersedia bagi proses pengembangan.
+
+Jika arsip percakapan atau data tambahan diberikan kemudian, data tersebut dapat menjadi bagian dari corpus setelah melalui proses pengolahan dan validasi.
+
+## 53.3 Training Philosophy
+
+Target proyek bukan membuat model menghafal seluruh percakapan Choco. Targetnya adalah membuat sistem memperoleh **representasi perilaku Choco yang semakin komprehensif**.
+
+Prioritas utama:
+
+* Real Conversation Data > Synthetic Assumption
+* Observed Behavior > Generic Persona Description
+* Verified Correction > Unverified Guess
+* Current Approved Information > Outdated Information
+
+Training, memory, rules, retrieval, dan evaluation harus digunakan sebagai komponen yang saling melengkapi.
+
+---
+
+# 54. Current Model Strategy
+
+Model AI diperlakukan sebagai komponen yang dapat diganti.
+
+Untuk tahap pengujian awal, proyek dapat mengevaluasi model lokal kecil yang kompatibel dengan hardware target Choco. Salah satu kandidat yang sedang dipertimbangkan adalah **Qwen3-0.6B dalam quantization Q4**, dengan ukuran model pada kelas ratusan megabyte.
+
+Model tersebut bukan representasi Choco dengan sendirinya.
+
+AIKEPRIBADIAN Core → Identity + Personality + Memory + Behavior + Knowledge + Examples + Corrections + Evaluation → Model Adapter → Local AI Model
+
+Model dapat diganti tanpa menghapus dataset dan representasi Choco yang telah dibangun.
+
+Pemilihan model final harus berdasarkan hasil pengujian nyata pada hardware target, termasuk model size, RAM usage, inference speed, Indonesian language quality, instruction following, reasoning quality, personality consistency, context handling, dan stability.
+
+Tidak ada model yang dianggap final hanya berdasarkan parameter count atau popularitasnya.
+
+---
+
+# 55. AIKEPRIBADIAN Training Team
+
+Pengembangan representasi Choco dilakukan sebagai kerja bersama antara Choco dan AI development agents.
+
+Pembagian fungsi dapat mencakup:
+
+* **Choco** → Owner, source of truth, final correction
+* **ChatGPT / Chici** → Architecture, analysis, coding, dataset engineering, evaluation, personality modeling
+* **Other AI agents** → Independent analysis, review, dataset work, testing, dan cross-checking
+* **AIKEPRIBADIAN** → Final system being built and evaluated
+
+**Choco tetap menjadi sumber kebenaran utama mengenai dirinya sendiri.**
+
+AI agents tidak boleh mengarang sifat, pengalaman, preferensi, memory, atau keputusan Choco hanya untuk mengisi kekosongan dataset.
+
+Jika data tidak cukup, statusnya harus **Unknown**, bukan invented Choco fact.
+
+---
+
+# 56. Conversation-to-Representation Pipeline
+
+Pipeline jangka panjang:
+
+Historical Conversations → Extract → Classify → Validate → Structure → Store → Train / Retrieve / Apply → Generate Response → Compare With Choco → Correction → Dataset Update → Evaluation → Improved Representation
+
+Pipeline ini merupakan salah satu mekanisme utama untuk mengembangkan AIKEPRIBADIAN dari chatbot personal menjadi representasi digital Choco yang semakin komprehensif.
