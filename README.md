@@ -889,19 +889,19 @@ Backend:
 Python / compatible backend
 
 Database:
-PostgreSQL-compatible database
+Local database (SQLite untuk tahap awal; PostgreSQL lokal bila diperlukan)
 
 AI:
-Replaceable model provider / local model
+Replaceable local model adapter
 
 Deployment:
-Cloud or self-hosted depending on resource and cost
+Local-only / self-hosted pada perangkat atau jaringan milik Choco
 
 Authentication:
 Secure admin authentication
 
 Version Control:
-Git + GitHub
+Local Git repository
 ```
 
 Teknologi final harus dipilih berdasarkan:
@@ -931,21 +931,15 @@ Free
 Open Source
     ↓
 Local Processing
-    ↓
-Free Cloud Tier
-    ↓
-Paid Service only when unavoidable
 ```
 
-Tidak boleh memasukkan layanan berbayar hanya karena lebih mudah.
-
-Jika suatu komponen membutuhkan pembayaran untuk penggunaan tertentu, sistem harus memiliki fallback atau alternatif yang memungkinkan proyek tetap berjalan sejauh kemampuan teknisnya.
+Tidak boleh memasukkan layanan berbayar atau layanan eksternal hanya karena lebih mudah. Jika kebutuhan sistem melampaui kapasitas perangkat lokal, kebutuhan tersebut harus dievaluasi tanpa mengubah prinsip local-only secara otomatis.
 
 ---
 
-# 28. Deployment Concept
+# 28. Local-Only Deployment Concept
 
-Deployment dapat menggunakan beberapa komponen terpisah.
+AIKEPRIBADIAN dijalankan secara lokal pada perangkat atau jaringan privat yang dikendalikan Choco. Tidak ada layanan hosting, database, atau pemrosesan cloud yang menjadi bagian dari arsitektur awal.
 
 Contoh:
 
@@ -970,10 +964,10 @@ Backend
 Backend
  │
  ▼
-PostgreSQL
+Local Database
 ```
 
-Database tidak boleh digunakan sebagai tempat menjalankan AI model.
+Database lokal tidak boleh digunakan sebagai tempat menjalankan AI model. Data personal, memori, contoh, koreksi, dan backup tetap berada pada storage lokal kecuali Choco secara eksplisit memutuskan perubahan arsitektur di masa depan.
 
 ---
 
@@ -1279,16 +1273,16 @@ Menguji:
 * API abuse
 * data leakage
 
-## Phase 8 - Deployment
+## Phase 8 - Local Deployment
 
 Menyusun:
 
-* production backend
-* database
-* frontend
-* environment configuration
-* monitoring
-* backup
+* backend lokal
+* database lokal
+* frontend lokal
+* konfigurasi environment lokal
+* monitoring lokal
+* backup lokal
 
 ## Phase 9 - Continuous Improvement
 
@@ -1677,46 +1671,45 @@ And continuously improves its representation of Choco
 
 ---
 
-# 51. Deployment Reference for Other AI Agents
+# 51. Local-Only Deployment Reference for Other AI Agents
 
 Bagian ini menjadi sumber informasi arsitektur deployment untuk AI lain yang ikut mengembangkan proyek AIKEPRIBADIAN.
 
 Deployment awal yang ditetapkan:
 
 ```text
-Application Hosting:
-Render Free Tier
+Runtime:
+Perangkat lokal atau server pada jaringan privat milik Choco
 
 Database:
-Supabase Free Tier
-PostgreSQL
+Database lokal
 
 Source Code:
-GitHub
+Local Git repository (source code dan contoh tersanitasi)
 
 Backend:
-Python-compatible application
+Python-compatible application yang berjalan lokal
 
 Frontend:
-Admin Panel + Chat Interface
+Admin Panel + Chat Interface yang berjalan lokal
 
 Secrets:
-Environment variables
+Environment variables atau secret store lokal
 ```
 
 Pembagian tanggung jawab:
 
 ```text
-GitHub
-→ Source code + version control
+Local Git repository
+→ Source code + version control; bukan penyimpanan data personal
 
-Render
+Local runtime
 → Application runtime / backend hosting
 
-Supabase
-→ Persistent PostgreSQL database
+Local database
+→ Persistent data untuk memori, konfigurasi, dan koreksi
 
-AI Model
+Local AI model
 → Generation + reasoning
 
 AIKEPRIBADIAN application
@@ -1724,11 +1717,11 @@ AIKEPRIBADIAN application
   Knowledge + Relationships + Context + Corrections
 ```
 
-AI lain yang membaca repository ini harus menggunakan konfigurasi tersebut sebagai deployment target awal. Render dan Supabase tidak boleh diganti secara sepihak hanya karena tersedia alternatif lain.
+AI lain yang membaca repository ini harus menggunakan konfigurasi lokal-only tersebut sebagai deployment target awal. Layanan eksternal tidak boleh ditambahkan secara sepihak.
 
-Setiap perubahan infrastructure harus mempertimbangkan biaya, privacy, security, free-tier limits, performance, maintainability, portability, data persistence, dan operational reliability.
+Setiap perubahan infrastruktur harus mempertimbangkan biaya, privacy, security, performance, maintainability, portability, data persistence, dan operational reliability.
 
-Data personal tidak boleh dipindahkan ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, kebutuhan, data yang dikirim, alasan penggunaan, security impact, biaya, dan fallback harus ditentukan terlebih dahulu.
+Data personal tidak boleh dipindahkan ke layanan eksternal. Jika Choco mempertimbangkan pengecualian di masa depan, kebutuhan, data yang dikirim, alasan penggunaan, security impact, biaya, dan fallback harus ditentukan serta disetujui terlebih dahulu.
 
 ---
 
@@ -1738,10 +1731,9 @@ Infrastructure merupakan bagian dari arsitektur proyek dan tidak boleh berubah s
 
 Perubahan terhadap:
 
-* Render
-* Supabase
-* database provider
-* AI provider
+* local runtime
+* local database engine
+* local AI model/runtime
 * authentication provider
 * storage provider
 * deployment architecture
@@ -1772,9 +1764,9 @@ Test
 Document
 ```
 
-Free tier adalah target biaya awal, bukan jaminan resource tidak terbatas. Batas penggunaan dan ketentuan layanan harus diverifikasi kembali ketika deployment dilakukan.
+Target awal adalah operasi lokal-only. Kapasitas perangkat, batas resource, backup, dan pemulihan harus diverifikasi sebelum digunakan secara rutin.
 
-**Current Deployment Target: Render Free Tier + Supabase Free Tier.**
+**Current Deployment Target: local-only runtime + local database + local AI model.**
 
 ---
 
