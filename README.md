@@ -796,10 +796,10 @@ Privacy First
 
 Sistem harus:
 
-* meminimalkan data yang dikirim keluar
-* tidak mengirim memory ke layanan yang tidak diperlukan
+* data Choco harus diproses dan disimpan secara lokal
+* tidak mengirim memory, personality, conversation, atau data pribadi ke cloud
+* tidak menggunakan layanan AI eksternal untuk inference
 * melindungi credential
-* menggunakan HTTPS untuk koneksi jaringan
 * tidak menyimpan secret di repository
 * menyediakan penghapusan memory
 * menyediakan backup dan restore
