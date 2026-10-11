@@ -874,48 +874,38 @@ Application server digunakan untuk logic.
 AI model digunakan untuk generation/reasoning.
 
 ---
-
 # 26. Proposed Technology Direction
 
-Teknologi dapat berubah selama pengembangan.
+Teknologi dapat berubah selama pengembangan, tetapi infrastruktur aktif saat ini mengikuti pilihan Choco.
 
-Target awal:
+Target saat ini:
 
 ```text
+Source Code + AI Development Collaboration:
+GitHub
+
+Application Hosting / Runtime:
+Hugging Face Spaces
+
 Frontend:
-Admin Panel + Chat Interface
+Admin Panel + Chat Interface, sesuai implementasi aktual
 
 Backend:
-Python / compatible backend
-
-Database:
-PostgreSQL-compatible database
+Python / compatible backend, sesuai implementasi aktual
 
 AI:
-Replaceable model provider / local model
+Replaceable model adapter; gunakan model yang benar-benar tersedia dan dikonfigurasi
 
-Deployment:
-Cloud or self-hosted depending on resource and cost
+Database / Persistent Storage:
+Belum menetapkan provider database eksternal. Pilihan penyimpanan harus mengikuti kode aktual dan batas persistence Hugging Face Spaces.
 
 Authentication:
 Secure admin authentication
-
-Version Control:
-Git + GitHub
 ```
 
-Teknologi final harus dipilih berdasarkan:
+Render dan Supabase bukan bagian dari infrastruktur aktif saat ini. Jangan menambahkan layanan tersebut kembali tanpa keputusan baru dari Choco.
 
-* biaya
-* resource requirements
-* performance
-* privacy
-* maintainability
-* API limitations
-* deployment compatibility
-* long-term sustainability
-
----
+Pemilihan teknologi harus mempertimbangkan biaya, resource requirements, performance, privacy, maintainability, deployment compatibility, persistence, dan keberlanjutan jangka panjang.
 
 # 27. Zero-Cost Goal
 
@@ -942,40 +932,38 @@ Tidak boleh memasukkan layanan berbayar hanya karena lebih mudah.
 Jika suatu komponen membutuhkan pembayaran untuk penggunaan tertentu, sistem harus memiliki fallback atau alternatif yang memungkinkan proyek tetap berjalan sejauh kemampuan teknisnya.
 
 ---
-
 # 28. Deployment Concept
 
-Deployment dapat menggunakan beberapa komponen terpisah.
+Deployment aktif saat ini menggunakan GitHub untuk source code dan kolaborasi pengembangan AI, serta Hugging Face Spaces sebagai tempat menjalankan aplikasi/server yang dipublikasikan.
 
-Contoh:
+Gambaran konseptual:
 
 ```text
-User
- │
- ▼
-Frontend
- │
- ▼
-Backend
- │
- ├── Personality Engine
- ├── Memory Engine
- ├── Behavior Engine
- ├── Context Engine
- └── AI Model Adapter
+Developer / AI Agents
         │
         ▼
-      AI Model
-
-Backend
- │
- ▼
-PostgreSQL
+      GitHub
+  Source + Version Control
+        │
+        ▼
+Hugging Face Spaces
+  Application / Server Runtime
+        │
+        ├── Personality Engine
+        ├── Memory Engine
+        ├── Behavior Engine
+        ├── Context Engine
+        └── AI Model Adapter
+                 │
+                 ▼
+              AI Model
 ```
 
-Database tidak boleh digunakan sebagai tempat menjalankan AI model.
+Diagram ini menggambarkan arah deployment, bukan klaim bahwa seluruh komponen sudah selesai diimplementasikan.
 
----
+Jangan mengasumsikan adanya PostgreSQL, Supabase, Render, atau database eksternal lain. Pilihan dan perilaku penyimpanan harus diverifikasi dari kode aktual.
+
+Periksa batas penyimpanan dan persistence Hugging Face Spaces sebelum mengandalkannya untuk memory permanen. File pada filesystem runtime tidak boleh dianggap otomatis permanen setelah restart atau rebuild.
 
 # 29. Security Architecture
 
@@ -1676,77 +1664,59 @@ And continuously improves its representation of Choco
 
 
 ---
+# 51. Current Deployment Reference for Other AI Agents
 
-# 51. Deployment Reference for Other AI Agents
-
-Bagian ini menjadi sumber informasi arsitektur deployment untuk AI lain yang ikut mengembangkan proyek AIKEPRIBADIAN.
-
-Deployment awal yang ditetapkan:
+Bagian ini adalah acuan deployment untuk AI lain yang ikut mengembangkan AIKEPRIBADIAN. Gunakan kondisi aktual berikut sebagai dasar kerja.
 
 ```text
-Application Hosting:
-Render Free Tier
-
-Database:
-Supabase Free Tier
-PostgreSQL
-
-Source Code:
+Source Code + AI Development Collaboration:
 GitHub
 
-Backend:
-Python-compatible application
+Application / Server Hosting:
+Hugging Face Spaces
 
-Frontend:
-Admin Panel + Chat Interface
+Database Provider:
+Belum ditetapkan sebagai layanan eksternal
+
+Frontend / Backend:
+Ikuti struktur dan implementasi aktual dalam repository dan Space
 
 Secrets:
-Environment variables
+Jangan commit token, password, atau secret ke repository. Gunakan mekanisme secrets platform bila diperlukan.
 ```
 
 Pembagian tanggung jawab:
 
 ```text
 GitHub
-→ Source code + version control
+→ Source code, version control, dan kolaborasi AI development
 
-Render
-→ Application runtime / backend hosting
-
-Supabase
-→ Persistent PostgreSQL database
+Hugging Face Spaces
+→ Application / server runtime yang dipilih saat ini
 
 AI Model
-→ Generation + reasoning
+→ Generation + reasoning, sesuai model yang benar-benar dikonfigurasi
 
 AIKEPRIBADIAN application
 → Identity + Personality + Memory + Behavior +
   Knowledge + Relationships + Context + Corrections
 ```
 
-AI lain yang membaca repository ini harus menggunakan konfigurasi tersebut sebagai deployment target awal. Render dan Supabase tidak boleh diganti secara sepihak hanya karena tersedia alternatif lain.
+**Render dan Supabase tidak digunakan untuk deployment saat ini.** Jangan menambahkan kembali Render, Supabase, atau layanan eksternal lain tanpa keputusan baru dari Choco.
 
-Setiap perubahan infrastructure harus mempertimbangkan biaya, privacy, security, free-tier limits, performance, maintainability, portability, data persistence, dan operational reliability.
+Jangan mengasumsikan bahwa penyimpanan runtime Hugging Face otomatis persisten. Verifikasi konfigurasi Space dan kode aktual sebelum menyatakan memory atau database tersimpan permanen.
 
-Data personal tidak boleh dipindahkan ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, kebutuhan, data yang dikirim, alasan penggunaan, security impact, biaya, dan fallback harus ditentukan terlebih dahulu.
-
----
-
+Data personal tidak boleh dikirim ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, jelaskan kebutuhan, data yang dikirim, alasan, dampak keamanan dan privasi, biaya, serta alternatifnya terlebih dahulu.
 # 52. Infrastructure Change Policy
 
-Infrastructure merupakan bagian dari arsitektur proyek dan tidak boleh berubah secara diam-diam.
+Infrastruktur merupakan bagian dari arsitektur proyek dan tidak boleh berubah secara diam-diam.
 
-Perubahan terhadap:
+Infrastruktur aktif saat ini:
 
-* Render
-* Supabase
-* database provider
-* AI provider
-* authentication provider
-* storage provider
-* deployment architecture
+* GitHub untuk source code dan kolaborasi pengembangan AI
+* Hugging Face Spaces untuk aplikasi/server yang dipublikasikan
 
-harus dicatat dan diuji.
+Render dan Supabase saat ini tidak digunakan. Perubahan terhadap platform hosting, database, AI provider, authentication, storage, atau deployment architecture harus mendapat keputusan Choco dan dicatat di dokumentasi.
 
 Urutan perubahan:
 
@@ -1772,11 +1742,7 @@ Test
 Document
 ```
 
-Free tier adalah target biaya awal, bukan jaminan resource tidak terbatas. Batas penggunaan dan ketentuan layanan harus diverifikasi kembali ketika deployment dilakukan.
-
-**Current Deployment Target: Render Free Tier + Supabase Free Tier.**
-
----
+Jangan menyamakan layanan gratis dengan resource tanpa batas. Verifikasi batas penggunaan, persistence, dan ketentuan platform ketika deployment dilakukan.
 
 # 53. Historical Conversation Corpus and Choco Modeling
 
