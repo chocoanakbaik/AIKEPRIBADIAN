@@ -1,3 +1,13 @@
+---
+title: AIKEPRIBADIAN
+emoji: 🧠
+colorFrom: yellow
+colorTo: gray
+sdk: gradio
+app_file: run.py
+pinned: false
+---
+
 # AIKEPRIBADIAN
 
 > A personal AI designed to become a highly faithful digital representation of Choco.
