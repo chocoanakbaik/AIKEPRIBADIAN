@@ -1,3 +1,1 @@
-transformers
-peft
-accelerate
+gradio\ngroq\n
