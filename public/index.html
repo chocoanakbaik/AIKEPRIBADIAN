@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <title>Choco AI</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #101114; color: #f2f2f3; min-height: 100vh; }
+    .app { width: min(820px, 100%); margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 24px 16px 16px; }
+    header { padding: 8px 4px 20px; border-bottom: 1px solid #292a30; }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    .sub { margin: 0; color: #a5a6af; font-size: 13px; }
+    #chat { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 22px 0; }
+    .bubble { max-width: 88%; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; padding: 12px 15px; border-radius: 16px; }
+    .user { align-self: flex-end; background: #30323a; }
+    .assistant { align-self: flex-start; background: #1c1d22; border: 1px solid #2a2b32; }
+    .error { color: #ffb5b5; border-color: #703b3b; }
+    form { display: flex; gap: 10px; padding-top: 14px; border-top: 1px solid #292a30; }
+    textarea { flex: 1; resize: vertical; min-height: 48px; max-height: 160px; border: 1px solid #383a43; border-radius: 12px; padding: 12px; background: #1b1c21; color: #fff; font: inherit; }
+    button { border: 0; border-radius: 12px; padding: 0 18px; background: #e8e8ec; color: #17171a; font-weight: 650; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: wait; }
+    .foot { color: #82838c; font-size: 12px; margin: 10px 2px 0; }
+    @media (max-width: 520px) { .app { padding: 16px 12px 12px; } .bubble { max-width: 95%; } button { padding: 0 13px; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Choco AI</h1>
+      <p class="sub">Representasi digital Hasby Prasetya Saprudin (Choco). Versi awal menggunakan Groq API.</p>
+    </header>
+    <section id="chat" aria-live="polite">
+      <div class="bubble assistant">Gw Choco AI. Kepribadian dan knowledge gw masih versi awal, jadi beberapa jawaban bisa belum akurat.</div>
+    </section>
+    <form id="form">
+      <textarea id="message" placeholder="Tulis pesan..." aria-label="Pesan" required maxlength="4000"></textarea>
+      <button id="send" type="submit">Kirim</button>
+    </form>
+    <p class="foot">Jangan masukkan password, API key, atau informasi rahasia.</p>
+  </main>
+  <script>
+    const form = document.getElementById("form");
+    const input = document.getElementById("message");
+    const send = document.getElementById("send");
+    const chat = document.getElementById("chat");
+    const history = [];
+
+    function addBubble(text, role, extraClass = "") {
+      const el = document.createElement("div");
+      el.className = "bubble " + role + (extraClass ? " " + extraClass : "");
+      el.textContent = text;
+      chat.appendChild(el);
+      el.scrollIntoView({ block: "end", behavior: "smooth" });
+      return el;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message || send.disabled) return;
+
+      addBubble(message, "user");
+      input.value = "";
+      send.disabled = true;
+      const waiting = addBubble("Lagi mikir...", "assistant");
+
+      try {
+        const response = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, history })
+        });
+        const data = await response.json();
+        waiting.remove();
+
+        if (!response.ok) {
+          addBubble(data.error || "Permintaan gagal.", "assistant", "error");
+          return;
+        }
+
+        const reply = data.reply || "Model mengembalikan jawaban kosong.";
+        addBubble(reply, "assistant");
+        history.push({ role: "user", content: message }, { role: "assistant", content: reply });
+        if (history.length > 20) history.splice(0, history.length - 20);
+      } catch {
+        waiting.remove();
+        addBubble("Gagal menghubungi backend. Coba lagi setelah deployment selesai.", "assistant", "error");
+      } finally {
+        send.disabled = false;
+        input.focus();
+      }
+    });
+  </script>
+</body>
+</html>
