@@ -1273,6 +1273,8 @@
 
   <div class="toast" id="toast" role="status"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/auth.js" defer></script>
   <script>
     const form = document.getElementById("form");
     const input = document.getElementById("message");
@@ -1392,6 +1394,7 @@
       }
 
       history = [];
+      window.dispatchEvent(new CustomEvent("choco:new-chat"));
       conversationTitle = "";
       conversationStarted = false;
 
@@ -1531,6 +1534,10 @@
           { role: "user", content: message },
           { role: "assistant", content: reply }
         );
+
+        window.dispatchEvent(new CustomEvent("choco:save-message-pair", {
+          detail: { userMessage: message, assistantMessage: reply, title: conversationTitle || message }
+        }));
 
         // Batasi riwayat di browser agar request tidak membengkak.
         if (history.length > 20) {
