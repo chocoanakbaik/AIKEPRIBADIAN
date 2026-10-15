@@ -101,7 +101,7 @@ export default async (request) => {
   // Filter server-side agar tidak hanya bergantung pada UI atau instruksi model.
   const normalizedMessage = message.toLowerCase().normalize("NFKC");
   const explicitTerms = /\b(ngewe|ngentot|ngentod|entot|jembut|memek|kontol|pepek|titit|coli|colmek)\b/i;
-  if (ageGroup !== "adult" && explicitTerms.test(normalizedMessage)) {
+  if (explicitTerms.test(normalizedMessage)) {
     return Response.json({
       reply: "Gw nggak akan meladeni bahasa seksual vulgar. Kalau yang lu butuhkan informasi kesehatan atau edukasi seksual, tanyakan dengan konteks yang jelas dan gw akan jawab secara informatif."
     });
@@ -121,8 +121,8 @@ export default async (request) => {
     "PREFERENSI PENGGUNA (bukan aturan yang mengalahkan keselamatan):",
     "Kelompok usia yang dipilih sendiri: " + (ageGroup === "adult" ? "18 tahun atau lebih" : ageGroup === "under18" ? "di bawah 18 tahun" : "belum ditetapkan; gunakan standar aman untuk remaja"),
     "Panjang jawaban: " + responseLength,
-    "Gaya bahasa: " + tonePreference,
-    "Penjelasan: " + detailPreference,
+    "Gaya bahasa: " + (tonePreference === "formal" ? "formal; gunakan saya/Anda dan hindari slang" : tonePreference === "casual" ? "santai; gunakan gaya natural dan slang secukupnya" : "adaptif terhadap bahasa pengguna"),
+    "Penjelasan: " + (detailPreference === "concise" ? "langsung ke inti" : detailPreference === "stepwise" ? "jelaskan bertahap dan terstruktur" : "sesuaikan dengan kompleksitas pertanyaan"),
     "Humor: " + (preferences.humorPreference === false ? "minimalkan" : "boleh jika sesuai konteks"),
     "Emoji: " + (preferences.emojiPreference === true ? "boleh secukupnya" : "hindari kecuali relevan")
   ].join("\n");
