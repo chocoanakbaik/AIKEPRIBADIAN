@@ -1492,7 +1492,8 @@
           },
           body: JSON.stringify({
             message,
-            history
+            history,
+            memories: typeof window.chocoGetMemories === "function" ? window.chocoGetMemories() : []
           })
         });
 
