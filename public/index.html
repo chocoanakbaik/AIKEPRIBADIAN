@@ -1010,6 +1010,18 @@
       }
     }
 
+    .modal-backdrop{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(2,4,10,.76);backdrop-filter:blur(8px)}
+    .modal-backdrop[hidden]{display:none}
+    .settings-modal{width:min(520px,100%);max-height:min(85dvh,760px);overflow:auto;border:1px solid rgba(140,153,201,.2);border-radius:18px;background:#101625;box-shadow:0 24px 90px rgba(0,0,0,.45)}
+    .settings-header{display:flex;align-items:center;justify-content:space-between;padding:22px 23px;border-bottom:1px solid var(--border)}
+    .settings-header h2{margin:3px 0 0;font-size:21px}
+    .settings-body{display:grid;gap:19px;padding:23px}
+    .setting-field{display:grid;gap:8px;color:#dce3f5;font-size:12px;font-weight:650}
+    .setting-field select{width:100%;padding:11px 12px;border:1px solid rgba(135,148,191,.22);border-radius:10px;background:#171e30;color:#eef2ff}
+    .setting-field small,.setting-toggle small{display:block;color:#8590aa;font-size:11px;font-weight:400;line-height:1.6}
+    .setting-toggle{display:flex;align-items:center;justify-content:space-between;gap:18px;color:#dce3f5;font-size:12px}
+    .setting-toggle input{width:17px;height:17px;accent-color:#8d86ff;flex-shrink:0}
+    .settings-footer{display:flex;justify-content:flex-end;padding:0 23px 23px}
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
@@ -1073,10 +1085,11 @@
       </div>
 
       <div class="sidebar-bottom">
-        <button class="nav-item future-feature" data-feature="Pengaturan">
-          <span class="nav-icon">⚙</span>
-          <span>Pengaturan</span>
-          <span class="soon-tag">Soon</span>
+        <button class="nav-item" type="button" data-open-panel="settings">
+          <span class="nav-icon">⚙</span><span>Pengaturan</span>
+        </button>
+        <button class="nav-item" type="button" data-open-panel="personality">
+          <span class="nav-icon">◉</span><span>Personalisasi</span>
         </button>
 
         <div class="profile">
@@ -1118,9 +1131,7 @@
 
             <div class="eyebrow">Your personal AI companion</div>
 
-            <h1>
-              Halo, <span class="gradient-text">ada yang bisa gw bantu?</span>
-            </h1>
+            <h1 id="welcomeHeading">Selamat datang di <span class="gradient-text">Choco AI</span></h1>
 
             <p class="welcome-description">
               Gw Choco AI, representasi digital Hasby Prasetya Saprudin.
@@ -1271,6 +1282,30 @@
     </aside>
   </div>
 
+  <div class="modal-backdrop" id="settingsBackdrop" hidden>
+    <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <header class="settings-header"><div><div class="panel-heading">KONTROL CHOCO AI</div><h2 id="settingsTitle">Pengaturan</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Tutup">×</button></header>
+      <div class="settings-body">
+        <label class="setting-field">Kelompok usia<select id="ageGroup"><option value="under18">Di bawah 18 tahun</option><option value="adult">18 tahun atau lebih</option><option value="unset">Belum diatur</option></select><small>Pilihan ini berdasarkan pengakuan sendiri, bukan verifikasi umur. Jika belum diatur, Choco AI memakai standar aman untuk remaja.</small></label>
+        <label class="setting-field">Panjang jawaban<select id="responseLength"><option value="short">Ringkas</option><option value="balanced">Seimbang</option><option value="detailed">Terperinci</option></select></label>
+        <label class="setting-toggle"><span><strong>Efek mengetik</strong><small>Tampilkan jawaban secara bertahap.</small></span><input id="typingEffect" type="checkbox" checked></label>
+        <label class="setting-toggle"><span><strong>Sapaan sesuai waktu</strong><small>Sesuaikan sapaan dengan jam perangkat.</small></span><input id="timeGreeting" type="checkbox" checked></label>
+      </div>
+      <footer class="settings-footer"><button class="auth-button primary" id="saveSettings" type="button">Simpan pengaturan</button></footer>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="personalityBackdrop" hidden>
+    <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="personalityTitle">
+      <header class="settings-header"><div><div class="panel-heading">CARA CHOCO MENJAWAB</div><h2 id="personalityTitle">Personalisasi</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Tutup">×</button></header>
+      <div class="settings-body">
+        <label class="setting-field">Gaya bahasa<select id="tonePreference"><option value="adaptive">Menyesuaikan lawan bicara</option><option value="formal">Formal</option><option value="casual">Santai</option></select></label>
+        <label class="setting-field">Kedalaman penjelasan<select id="detailPreference"><option value="adaptive">Menyesuaikan pertanyaan</option><option value="concise">Langsung ke inti</option><option value="stepwise">Bertahap dan terstruktur</option></select></label>
+        <label class="setting-toggle"><span><strong>Humor</strong><small>Gunakan humor jika konteksnya sesuai.</small></span><input id="humorPreference" type="checkbox" checked></label>
+        <label class="setting-toggle"><span><strong>Emoji</strong><small>Gunakan emoji secukupnya.</small></span><input id="emojiPreference" type="checkbox"></label>
+      </div>
+      <footer class="settings-footer"><button class="auth-button primary" id="savePersonality" type="button">Simpan personalisasi</button></footer>
+    </section>
+  </div>
   <div class="toast" id="toast" role="status"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1292,6 +1327,32 @@
     let toastTimer;
     let conversationTitle = "";
     let conversationStarted = false;
+    const defaultPreferences = { ageGroup: "unset", responseLength: "balanced", typingEffect: true, timeGreeting: true, tonePreference: "adaptive", detailPreference: "adaptive", humorPreference: true, emojiPreference: false };
+    let preferences = { ...defaultPreferences };
+    function loadPreferences() {
+      try { preferences = { ...defaultPreferences, ...JSON.parse(localStorage.getItem("chocoPreferences") || "{}") }; } catch { preferences = { ...defaultPreferences }; }
+      Object.keys(defaultPreferences).forEach(key => { const el = document.getElementById(key); if (el) el.type === "checkbox" ? el.checked = Boolean(preferences[key]) : el.value = preferences[key]; });
+    }
+    function savePreferenceFields(keys) {
+      keys.forEach(key => { const el = document.getElementById(key); if (el) preferences[key] = el.type === "checkbox" ? el.checked : el.value; });
+      try { localStorage.setItem("chocoPreferences", JSON.stringify(preferences)); showToast("Pengaturan tersimpan di browser ini."); } catch { showToast("Pengaturan tidak bisa disimpan di browser."); }
+    }
+    function openPanel(name) { document.getElementById(name + "Backdrop").hidden = false; }
+    document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.openPanel)));
+    document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => button.closest(".modal-backdrop").hidden = true));
+    document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", event => { if (event.target === backdrop) backdrop.hidden = true; }));
+    document.getElementById("saveSettings").addEventListener("click", () => { savePreferenceFields(["ageGroup","responseLength","typingEffect","timeGreeting"]); document.getElementById("settingsBackdrop").hidden = true; updateWelcomeGreeting(); });
+    document.getElementById("savePersonality").addEventListener("click", () => { savePreferenceFields(["tonePreference","detailPreference","humorPreference","emojiPreference"]); document.getElementById("personalityBackdrop").hidden = true; });
+    loadPreferences();
+    function updateWelcomeGreeting() {
+      const heading = document.getElementById("welcomeHeading");
+      if (!heading) return;
+      if (!preferences.timeGreeting) { heading.textContent = "Selamat datang di Choco AI"; return; }
+      const hour = new Date().getHours();
+      const greeting = hour < 4 ? "Selamat malam" : hour < 11 ? "Selamat pagi" : hour < 15 ? "Selamat siang" : hour < 18 ? "Selamat sore" : "Selamat malam";
+      heading.replaceChildren(document.createTextNode(greeting + ", "), Object.assign(document.createElement("span"), { className: "gradient-text", textContent: "selamat datang di Choco AI" }));
+    }
+    updateWelcomeGreeting();
 
     function showToast(message) {
       toast.textContent = message;
@@ -1322,6 +1383,14 @@
     document.getElementById("menuButton").addEventListener("click", openSidebar);
     sidebarOverlay.addEventListener("click", closeSidebar);
 
+    function renderAssistantText(container, text) {
+      container.replaceChildren();
+      String(text).split(/(\*\*[^*]+\*\*)/g).forEach(part => {
+        if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+          const strong = document.createElement("strong"); strong.textContent = part.slice(2, -2); container.appendChild(strong);
+        } else container.appendChild(document.createTextNode(part));
+      });
+    }
     function addMessage(text, role, options = {}) {
       const wrapper = document.createElement("article");
       wrapper.className = "message " + role;
@@ -1343,7 +1412,7 @@
         name.textContent = "Choco AI";
 
         const content = document.createElement("div");
-        content.textContent = text;
+        renderAssistantText(content, text);
 
         body.append(name, content);
         wrapper.append(avatar, body);
@@ -1368,6 +1437,16 @@
       return wrapper;
     }
 
+    async function revealReply(text) {
+      const wrapper = addMessage("", "assistant");
+      const content = wrapper.querySelector(".message-body > div:last-child");
+      if (!preferences.typingEffect) { renderAssistantText(content, text); return; }
+      for (let i = 0; i < text.length; i += 4) {
+        renderAssistantText(content, text.slice(0, i + 4));
+        scrollToBottom();
+        await new Promise(resolve => setTimeout(resolve, 12));
+      }
+    }
     function updateRecentTitle(title) {
       if (!conversationStarted) {
         conversationStarted = true;
@@ -1400,6 +1479,7 @@
 
       messages.replaceChildren();
       welcome.style.display = "";
+      updateWelcomeGreeting();
       input.value = "";
       input.style.height = "auto";
 
@@ -1493,7 +1573,8 @@
           body: JSON.stringify({
             message,
             history,
-            memories: typeof window.chocoGetMemories === "function" ? window.chocoGetMemories() : []
+            memories: typeof window.chocoGetMemories === "function" ? window.chocoGetMemories() : [],
+            preferences
           })
         });
 
@@ -1529,7 +1610,7 @@
           return;
         }
 
-        addMessage(reply, "assistant");
+        await revealReply(reply);
 
         history.push(
           { role: "user", content: message },
