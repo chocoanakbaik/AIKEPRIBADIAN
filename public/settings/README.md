@@ -1,16 +1,15 @@
-# Choco AI Settings Modules
+# Choco AI: Pengaturan dan Profil
 
-This folder separates the code for three distinct areas:
+Folder ini memisahkan dua area aplikasi:
 
-- `settings.js`: application settings.
-- `personalization.js`: preferences that affect how Choco AI responds.
-- `profile.js`: the signed-in user's profile.
-- `settings.css`: shared styling for these panels.
+- `settings.js`: pengaturan aplikasi.
+- `profile.js`: profil pengguna yang sedang login.
+- `settings.css`: styling untuk panel Pengaturan dan Profil.
 
-## Current status
+## Status saat ini
 
-These files are scaffolds only. They are not yet imported by `public/index.html` and do not save data yet. Before implementation, inspect the existing frontend handlers, Supabase tables, and Row Level Security policies to avoid duplicate logic and ensure every record is scoped to the authenticated user's `user_id`.
+File masih berupa kerangka dan belum dihubungkan ke `public/index.html` atau Supabase. Sebelum implementasi, periksa handler frontend, tabel Supabase, dan kebijakan Row Level Security (RLS) yang sudah ada agar tidak membuat logika ganda. Setiap data harus dibatasi ke `user_id` pengguna yang terautentikasi.
 
-## Storage rule
+## Aturan penyimpanan
 
-Supabase is the source of truth for all three areas. Do not use `localStorage` as the persistent source for these features. A failed save must be reported to the user rather than shown as successful.
+Supabase menjadi sumber utama data Pengaturan dan Profil. Jangan gunakan `localStorage` sebagai penyimpanan persisten untuk kedua fitur ini. Jika penyimpanan gagal, tampilkan pesan kegagalan dan jangan berpura-pura bahwa data berhasil disimpan.
