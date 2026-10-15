@@ -1079,11 +1079,15 @@
           <span class="soon-tag">Soon</span>
         </button>
 
+        <button class="nav-item" id="authButton" type="button">
+          <span class="nav-icon">◎</span>
+          <span id="authButtonLabel">Masuk dengan Google</span>
+        </button>
         <div class="profile">
-          <div class="profile-avatar">H</div>
+          <div class="profile-avatar" id="profileAvatar">?</div>
           <div>
-            <div class="profile-name">Choco AI</div>
-            <div class="profile-sub">Dikembangkan oleh Hasby</div>
+            <div class="profile-name" id="profileName">Belum masuk</div>
+            <div class="profile-sub" id="profileSub">Chat tersimpan setelah login</div>
           </div>
         </div>
       </div>
@@ -1273,6 +1277,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const form = document.getElementById("form");
     const input = document.getElementById("message");
@@ -1290,6 +1295,199 @@
     let toastTimer;
     let conversationTitle = "";
     let conversationStarted = false;
+    let activeConversationId = null;
+    let supabaseClient = null;
+    let currentUser = null;
+    let supabaseReady = false;
+
+    const authButton = document.getElementById("authButton");
+    const authButtonLabel = document.getElementById("authButtonLabel");
+    const profileName = document.getElementById("profileName");
+    const profileSub = document.getElementById("profileSub");
+    const profileAvatar = document.getElementById("profileAvatar");
+
+    async function initializeSupabase() {
+      try {
+        const configResponse = await fetch("/.netlify/functions/supabase-config");
+        const config = await configResponse.json();
+        if (!configResponse.ok) throw new Error(config.error || "Konfigurasi Supabase gagal dimuat.");
+        if (!window.supabase?.createClient) throw new Error("Library Supabase gagal dimuat.");
+
+        supabaseClient = window.supabase.createClient(config.url, config.publishableKey);
+        supabaseReady = true;
+
+        const { data } = await supabaseClient.auth.getSession();
+        currentUser = data.session?.user || null;
+        updateAuthUI();
+        if (currentUser) await loadConversationList();
+
+        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+          currentUser = session?.user || null;
+          updateAuthUI();
+          if (currentUser) await loadConversationList();
+          else {
+            activeConversationId = null;
+            recentList.replaceChildren();
+            const empty = document.createElement("div");
+            empty.className = "recent-item";
+            empty.textContent = "Login untuk menyimpan obrolan";
+            recentList.appendChild(empty);
+          }
+        });
+      } catch (error) {
+        console.error("Supabase init:", error);
+        profileName.textContent = "Mode tamu";
+        profileSub.textContent = "Login belum tersedia";
+        authButtonLabel.textContent = "Login belum siap";
+        authButton.disabled = true;
+        showToast(error.message || "Supabase belum terhubung.");
+      }
+    }
+
+    function updateAuthUI() {
+      if (currentUser) {
+        const label = currentUser.user_metadata?.full_name ||
+          currentUser.user_metadata?.name ||
+          currentUser.email ||
+          "Pengguna";
+        profileName.textContent = label;
+        profileSub.textContent = currentUser.email || "Login Google aktif";
+        profileAvatar.textContent = label.trim().charAt(0).toUpperCase() || "U";
+        authButtonLabel.textContent = "Keluar";
+        authButton.disabled = false;
+      } else {
+        profileName.textContent = "Belum masuk";
+        profileSub.textContent = "Chat tersimpan setelah login";
+        profileAvatar.textContent = "?";
+        authButtonLabel.textContent = "Masuk dengan Google";
+        authButton.disabled = false;
+      }
+    }
+
+    authButton.addEventListener("click", async () => {
+      if (!supabaseReady || !supabaseClient) {
+        showToast("Koneksi Supabase belum siap.");
+        return;
+      }
+      authButton.disabled = true;
+      try {
+        if (currentUser) {
+          const { error } = await supabaseClient.auth.signOut();
+          if (error) throw error;
+          showToast("Berhasil keluar.");
+        } else {
+          const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: "google",
+            options: { redirectTo: window.location.origin }
+          });
+          if (error) throw error;
+        }
+      } catch (error) {
+        showToast(error.message || "Proses login gagal.");
+        authButton.disabled = false;
+      }
+    });
+
+    async function loadConversationList() {
+      if (!supabaseClient || !currentUser) return;
+      const { data, error } = await supabaseClient
+        .from("conversations")
+        .select("id,title,created_at")
+        .eq("user_id", currentUser.id)
+        .order("updated_at", { ascending: false })
+        .limit(30);
+      if (error) {
+        console.error("Load conversations:", error);
+        showToast("Riwayat chat belum bisa dimuat.");
+        return;
+      }
+
+      recentList.replaceChildren();
+      if (!data?.length) {
+        const empty = document.createElement("div");
+        empty.className = "recent-item";
+        empty.textContent = "Belum ada obrolan";
+        recentList.appendChild(empty);
+        return;
+      }
+
+      for (const conversation of data) {
+        const item = document.createElement("div");
+        item.className = "recent-item";
+        item.textContent = conversation.title || "Percakapan baru";
+        item.title = item.textContent;
+        item.addEventListener("click", () => openConversation(conversation.id));
+        recentList.appendChild(item);
+      }
+    }
+
+    async function openConversation(id) {
+      if (!supabaseClient || !currentUser || busy) return;
+      const { data, error } = await supabaseClient
+        .from("messages")
+        .select("role,content")
+        .eq("conversation_id", id)
+        .eq("user_id", currentUser.id)
+        .order("created_at", { ascending: true });
+      if (error) {
+        showToast("Percakapan gagal dibuka.");
+        console.error("Load messages:", error);
+        return;
+      }
+
+      activeConversationId = id;
+      history = (data || []).map(item => ({ role: item.role, content: item.content }));
+      conversationTitle = "";
+      conversationStarted = true;
+      messages.replaceChildren();
+      welcome.style.display = "none";
+      for (const item of data || []) addMessage(item.content, item.role);
+      closeSidebar();
+    }
+
+    async function persistUserMessage(message) {
+      if (!supabaseClient || !currentUser) return;
+      if (!activeConversationId) {
+        const title = message.slice(0, 36) || "Percakapan baru";
+        const { data, error } = await supabaseClient
+          .from("conversations")
+          .insert({ user_id: currentUser.id, title })
+          .select("id")
+          .single();
+        if (error) throw error;
+        activeConversationId = data.id;
+        conversationTitle = title;
+        conversationStarted = true;
+      }
+      const { error } = await supabaseClient.from("messages").insert({
+        conversation_id: activeConversationId,
+        user_id: currentUser.id,
+        role: "user",
+        content: message
+      });
+      if (error) throw error;
+      await supabaseClient.from("conversations")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", activeConversationId)
+        .eq("user_id", currentUser.id);
+      await loadConversationList();
+    }
+
+    async function persistAssistantMessage(reply) {
+      if (!supabaseClient || !currentUser || !activeConversationId) return;
+      const { error } = await supabaseClient.from("messages").insert({
+        conversation_id: activeConversationId,
+        user_id: currentUser.id,
+        role: "assistant",
+        content: reply
+      });
+      if (error) {
+        console.error("Save assistant message:", error);
+        showToast("Jawaban muncul, tetapi gagal disimpan ke riwayat.");
+      }
+    }
+
+    initializeSupabase();
 
     function showToast(message) {
       toast.textContent = message;
@@ -1394,6 +1592,7 @@
       history = [];
       conversationTitle = "";
       conversationStarted = false;
+      activeConversationId = null;
 
       messages.replaceChildren();
       welcome.style.display = "";
@@ -1476,6 +1675,14 @@
       updateRecentTitle(message);
 
       addMessage(message, "user");
+      if (currentUser) {
+        try {
+          await persistUserMessage(message);
+        } catch (error) {
+          console.error("Save user message:", error);
+          addMessage("Pesan belum tersimpan ke database: " + (error.message || "kesalahan Supabase"), "assistant", { error: true });
+        }
+      }
       input.value = "";
       resizeInput();
 
@@ -1526,6 +1733,7 @@
         }
 
         addMessage(reply, "assistant");
+        if (currentUser) await persistAssistantMessage(reply);
 
         history.push(
           { role: "user", content: message },
