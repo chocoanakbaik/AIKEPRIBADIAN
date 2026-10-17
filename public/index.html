@@ -1641,6 +1641,57 @@
         scrollToBottom();
       }
     });
+
+    // ===== Riwayat obrolan dari akun (Supabase) =====
+    let chocoUser = null;
+
+    function showEmptyRecent() {
+      recentList.replaceChildren();
+      const empty = document.createElement("div");
+      empty.className = "recent-item";
+      empty.style.color = "#737f99";
+      empty.textContent = "Belum ada obrolan";
+      recentList.appendChild(empty);
+    }
+
+    async function refreshConversationList() {
+      if (!chocoUser || typeof window.chocoListConversations !== "function") return;
+      const items = await window.chocoListConversations();
+      if (!chocoUser) return;
+      if (!items.length) { showEmptyRecent(); return; }
+      recentList.replaceChildren();
+      for (const conversation of items) {
+        const item = document.createElement("div");
+        item.className = "recent-item";
+        item.textContent = conversation.title || "Percakapan baru";
+        item.title = item.textContent;
+        item.addEventListener("click", () => openSavedConversation(conversation.id, conversation.title));
+        recentList.appendChild(item);
+      }
+    }
+
+    async function openSavedConversation(id, title) {
+      if (busy) { showToast("Tunggu sampai jawaban selesai dulu."); return; }
+      if (typeof window.chocoOpenConversation !== "function") return;
+      const rows = await window.chocoOpenConversation(id);
+      if (!rows) { showToast("Percakapan gagal dibuka."); return; }
+      history = rows.map(row => ({ role: row.role, content: row.content })).slice(-40);
+      conversationTitle = String(title || "").slice(0, 36);
+      conversationStarted = true;
+      messages.replaceChildren();
+      welcome.style.display = "none";
+      rows.forEach(row => addMessage(row.content, row.role));
+      closeSidebar();
+      scrollToBottom();
+    }
+
+    window.addEventListener("choco:auth-changed", event => {
+      chocoUser = (event.detail && event.detail.user) || null;
+      if (chocoUser) refreshConversationList();
+      else showEmptyRecent();
+    });
+    window.addEventListener("choco:conversations-changed", refreshConversationList);
+    window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 </body>
 </html>
