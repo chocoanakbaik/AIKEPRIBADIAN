@@ -24,6 +24,7 @@
   let activeConversationId = null;
   let saveQueue = Promise.resolve();
   let savedMemories = [];
+  let lastUserId = null;
 
   function notify(text) {
     if (typeof window.showToast === "function") window.showToast(text);
@@ -55,7 +56,11 @@
 
   async function setUser(user) {
     currentUser = user || null;
-    activeConversationId = null;
+    const newUserId = currentUser ? currentUser.id : null;
+    // Reset percakapan aktif hanya kalau akunnya beneran ganti (login/logout),
+    // bukan tiap token refresh atau tab balik fokus.
+    if (newUserId !== lastUserId) activeConversationId = null;
+    lastUserId = newUserId;
     if (currentUser) {
       label.textContent = currentUser.user_metadata?.full_name || currentUser.email || "Akun aktif";
       login.hidden = true;
@@ -110,6 +115,37 @@
 
   window.chocoGetMemories = () => savedMemories.slice(0, 20);
 
+  window.chocoListConversations = async () => {
+    if (!currentUser || !db) return [];
+    const { data, error } = await db.from("conversations")
+      .select("id,title,updated_at")
+      .eq("user_id", currentUser.id)
+      .order("updated_at", { ascending: false })
+      .limit(30);
+    if (error) {
+      console.warn("Daftar obrolan gagal dimuat:", error.message);
+      notify("Riwayat obrolan belum bisa dimuat. Periksa policy database.");
+      return [];
+    }
+    return data || [];
+  };
+
+  window.chocoOpenConversation = async (id) => {
+    if (!currentUser || !db || !id) return null;
+    const { data, error } = await db.from("messages")
+      .select("role,content")
+      .eq("conversation_id", id)
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
+    if (error) {
+      console.warn("Pesan gagal dimuat:", error.message);
+      return null;
+    }
+    activeConversationId = id;
+    return data || [];
+  };
+
   logout.addEventListener("click", async () => {
     if (!db) return;
     const { error } = await db.auth.signOut();
@@ -136,6 +172,7 @@
       const { error } = await db.from("messages").insert(rows);
       if (error) throw error;
       await db.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", activeConversationId).eq("user_id", currentUser.id);
+      window.dispatchEvent(new CustomEvent("choco:conversations-changed"));
     }).catch(error => {
       console.error("Penyimpanan percakapan gagal:", error);
       notify("Jawaban tampil, tetapi belum tersimpan ke akun. Periksa policy database.");
