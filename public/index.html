@@ -1194,12 +1194,26 @@
               </button>
             </div>
 
-            <div class="native-ad-slot" aria-label="Iklan">
+            <div class="native-ad-slot" aria-label="Iklan" hidden>
               <div class="native-ad-label">Iklan</div>
               <div class="native-ad-content">
                 <script async="async" data-cfasync="false" src="https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61"></script>
                 <div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div>
               </div>
+              <script>
+                const nativeAdSlot = document.querySelector(".native-ad-slot");
+                const nativeAdContainer = document.getElementById("container-4c7148c2e2f23b913be9dd10ba77ad61");
+                if (nativeAdSlot && nativeAdContainer) {
+                  const showNativeAd = () => {
+                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) {
+                      nativeAdSlot.hidden = false;
+                    }
+                  };
+                  const nativeAdObserver = new MutationObserver(showNativeAd);
+                  nativeAdObserver.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
+                  showNativeAd();
+                }
+              </script>
             </div>
           </section>
 
