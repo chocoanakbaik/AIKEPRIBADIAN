@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "defaults": {
+    "responseLength": "balanced",
+    "tonePreference": "adaptive",
+    "detailPreference": "adaptive",
+    "humorPreference": true,
+    "emojiPreference": false
+  },
+  "allowed": {
+    "responseLength": [
+      "short",
+      "balanced",
+      "detailed"
+    ],
+    "tonePreference": [
+      "adaptive",
+      "formal",
+      "casual"
+    ],
+    "detailPreference": [
+      "adaptive",
+      "concise",
+      "stepwise"
+    ]
+  },
+  "max_tokens": {
+    "short": 350,
+    "balanced": 700,
+    "detailed": 1100
+  }
+}
