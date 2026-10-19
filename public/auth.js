@@ -11,14 +11,13 @@
 
   const controls = document.createElement("div");
   controls.className = "auth-controls";
-  controls.innerHTML = '<span class="auth-label" id="authLabel">Belum login</span><button class="auth-button" id="authMemory" type="button" title="Simpan memori" hidden>+ Memori</button><button class="auth-button primary" id="authLogin" type="button">Login</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
+  controls.innerHTML = '<span class="auth-label" id="authLabel">Belum login</span><button class="auth-button primary" id="authLogin" type="button">Login</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
   const topActions = document.querySelector(".top-actions");
   if (topActions) topActions.prepend(controls);
 
   const label = controls.querySelector("#authLabel");
   const login = controls.querySelector("#authLogin");
   const logout = controls.querySelector("#authLogout");
-  const memoryButton = controls.querySelector("#authMemory");
   let db = null;
   let currentUser = null;
   let activeConversationId = null;
@@ -42,9 +41,9 @@
       });
       const { data, error } = await db.auth.getSession();
       if (error) throw error;
-      await setUser(data.session?.user || null);
-      db.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user || null);
+      await setUser(data.session?.user || null, "INITIAL_SESSION");
+      db.auth.onAuthStateChange((eventType, session) => {
+        setUser(session?.user || null, eventType);
       });
     } catch (error) {
       label.textContent = "Auth belum siap";
@@ -54,7 +53,7 @@
     }
   }
 
-  async function setUser(user) {
+  async function setUser(user, eventType = "UNKNOWN") {
     currentUser = user || null;
     const newUserId = currentUser ? currentUser.id : null;
     // Reset percakapan aktif hanya kalau akunnya beneran ganti (login/logout),
@@ -65,7 +64,6 @@
       label.textContent = currentUser.user_metadata?.full_name || currentUser.email || "Akun aktif";
       login.hidden = true;
       logout.hidden = false;
-      memoryButton.hidden = false;
       try {
         const { error } = await db.from("profiles").upsert({
           id: currentUser.id,
@@ -81,10 +79,9 @@
       label.textContent = "Belum login";
       login.hidden = false;
       logout.hidden = true;
-      memoryButton.hidden = true;
       savedMemories = [];
     }
-    window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: currentUser } }));
+    window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: currentUser, eventType } }));
   }
 
   login.addEventListener("click", async () => {
@@ -99,18 +96,6 @@
     } catch (error) {
       notify("Login Google gagal: " + error.message);
     } finally { login.disabled = false; }
-  });
-
-  memoryButton.addEventListener("click", async () => {
-    if (!currentUser || !db) return notify("Login dulu untuk menyimpan memori.");
-    const content = prompt("Memori apa yang ingin Choco AI ingat untuk akun ini?");
-    if (!content || !content.trim()) return;
-    const clean = content.trim().slice(0, 1500);
-    const { error } = await db.from("memories").insert({ user_id: currentUser.id, content: clean });
-    if (error) return notify("Memori gagal disimpan: " + error.message);
-    savedMemories.unshift(clean);
-    savedMemories = savedMemories.slice(0, 20);
-    notify("Memori berhasil disimpan.");
   });
 
   window.chocoGetMemories = () => savedMemories.slice(0, 20);
