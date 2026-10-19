@@ -1708,9 +1708,12 @@
           { role: "assistant", content: reply }
         );
 
-        window.dispatchEvent(new CustomEvent("choco:save-message-pair", {
-          detail: { userMessage: message, assistantMessage: reply, title: conversationTitle || message }
-        }));
+        const savedPair = { userMessage: message, assistantMessage: reply, title: conversationTitle || message };
+        if (window.chocoIsAuthenticated?.() && typeof window.chocoSaveMessagePair === "function") {
+          await window.chocoSaveMessagePair(savedPair);
+        } else {
+          window.dispatchEvent(new CustomEvent("choco:save-message-pair", { detail: savedPair }));
+        }
 
         // Batasi riwayat di browser agar request tidak membengkak.
         if (history.length > 40) {
@@ -1749,7 +1752,8 @@
       if (!chocoUser || typeof window.chocoListConversations !== "function") return;
       const items = await window.chocoListConversations();
       if (!chocoUser) return;
-      if (!items.length) { showEmptyRecent(); return; }
+      if (items === null) { showEmptyRecent(); return null; }
+      if (!items.length) { showEmptyRecent(); return []; }
       recentList.replaceChildren();
       for (const conversation of items) {
         const item = document.createElement("div");
@@ -1759,6 +1763,7 @@
         item.addEventListener("click", () => openSavedConversation(conversation.id, conversation.title));
         recentList.appendChild(item);
       }
+      return items;
     }
 
     async function openSavedConversation(id, title) {
@@ -1777,9 +1782,11 @@
     }
 
     let loginNoticeTimer = null;
-    window.addEventListener("choco:auth-changed", event => {
+    let restoredUserId = null;
+    window.addEventListener("choco:auth-changed", async event => {
       const detail = event.detail || {};
       chocoUser = detail.user || null;
+      if (!chocoUser) restoredUserId = null;
       const profileName = document.getElementById("profileName");
       const profileSub = document.getElementById("profileSub");
       const profileAvatar = document.getElementById("profileAvatar");
@@ -1797,7 +1804,12 @@
           clearTimeout(loginNoticeTimer);
           loginNoticeTimer = setTimeout(() => notice.classList.remove("show"), 10000);
         }
-        refreshConversationList();
+        const userId = chocoUser.id;
+        const conversations = await refreshConversationList();
+        if (conversations?.length && restoredUserId !== userId && chocoUser?.id === userId) {
+          restoredUserId = userId;
+          await openSavedConversation(conversations[0].id, conversations[0].title);
+        }
       } else {
         profileName.textContent = "Belum login";
         profileName.title = "";
