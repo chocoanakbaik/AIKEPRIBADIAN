@@ -523,6 +523,39 @@
 
     .sponsor-link-slot[hidden] { display: none; }
 
+    /* Slot iklan dipisahkan agar format berbentuk konten tidak saling menempel. */
+    .ad-placement {
+      display: block;
+      position: relative;
+      isolation: isolate;
+      clear: both;
+    }
+
+    .ad-placement + .ad-placement { margin-top: 14px; }
+
+    .ad-placement-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #79849e;
+      font-size: 9px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .social-ad-note {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(135,148,191,.18);
+      border-radius: 10px;
+      color: #79849e;
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .social-ad-note[hidden] { display: none; }
+
     .sponsor-link-label {
       display: block;
       margin-bottom: 5px;
@@ -1235,7 +1268,7 @@
               </button>
             </div>
 
-            <div class="native-ad-slot" aria-label="Iklan" hidden>
+            <div class="native-ad-slot ad-placement" id="nativeAdPlacement" aria-label="Iklan banner native" hidden>
               <div class="native-ad-label">Iklan</div>
               <div class="native-ad-content">
                 <div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div>
@@ -1260,12 +1293,17 @@
               </script>
             </div>
 
-            <div class="sponsor-link-slot" id="sponsorLinkSlot" hidden>
-              <span class="sponsor-link-label">SPONSOR</span>
+            <div class="sponsor-link-slot ad-placement" id="sponsorLinkSlot" hidden>
+              <span class="sponsor-link-label">SMARTLINK · SPONSOR</span>
               <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378"
                  target="_blank" rel="sponsored noopener noreferrer">
                 Lihat penawaran sponsor <span aria-hidden="true">↗</span>
               </a>
+            </div>
+
+            <div class="social-ad-note ad-placement" id="socialAdPlacement" hidden>
+              <span class="ad-placement-label">Social Bar · Iklan mengambang</span>
+              Format ini dikendalikan penyedia iklan dan dapat muncul mengambang di tepi layar; Choco AI tidak dapat menjamin posisinya pada setiap browser.
             </div>
           </section>
 
@@ -1797,11 +1835,18 @@
     window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 
-  <!--
-    Popunder intentionally remains disabled because it can interrupt an active conversation.
-    Saved for possible later review only; this script does not execute:
-    <script data-cfasync="false" src="https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df"></script>
-  -->
+  <!-- Popunder tidak memiliki slot visual: skripnya membuka tab/jendela terpisah. -->
+  <script>
+    window.loadChocoPopunder = function () {
+      if (window.__chocoPopunderLoaded) return;
+      window.__chocoPopunderLoaded = true;
+      const script = document.createElement("script");
+      script.dataset.cfasync = "false";
+      script.src = "https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df";
+      script.onerror = () => { window.__chocoPopunderLoaded = false; script.remove(); };
+      document.body.appendChild(script);
+    };
+  </script>
 
   <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
     <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
@@ -1826,19 +1871,22 @@
       const reject = document.getElementById("sitePreferenceReject");
 
       const sponsorLinkSlot = document.getElementById("sponsorLinkSlot");
+      const socialAdPlacement = document.getElementById("socialAdPlacement");
       const preferencesLink = document.getElementById("openSitePreferences");
+      const messages = document.getElementById("messages");
+      const welcome = document.getElementById("welcome");
       let adsAllowed = false;
       let socialBarTimer = null;
 
       function loadSocialBarOnce() {
-        if (!adsAllowed) return;
+        if (!adsAllowed || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) return;
         try {
           if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
         } catch (error) {}
         if (socialBarTimer) clearTimeout(socialBarTimer);
         // Delay the floating format so it does not compete with the initial page load.
         socialBarTimer = setTimeout(() => {
-          if (!adsAllowed || document.visibilityState === "hidden") {
+          if (!adsAllowed || document.visibilityState === "hidden" || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) {
             socialBarTimer = null;
             return;
           }
@@ -1853,6 +1901,7 @@
           script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
           script.onerror = () => script.remove();
           document.head.appendChild(script);
+          if (socialAdPlacement) socialAdPlacement.hidden = false;
           try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
         }, 15000);
       }
@@ -1861,6 +1910,7 @@
         adsAllowed = true;
         if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
         if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+        if (typeof window.loadChocoPopunder === "function") window.loadChocoPopunder();
         loadSocialBarOnce();
       }
 
@@ -1879,6 +1929,7 @@
         } else {
           if (socialBarTimer) clearTimeout(socialBarTimer);
           if (sponsorLinkSlot) sponsorLinkSlot.hidden = true;
+          if (socialAdPlacement) socialAdPlacement.hidden = true;
           // A third-party script already loaded cannot be reliably unloaded in place.
           if (wasAllowed) window.location.reload();
         }
