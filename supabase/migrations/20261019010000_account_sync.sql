@@ -145,3 +145,30 @@ grant select, insert, update, delete on public.conversations to authenticated;
 grant select, insert, update, delete on public.messages to authenticated;
 grant select, insert, update, delete on public.memories to authenticated;
 grant usage, select on all sequences in schema public to authenticated;
+
+
+-- Repair the pre-existing schema used by this project: messages.id was a plain
+-- bigint NOT NULL without a default, so inserts that omit id would fail.
+-- Fresh installations already use an identity column and skip this block.
+do $$
+declare
+  next_id bigint;
+begin
+  if not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'messages'
+      and column_name = 'id'
+      and is_identity = 'YES'
+  ) then
+    create sequence if not exists public.messages_id_seq;
+    select coalesce(max(id), 0) + 1 into next_id from public.messages;
+    perform setval('public.messages_id_seq', greatest(next_id, 1), false);
+    alter table public.messages
+      alter column id set default nextval('public.messages_id_seq');
+    alter sequence public.messages_id_seq owned by public.messages.id;
+  end if;
+end $$;
+
+-- Ensure old rows cannot leave the sequence behind after a manual/imported id.
