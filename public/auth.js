@@ -137,6 +137,7 @@
   });
 
   window.chocoGetMemories = () => savedMemories.slice(0, 20);
+  window.chocoIsAuthenticated = () => Boolean(currentUser && db);
 
   window.chocoListConversations = async () => {
     if (!currentUser || !db) return [];
