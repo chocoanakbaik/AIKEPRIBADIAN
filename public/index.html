@@ -1797,7 +1797,11 @@
     window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 
-  <!-- Popunder intentionally remains disabled: it can interrupt an active conversation. -->
+  <!--
+    Popunder intentionally remains disabled because it can interrupt an active conversation.
+    Saved for possible later review only; this script does not execute:
+    <script data-cfasync="false" src="https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df"></script>
+  -->
 
   <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
     <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
