@@ -1197,22 +1197,25 @@
             <div class="native-ad-slot" aria-label="Iklan" hidden>
               <div class="native-ad-label">Iklan</div>
               <div class="native-ad-content">
-                <script async="async" data-cfasync="false" src="https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61"></script>
                 <div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div>
               </div>
               <script>
                 const nativeAdSlot = document.querySelector(".native-ad-slot");
                 const nativeAdContainer = document.getElementById("container-4c7148c2e2f23b913be9dd10ba77ad61");
-                if (nativeAdSlot && nativeAdContainer) {
-                  const showNativeAd = () => {
-                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) {
-                      nativeAdSlot.hidden = false;
-                    }
-                  };
-                  const nativeAdObserver = new MutationObserver(showNativeAd);
-                  nativeAdObserver.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
-                  showNativeAd();
-                }
+                window.loadChocoNativeAd = function () {
+                  if (!nativeAdSlot || !nativeAdContainer || nativeAdContainer.dataset.requested === "true") return;
+                  nativeAdContainer.dataset.requested = "true";
+                  const adScript = document.createElement("script");
+                  adScript.async = true;
+                  adScript.dataset.cfasync = "false";
+                  adScript.src = "https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61";
+                  adScript.onerror = function () { nativeAdSlot.hidden = true; };
+                  nativeAdContainer.before(adScript);
+                  const observer = new MutationObserver(() => {
+                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) nativeAdSlot.hidden = false;
+                  });
+                  observer.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
+                };
               </script>
             </div>
           </section>
@@ -1759,5 +1762,49 @@
     or open ads until reviewed and explicitly enabled.
   -->
 
+  <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
+    <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
+      <div class="settings-header">
+        <div><div class="eyebrow">PREFERENSI SITUS</div><h2 id="sitePreferenceTitle">Kendalikan pengalamanmu</h2></div>
+      </div>
+      <div class="settings-body">
+        <p id="sitePreferenceDescription" style="margin:0;color:#aab4ce;font-size:13px;line-height:1.8">Choco AI dapat memuat konten dari penyedia iklan pihak ketiga jika kamu mengizinkannya. Pilihanmu disimpan di browser agar kamu tidak ditanya setiap kali membuka situs. Jika menolak, skrip iklan tidak akan dimuat oleh Choco AI.</p>
+        <p style="margin:0;color:#8590aa;font-size:11px;line-height:1.7">Pengaturan ini hanya untuk iklan. Pengaturan login dan Supabase tidak diubah.</p>
+      </div>
+      <div class="settings-footer" style="justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <button class="tool-button" id="sitePreferenceReject" type="button" style="border:1px solid var(--border)">Tolak</button>
+        <button class="tool-button" id="sitePreferenceAccept" type="button" style="background:var(--gradient);color:white">Izinkan konten</button>
+      </div>
+    </div>
+  </section>
+  <script>
+    (function () {
+      const key = "choco_site_preferences_v1";
+      const backdrop = document.getElementById("sitePreferenceBackdrop");
+      const accept = document.getElementById("sitePreferenceAccept");
+      const reject = document.getElementById("sitePreferenceReject");
+
+      function loadAds() {
+        if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+      }
+      function saveChoice(allowed) {
+        try {
+          localStorage.setItem(key, JSON.stringify({ adsAllowed: allowed, savedAt: new Date().toISOString() }));
+        } catch (error) {
+          backdrop.hidden = false;
+          return;
+        }
+        backdrop.hidden = true;
+        if (allowed) loadAds();
+      }
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) { saved = null; }
+      if (saved && saved.adsAllowed === true) loadAds();
+      else if (!saved || typeof saved.adsAllowed !== "boolean") backdrop.hidden = false;
+
+      accept.addEventListener("click", () => saveChoice(true));
+      reject.addEventListener("click", () => saveChoice(false));
+    })();
+  </script>
 </body>
 </html>
