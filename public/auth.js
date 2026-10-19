@@ -186,6 +186,10 @@
         return;
       }
       const result = await response.json();
+      if (result.userId !== userId || currentUser?.id !== userId) {
+        console.warn("Respons memori tidak cocok dengan akun aktif; diabaikan.");
+        return;
+      }
       const known = new Set(savedMemories.map(item => item.toLocaleLowerCase()));
       const rows = [...new Set((Array.isArray(result.memories) ? result.memories : [])
         .filter(item => typeof item === "string")
