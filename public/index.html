@@ -510,6 +510,47 @@
       background: rgba(255,255,255,.015);
     }
 
+    .sponsor-link-slot {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255,255,255,.018);
+      font-size: 11px;
+    }
+
+    .sponsor-link-slot[hidden] { display: none; }
+
+    .sponsor-link-label {
+      display: block;
+      margin-bottom: 5px;
+      color: #79849e;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .sponsor-link-slot a {
+      color: #aebcff;
+      text-decoration: none;
+    }
+
+    .sponsor-link-slot a:hover { text-decoration: underline; }
+
+    .preference-link {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #8f9bb8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-size: inherit;
+    }
+
+    .preference-link:hover { color: #c2ccff; }
+
     /* MESSAGES */
 
     #messages {
@@ -1218,6 +1259,14 @@
                 };
               </script>
             </div>
+
+            <div class="sponsor-link-slot" id="sponsorLinkSlot" hidden>
+              <span class="sponsor-link-label">SPONSOR</span>
+              <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378"
+                 target="_blank" rel="sponsored noopener noreferrer">
+                Lihat penawaran sponsor <span aria-hidden="true">↗</span>
+              </a>
+            </div>
           </section>
 
           <section id="messages" aria-live="polite"></section>
@@ -1257,7 +1306,8 @@
           </form>
 
           <p class="disclaimer">
-            Choco AI dapat melakukan kesalahan.
+            Choco AI dapat melakukan kesalahan. ·
+            <button type="button" id="openSitePreferences" class="preference-link">Preferensi situs</button>
           </p>
         </div>
       </footer>
@@ -1747,20 +1797,7 @@
     window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 
-  <!--
-    ADSTERRA FORMAT STASH - SAVED FOR REVIEW, NOT ACTIVE.
-    Social Bar:
-    <script data-cfasync="false" src="https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c"></script>
-
-    Smartlink:
-    https://araplhn.org/4/22bd18620139869f854d3a0c3845e378
-
-    Popunder:
-    <script data-cfasync="false" src="https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df"></script>
-
-    Intentionally kept inside an HTML comment so these formats do not execute
-    or open ads until reviewed and explicitly enabled.
-  -->
+  <!-- Popunder intentionally remains disabled: it can interrupt an active conversation. -->
 
   <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
     <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
@@ -1784,9 +1821,45 @@
       const accept = document.getElementById("sitePreferenceAccept");
       const reject = document.getElementById("sitePreferenceReject");
 
-      function loadAds() {
-        if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+      const sponsorLinkSlot = document.getElementById("sponsorLinkSlot");
+      const preferencesLink = document.getElementById("openSitePreferences");
+      let adsAllowed = false;
+      let socialBarTimer = null;
+
+      function loadSocialBarOnce() {
+        if (!adsAllowed) return;
+        try {
+          if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
+        } catch (error) {}
+        if (socialBarTimer) clearTimeout(socialBarTimer);
+        // Delay the floating format so it does not compete with the initial page load.
+        socialBarTimer = setTimeout(() => {
+          if (!adsAllowed || document.visibilityState === "hidden") {
+            socialBarTimer = null;
+            return;
+          }
+          let alreadyLoaded = false;
+          try {
+            alreadyLoaded = sessionStorage.getItem("choco_socialbar_loaded_session") === "true";
+          } catch (error) {}
+          if (alreadyLoaded) return;
+          const script = document.createElement("script");
+          script.dataset.cfasync = "false";
+          script.async = true;
+          script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
+          script.onerror = () => script.remove();
+          document.head.appendChild(script);
+          try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
+        }, 15000);
       }
+
+      function loadAds() {
+        adsAllowed = true;
+        if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
+        if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+        loadSocialBarOnce();
+      }
+
       function saveChoice(allowed) {
         try {
           localStorage.setItem(key, JSON.stringify({ adsAllowed: allowed, savedAt: new Date().toISOString() }));
@@ -1794,9 +1867,19 @@
           backdrop.hidden = false;
           return;
         }
+        const wasAllowed = adsAllowed;
+        adsAllowed = allowed;
         backdrop.hidden = true;
-        if (allowed) loadAds();
+        if (allowed) {
+          loadAds();
+        } else {
+          if (socialBarTimer) clearTimeout(socialBarTimer);
+          if (sponsorLinkSlot) sponsorLinkSlot.hidden = true;
+          // A third-party script already loaded cannot be reliably unloaded in place.
+          if (wasAllowed) window.location.reload();
+        }
       }
+
       let saved = null;
       try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) { saved = null; }
       if (saved && saved.adsAllowed === true) loadAds();
@@ -1804,6 +1887,7 @@
 
       accept.addEventListener("click", () => saveChoice(true));
       reject.addEventListener("click", () => saveChoice(false));
+      preferencesLink.addEventListener("click", () => { backdrop.hidden = false; });
     })();
   </script>
 </body>
