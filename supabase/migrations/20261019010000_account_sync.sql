@@ -138,3 +138,10 @@ create policy "Choco enforce message isolation" on public.messages as restrictiv
 drop policy if exists "Choco enforce memory isolation" on public.memories;
 create policy "Choco enforce memory isolation" on public.memories as restrictive
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Explicit API privileges; RLS above remains the row-level security boundary.
+grant select, insert, update, delete on public.profiles to authenticated;
+grant select, insert, update, delete on public.conversations to authenticated;
+grant select, insert, update, delete on public.messages to authenticated;
+grant select, insert, update, delete on public.memories to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
