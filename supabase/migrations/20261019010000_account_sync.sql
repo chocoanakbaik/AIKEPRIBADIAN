@@ -96,3 +96,45 @@ $$;
 drop trigger if exists conversations_set_updated_at on public.conversations;
 create trigger conversations_set_updated_at before update on public.conversations
 for each row execute function public.choco_set_updated_at();
+
+-- Compatibility for installations where one or more tables already existed.
+alter table public.profiles add column if not exists display_name text;
+alter table public.conversations add column if not exists title text not null default 'Percakapan baru';
+alter table public.conversations add column if not exists created_at timestamptz not null default now();
+alter table public.conversations add column if not exists updated_at timestamptz not null default now();
+alter table public.messages add column if not exists conversation_id uuid references public.conversations(id) on delete cascade;
+alter table public.messages add column if not exists user_id uuid references auth.users(id) on delete cascade;
+alter table public.messages add column if not exists role text;
+alter table public.messages add column if not exists content text;
+alter table public.messages add column if not exists created_at timestamptz not null default now();
+alter table public.memories add column if not exists user_id uuid references auth.users(id) on delete cascade;
+alter table public.memories add column if not exists content text;
+alter table public.memories add column if not exists created_at timestamptz not null default now();
+
+-- Restrictive policies ensure any older permissive policy cannot expose another
+-- user's records. The per-table permissive policies above still grant valid access.
+drop policy if exists "Choco enforce profile isolation" on public.profiles;
+create policy "Choco enforce profile isolation" on public.profiles as restrictive
+  for all using (auth.uid() = id) with check (auth.uid() = id);
+
+drop policy if exists "Choco enforce conversation isolation" on public.conversations;
+create policy "Choco enforce conversation isolation" on public.conversations as restrictive
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "Choco enforce message isolation" on public.messages;
+create policy "Choco enforce message isolation" on public.messages as restrictive
+  for all using (
+    auth.uid() = user_id and exists (
+      select 1 from public.conversations c
+      where c.id = conversation_id and c.user_id = auth.uid()
+    )
+  ) with check (
+    auth.uid() = user_id and exists (
+      select 1 from public.conversations c
+      where c.id = conversation_id and c.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Choco enforce memory isolation" on public.memories;
+create policy "Choco enforce memory isolation" on public.memories as restrictive
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
