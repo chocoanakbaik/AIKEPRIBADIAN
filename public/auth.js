@@ -138,21 +138,51 @@
     else notify("Berhasil logout.");
   });
 
+  async function saveLongTermMemories(userMessage, assistantMessage, userId) {
+    try {
+      const { data } = await db.auth.getSession();
+      const token = data?.session?.access_token;
+      if (!token || !currentUser || currentUser.id !== userId) return;
+      const response = await fetch("/.netlify/functions/memory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ userMessage, assistantMessage })
+      });
+      if (!response.ok) return;
+      const result = await response.json();
+      const candidates = Array.isArray(result.memories) ? result.memories : [];
+      const known = new Set(savedMemories.map(value => value.toLowerCase()));
+      const rows = candidates.filter(value => typeof value === "string")
+        .map(value => value.trim().replace(/\s+/g, " ").slice(0, 240))
+        .filter(value => value.length >= 8 && !known.has(value.toLowerCase()))
+        .slice(0, 3).map(content => ({ user_id: userId, content }));
+      if (!rows.length || !currentUser || currentUser.id !== userId) return;
+      const { error } = await db.from("memories").insert(rows);
+      if (error) { console.warn("Memori tidak tersimpan:", error.message); return; }
+      savedMemories = [...rows.map(row => row.content), ...savedMemories].slice(0, 20);
+    } catch (error) {
+      console.warn("Memori jangka panjang:", error);
+    }
+  }
+
   window.addEventListener("choco:save-message-pair", event => {
     const detail = event.detail || {};
     if (!currentUser || !db || !detail.userMessage || !detail.assistantMessage) return;
+    const expectedUserId = currentUser.id;
+    void saveLongTermMemories(detail.userMessage, detail.assistantMessage, expectedUserId);
     saveQueue = saveQueue.then(async () => {
+      if (!currentUser || currentUser.id !== expectedUserId) return;
       if (!activeConversationId) {
         const { data, error } = await db.from("conversations").insert({
-          user_id: currentUser.id,
+          user_id: expectedUserId,
           title: String(detail.title || detail.userMessage).slice(0, 120)
         }).select("id").single();
         if (error) throw error;
         activeConversationId = data.id;
       }
       const rows = [
-        { conversation_id: activeConversationId, user_id: currentUser.id, role: "user", content: detail.userMessage },
-        { conversation_id: activeConversationId, user_id: currentUser.id, role: "assistant", content: detail.assistantMessage }
+        { conversation_id: activeConversationId, user_id: expectedUserId, role: "user", content: detail.userMessage },
+        { conversation_id: activeConversationId, user_id: expectedUserId, role: "assistant", content: detail.assistantMessage }
       ];
       const { error } = await db.from("messages").insert(rows);
       if (error) throw error;
