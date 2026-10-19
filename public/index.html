@@ -510,6 +510,47 @@
       background: rgba(255,255,255,.015);
     }
 
+    .sponsor-link-slot {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255,255,255,.018);
+      font-size: 11px;
+    }
+
+    .sponsor-link-slot[hidden] { display: none; }
+
+    .sponsor-link-label {
+      display: block;
+      margin-bottom: 5px;
+      color: #79849e;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .sponsor-link-slot a {
+      color: #aebcff;
+      text-decoration: none;
+    }
+
+    .sponsor-link-slot a:hover { text-decoration: underline; }
+
+    .preference-link {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #8f9bb8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-size: inherit;
+    }
+
+    .preference-link:hover { color: #c2ccff; }
+
     /* MESSAGES */
 
     #messages {
@@ -1197,23 +1238,34 @@
             <div class="native-ad-slot" aria-label="Iklan" hidden>
               <div class="native-ad-label">Iklan</div>
               <div class="native-ad-content">
-                <script async="async" data-cfasync="false" src="https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61"></script>
                 <div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div>
               </div>
               <script>
                 const nativeAdSlot = document.querySelector(".native-ad-slot");
                 const nativeAdContainer = document.getElementById("container-4c7148c2e2f23b913be9dd10ba77ad61");
-                if (nativeAdSlot && nativeAdContainer) {
-                  const showNativeAd = () => {
-                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) {
-                      nativeAdSlot.hidden = false;
-                    }
-                  };
-                  const nativeAdObserver = new MutationObserver(showNativeAd);
-                  nativeAdObserver.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
-                  showNativeAd();
-                }
+                window.loadChocoNativeAd = function () {
+                  if (!nativeAdSlot || !nativeAdContainer || nativeAdContainer.dataset.requested === "true") return;
+                  nativeAdContainer.dataset.requested = "true";
+                  const adScript = document.createElement("script");
+                  adScript.async = true;
+                  adScript.dataset.cfasync = "false";
+                  adScript.src = "https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61";
+                  adScript.onerror = function () { nativeAdSlot.hidden = true; };
+                  nativeAdContainer.before(adScript);
+                  const observer = new MutationObserver(() => {
+                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) nativeAdSlot.hidden = false;
+                  });
+                  observer.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
+                };
               </script>
+            </div>
+
+            <div class="sponsor-link-slot" id="sponsorLinkSlot" hidden>
+              <span class="sponsor-link-label">SPONSOR</span>
+              <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378"
+                 target="_blank" rel="sponsored noopener noreferrer">
+                Lihat penawaran sponsor <span aria-hidden="true">↗</span>
+              </a>
             </div>
           </section>
 
@@ -1254,7 +1306,8 @@
           </form>
 
           <p class="disclaimer">
-            Choco AI dapat melakukan kesalahan.
+            Choco AI dapat melakukan kesalahan. ·
+            <button type="button" id="openSitePreferences" class="preference-link">Preferensi situs</button>
           </p>
         </div>
       </footer>
@@ -1742,6 +1795,104 @@
     });
     window.addEventListener("choco:conversations-changed", refreshConversationList);
     window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
+  </script>
+
+  <!--
+    Popunder intentionally remains disabled because it can interrupt an active conversation.
+    Saved for possible later review only; this script does not execute:
+    <script data-cfasync="false" src="https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df"></script>
+  -->
+
+  <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
+    <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
+      <div class="settings-header">
+        <div><div class="eyebrow">PREFERENSI SITUS</div><h2 id="sitePreferenceTitle">Kendalikan pengalamanmu</h2></div>
+      </div>
+      <div class="settings-body">
+        <p id="sitePreferenceDescription" style="margin:0;color:#aab4ce;font-size:13px;line-height:1.8">Choco AI dapat memuat konten dari penyedia iklan pihak ketiga jika kamu mengizinkannya. Pilihanmu disimpan di browser agar kamu tidak ditanya setiap kali membuka situs. Jika menolak, skrip iklan tidak akan dimuat oleh Choco AI.</p>
+        <p style="margin:0;color:#8590aa;font-size:11px;line-height:1.7">Pengaturan ini hanya untuk iklan. Pengaturan login dan Supabase tidak diubah.</p>
+      </div>
+      <div class="settings-footer" style="justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <button class="tool-button" id="sitePreferenceReject" type="button" style="border:1px solid var(--border)">Tolak</button>
+        <button class="tool-button" id="sitePreferenceAccept" type="button" style="background:var(--gradient);color:white">Izinkan konten</button>
+      </div>
+    </div>
+  </section>
+  <script>
+    (function () {
+      const key = "choco_site_preferences_v1";
+      const backdrop = document.getElementById("sitePreferenceBackdrop");
+      const accept = document.getElementById("sitePreferenceAccept");
+      const reject = document.getElementById("sitePreferenceReject");
+
+      const sponsorLinkSlot = document.getElementById("sponsorLinkSlot");
+      const preferencesLink = document.getElementById("openSitePreferences");
+      let adsAllowed = false;
+      let socialBarTimer = null;
+
+      function loadSocialBarOnce() {
+        if (!adsAllowed) return;
+        try {
+          if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
+        } catch (error) {}
+        if (socialBarTimer) clearTimeout(socialBarTimer);
+        // Delay the floating format so it does not compete with the initial page load.
+        socialBarTimer = setTimeout(() => {
+          if (!adsAllowed || document.visibilityState === "hidden") {
+            socialBarTimer = null;
+            return;
+          }
+          let alreadyLoaded = false;
+          try {
+            alreadyLoaded = sessionStorage.getItem("choco_socialbar_loaded_session") === "true";
+          } catch (error) {}
+          if (alreadyLoaded) return;
+          const script = document.createElement("script");
+          script.dataset.cfasync = "false";
+          script.async = true;
+          script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
+          script.onerror = () => script.remove();
+          document.head.appendChild(script);
+          try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
+        }, 15000);
+      }
+
+      function loadAds() {
+        adsAllowed = true;
+        if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
+        if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+        loadSocialBarOnce();
+      }
+
+      function saveChoice(allowed) {
+        try {
+          localStorage.setItem(key, JSON.stringify({ adsAllowed: allowed, savedAt: new Date().toISOString() }));
+        } catch (error) {
+          backdrop.hidden = false;
+          return;
+        }
+        const wasAllowed = adsAllowed;
+        adsAllowed = allowed;
+        backdrop.hidden = true;
+        if (allowed) {
+          loadAds();
+        } else {
+          if (socialBarTimer) clearTimeout(socialBarTimer);
+          if (sponsorLinkSlot) sponsorLinkSlot.hidden = true;
+          // A third-party script already loaded cannot be reliably unloaded in place.
+          if (wasAllowed) window.location.reload();
+        }
+      }
+
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) { saved = null; }
+      if (saved && saved.adsAllowed === true) loadAds();
+      else if (!saved || typeof saved.adsAllowed !== "boolean") backdrop.hidden = false;
+
+      accept.addEventListener("click", () => saveChoice(true));
+      reject.addEventListener("click", () => saveChoice(false));
+      preferencesLink.addEventListener("click", () => { backdrop.hidden = false; });
+    })();
   </script>
 </body>
 </html>
