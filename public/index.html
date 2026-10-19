@@ -217,12 +217,16 @@
       border-top: 1px solid var(--border);
     }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 10px 8px 2px;
-    }
+    .profile { display:flex; align-items:center; gap:11px; padding:10px 8px; width:100%; text-align:left; border:1px solid transparent; border-radius:12px; background:transparent; color:inherit; cursor:pointer; }
+    .profile:hover,.profile[aria-expanded="true"] { background:rgba(255,255,255,.045); border-color:var(--border); }
+    .profile-copy { display:flex; flex-direction:column; min-width:0; text-align:left; }
+    .account-menu-wrap { position:relative; }
+    .account-chevron { margin-left:auto; color:var(--muted); }
+    .account-menu { position:absolute; left:0; bottom:calc(100% + 8px); width:100%; padding:7px; border:1px solid rgba(135,148,191,.22); border-radius:13px; background:#111827; box-shadow:0 18px 45px rgba(0,0,0,.4); z-index:40; }
+    .account-menu[hidden] { display:none !important; }
+    .account-menu-item { display:flex; align-items:center; gap:10px; width:100%; padding:11px 10px; border:0; border-radius:9px; background:transparent; color:#e6ebfa; text-align:left; font-size:12px; cursor:pointer; }
+    .account-menu-item:hover { background:rgba(255,255,255,.07); }
+    .memory-settings-empty { min-height:150px; }
 
     .profile-avatar {
       display: grid;
@@ -826,6 +830,9 @@
       background: rgba(12,16,28,.58);
     }
 
+
+    .identity-card { margin-bottom:22px; }
+    .right-panel .identity-card { order:0; }
     .panel-heading {
       margin: 2px 0 18px;
       color: #aab4ce;
@@ -1163,13 +1170,6 @@
         </div>
       </div>
 
-      <button class="new-chat" id="newChat">
-        <span>＋</span>
-        <span>Obrolan baru</span>
-      </button>
-
-      <div class="nav-label">Workspace</div>
-
       <button class="nav-item active" data-page="home">
         <span class="nav-icon">⌂</span>
         <span>Beranda</span>
@@ -1185,14 +1185,19 @@
       </div>
 
       <div class="sidebar-bottom">
-        <button class="nav-item" type="button" data-open-panel="settings">
-          <span class="nav-icon">⚙</span><span>Pengaturan</span>
-        </button>
-        <div class="profile">
-          <div class="profile-avatar" id="profileAvatar">?</div>
-          <div class="profile-copy">
-            <div class="profile-name" id="profileName">Belum login</div>
-            <div class="profile-sub" id="profileSub">Akun pengguna</div>
+        <div class="account-menu-wrap">
+          <button class="profile account-trigger" id="accountMenuButton" type="button" aria-expanded="false" aria-controls="accountMenu">
+            <span class="profile-avatar" id="profileAvatar">?</span>
+            <span class="profile-copy">
+              <span class="profile-name" id="profileName">Belum login</span>
+              <span class="profile-sub" id="profileSub">Akun pengguna</span>
+            </span>
+            <span class="account-chevron" aria-hidden="true">⌃</span>
+          </button>
+          <div class="account-menu" id="accountMenu" hidden>
+            <button type="button" class="account-menu-item" id="accountSettingsButton"><span>⚙</span> Pengaturan</button>
+            <button type="button" class="account-menu-item" id="accountPersonalityButton"><span>✦</span> Personalisasi</button>
+            <button type="button" class="account-menu-item" id="accountLoginButton"><span>↗</span> Login / akun</button>
           </div>
         </div>
       </div>
@@ -1361,13 +1366,8 @@
   <div class="modal-backdrop" id="settingsBackdrop" hidden>
     <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <header class="settings-header"><div><div class="panel-heading">KONTROL CHOCO AI</div><h2 id="settingsTitle">Pengaturan</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Tutup">×</button></header>
-      <div class="settings-body">
-        <label class="setting-field">Kelompok usia<select id="ageGroup"><option value="under18">Di bawah 18 tahun</option><option value="adult">18 tahun atau lebih</option><option value="unset">Belum diatur</option></select><small>Pilihan ini berdasarkan pengakuan sendiri, bukan verifikasi umur. Jika belum diatur, Choco AI memakai standar aman untuk remaja.</small></label>
-        <label class="setting-field">Panjang jawaban<select id="responseLength"><option value="short">Ringkas</option><option value="balanced">Seimbang</option><option value="detailed">Terperinci</option></select></label>
-        <label class="setting-toggle"><span><strong>Efek mengetik</strong><small>Tampilkan jawaban secara bertahap.</small></span><input id="typingEffect" type="checkbox" checked></label>
-        <label class="setting-toggle"><span><strong>Sapaan sesuai waktu</strong><small>Sesuaikan sapaan dengan jam perangkat.</small></span><input id="timeGreeting" type="checkbox" checked></label>
-      </div>
-      <footer class="settings-footer settings-footer-split"><button class="auth-button" id="openPersonalityFromSettings" type="button">Personalisasi</button><button class="auth-button primary" id="saveSettings" type="button">Simpan pengaturan</button></footer>
+      <div class="settings-body memory-settings-empty" aria-live="polite"></div>
+      <footer class="settings-footer"></footer>
     </section>
   </div>
   <div class="modal-backdrop" id="personalityBackdrop" hidden>
@@ -1416,11 +1416,18 @@
     }
     function openPanel(name) { document.getElementById(name + "Backdrop").hidden = false; }
     document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.openPanel)));
+    const accountMenuButton = document.getElementById("accountMenuButton");
+    const accountMenu = document.getElementById("accountMenu");
+    accountMenuButton.addEventListener("click", () => { const expanded = accountMenu.hidden; accountMenu.hidden = !expanded; accountMenuButton.setAttribute("aria-expanded", String(expanded)); });
+    document.addEventListener("click", event => { if (!event.target.closest(".account-menu-wrap")) { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); } });
+    document.getElementById("accountSettingsButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("settings"); });
+    document.getElementById("accountPersonalityButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("personality"); });
+    document.getElementById("accountLoginButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); document.getElementById("authLogin")?.click(); });
     document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => button.closest(".modal-backdrop").hidden = true));
     document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", event => { if (event.target === backdrop) backdrop.hidden = true; }));
-    document.getElementById("saveSettings").addEventListener("click", () => { savePreferenceFields(["ageGroup","responseLength","typingEffect","timeGreeting"]); document.getElementById("settingsBackdrop").hidden = true; updateWelcomeGreeting(); });
+    document.getElementById("saveSettings").addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; });
     document.getElementById("savePersonality").addEventListener("click", () => { savePreferenceFields(["tonePreference","detailPreference","humorPreference","emojiPreference"]); document.getElementById("personalityBackdrop").hidden = true; });
-    document.getElementById("openPersonalityFromSettings").addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; openPanel("personality"); });
+
     const plusMenuButton = document.getElementById("plusMenuButton");
     const plusMenu = document.getElementById("plusMenu");
     plusMenuButton.addEventListener("click", () => { const open = plusMenu.hidden; plusMenu.hidden = !open; plusMenuButton.setAttribute("aria-expanded", String(open)); });
