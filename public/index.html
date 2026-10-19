@@ -217,12 +217,16 @@
       border-top: 1px solid var(--border);
     }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 10px 8px 2px;
-    }
+    .profile { display:flex; align-items:center; gap:11px; padding:10px 8px; width:100%; text-align:left; border:1px solid transparent; border-radius:12px; background:transparent; color:inherit; cursor:pointer; }
+    .profile:hover,.profile[aria-expanded="true"] { background:rgba(255,255,255,.045); border-color:var(--border); }
+    .profile-copy { display:flex; flex-direction:column; min-width:0; text-align:left; }
+    .account-menu-wrap { position:relative; }
+    .account-chevron { margin-left:auto; color:var(--muted); }
+    .account-menu { position:absolute; left:0; bottom:calc(100% + 8px); width:100%; padding:7px; border:1px solid rgba(135,148,191,.22); border-radius:13px; background:#111827; box-shadow:0 18px 45px rgba(0,0,0,.4); z-index:40; }
+    .account-menu[hidden] { display:none !important; }
+    .account-menu-item { display:flex; align-items:center; gap:10px; width:100%; padding:11px 10px; border:0; border-radius:9px; background:transparent; color:#e6ebfa; text-align:left; font-size:12px; cursor:pointer; }
+    .account-menu-item:hover { background:rgba(255,255,255,.07); }
+    .memory-settings-empty { min-height:150px; }
 
     .profile-avatar {
       display: grid;
@@ -247,6 +251,8 @@
       color: var(--muted);
       font-size: 10px;
     }
+    .profile-copy { min-width: 0; }
+    .profile-name, .profile-sub { max-width: 155px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* MAIN LAYOUT */
 
@@ -485,12 +491,17 @@
     /* ADSTERRA NATIVE BANNER */
     .native-ad-slot {
       width: 100%;
-      max-width: 560px;
+      max-width: 100%;
       min-width: 0;
-      margin-top: 22px;
       overflow: hidden;
       color: var(--muted);
     }
+    .ad-rail { margin-top: 24px; padding-top: 19px; border-top: 1px solid var(--border); }
+    .ad-rail-heading { margin-bottom: 14px; color: #aab4ce; font-size: 10px; font-weight: 750; letter-spacing: 1px; text-transform: uppercase; }
+    .all-sizes-ad-slot { min-width: 0; }
+    .all-sizes-ad-placeholder { min-height: 130px; display: grid; align-content: center; justify-items: center; gap: 7px; padding: 16px 10px; text-align: center; border: 1px dashed rgba(135,148,191,.22); border-radius: 12px; background: rgba(255,255,255,.015); color: #79849e; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+    .all-sizes-ad-placeholder span { color: #5e6a85; font-size: 10px; }
+    .native-ad-slot[hidden], .sponsor-link-slot[hidden], .social-ad-note[hidden], .plus-menu[hidden] { display: none !important; }
 
     .native-ad-label {
       margin-bottom: 8px;
@@ -512,7 +523,7 @@
 
     .sponsor-link-slot {
       width: 100%;
-      max-width: 560px;
+      max-width: 100%;
       margin-top: 12px;
       padding: 11px 13px;
       border: 1px solid var(--border);
@@ -522,6 +533,39 @@
     }
 
     .sponsor-link-slot[hidden] { display: none; }
+
+    /* Slot iklan dipisahkan agar format berbentuk konten tidak saling menempel. */
+    .ad-placement {
+      display: block;
+      position: relative;
+      isolation: isolate;
+      clear: both;
+    }
+
+    .ad-placement + .ad-placement { margin-top: 14px; }
+
+    .ad-placement-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #79849e;
+      font-size: 9px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .social-ad-note {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(135,148,191,.18);
+      border-radius: 10px;
+      color: #79849e;
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .social-ad-note[hidden] { display: none; }
 
     .sponsor-link-label {
       display: block;
@@ -710,11 +754,16 @@
       gap: 12px;
     }
 
-    .input-hints {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+    .input-hints { display: flex; align-items: center; gap: 7px; }
+    .plus-menu-wrap { position: relative; }
+    .plus-trigger { width: 36px; height: 36px; justify-content: center; border: 1px solid rgba(135,148,191,.18); background: rgba(255,255,255,.025); font-size: 17px; }
+    .plus-menu { position: absolute; z-index: 30; left: 0; bottom: calc(100% + 12px); width: min(280px, calc(100vw - 42px)); padding: 9px; border: 1px solid rgba(135,148,191,.2); border-radius: 15px; background: #111827; box-shadow: 0 18px 50px rgba(0,0,0,.42); }
+    .plus-menu-heading { padding: 7px 9px 10px; color: #8995b0; font-size: 10px; font-weight: 750; letter-spacing: .8px; text-transform: uppercase; }
+    .plus-menu-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px 9px; text-align: left; border: 0; border-radius: 10px; background: transparent; color: #e6ebfa; cursor: pointer; }
+    .plus-menu-item:hover { background: rgba(255,255,255,.06); }
+    .plus-menu-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid var(--border); border-radius: 10px; color: #b9c5ff; }
+    .plus-menu-item strong { display: block; font-size: 12px; font-weight: 650; }
+    .plus-menu-item small { display: block; margin-top: 3px; color: #7f8aa4; font-size: 10px; line-height: 1.4; }
 
     .tool-button {
       display: flex;
@@ -773,14 +822,17 @@
     /* RIGHT PANEL */
 
     .right-panel {
-      width: 250px;
-      flex: 0 0 250px;
+      width: 300px;
+      flex: 0 0 300px;
       padding: 25px 17px;
       overflow-y: auto;
       border-left: 1px solid var(--border);
       background: rgba(12,16,28,.58);
     }
 
+
+    .identity-card { margin-bottom:22px; }
+    .right-panel .identity-card { order:0; }
     .panel-heading {
       margin: 2px 0 18px;
       color: #aab4ce;
@@ -889,6 +941,10 @@
       font-size: 11px;
       line-height: 1.8;
     }
+    .settings-footer-split { justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .login-notice { position: fixed; z-index: 90; top: 78px; left: 50%; width: min(520px, calc(100vw - 32px)); padding: 14px 17px; transform: translate(-50%, -10px); opacity: 0; pointer-events: none; border: 1px solid rgba(140,153,255,.26); border-radius: 14px; background: rgba(20,27,45,.97); box-shadow: 0 16px 48px rgba(0,0,0,.35); color: #dfe6ff; font-size: 12px; line-height: 1.65; transition: opacity .25s, transform .25s; }
+    .login-notice.show { opacity: 1; transform: translate(-50%, 0); }
+    .login-notice strong { display: block; margin-bottom: 3px; color: #c4b5ff; font-size: 12px; }
 
     /* NOTIFICATIONS AND RESPONSIVE */
 
@@ -951,7 +1007,7 @@
       }
     }
 
-    @media (max-width: 1120px) {
+    @media (max-width: 980px) {
       .right-panel {
         display: none;
       }
@@ -1114,34 +1170,9 @@
         </div>
       </div>
 
-      <button class="new-chat" id="newChat">
-        <span>＋</span>
-        <span>Obrolan baru</span>
-      </button>
-
-      <div class="nav-label">Workspace</div>
-
       <button class="nav-item active" data-page="home">
         <span class="nav-icon">⌂</span>
         <span>Beranda</span>
-      </button>
-
-      <button class="nav-item future-feature" data-feature="Jelajahi">
-        <span class="nav-icon">◈</span>
-        <span>Jelajahi</span>
-        <span class="soon-tag">Soon</span>
-      </button>
-
-      <button class="nav-item future-feature" data-feature="Memori">
-        <span class="nav-icon">◷</span>
-        <span>Memori</span>
-        <span class="soon-tag">Soon</span>
-      </button>
-
-      <button class="nav-item future-feature" data-feature="File">
-        <span class="nav-icon">▤</span>
-        <span>File</span>
-        <span class="soon-tag">Soon</span>
       </button>
 
       <div class="recent-section">
@@ -1154,18 +1185,19 @@
       </div>
 
       <div class="sidebar-bottom">
-        <button class="nav-item" type="button" data-open-panel="settings">
-          <span class="nav-icon">⚙</span><span>Pengaturan</span>
-        </button>
-        <button class="nav-item" type="button" data-open-panel="personality">
-          <span class="nav-icon">◉</span><span>Personalisasi</span>
-        </button>
-
-        <div class="profile">
-          <div class="profile-avatar">H</div>
-          <div>
-            <div class="profile-name">Choco AI</div>
-            <div class="profile-sub">Dikembangkan oleh Hasby</div>
+        <div class="account-menu-wrap">
+          <button class="profile account-trigger" id="accountMenuButton" type="button" aria-expanded="false" aria-controls="accountMenu">
+            <span class="profile-avatar" id="profileAvatar">?</span>
+            <span class="profile-copy">
+              <span class="profile-name" id="profileName">Belum login</span>
+              <span class="profile-sub" id="profileSub">Akun pengguna</span>
+            </span>
+            <span class="account-chevron" aria-hidden="true">⌃</span>
+          </button>
+          <div class="account-menu" id="accountMenu" hidden>
+            <button type="button" class="account-menu-item" id="accountSettingsButton"><span>⚙</span> Pengaturan</button>
+            <button type="button" class="account-menu-item" id="accountPersonalityButton"><span>✦</span> Personalisasi</button>
+            <button type="button" class="account-menu-item" id="accountLoginButton"><span>↗</span> Login / akun</button>
           </div>
         </div>
       </div>
@@ -1235,38 +1267,6 @@
               </button>
             </div>
 
-            <div class="native-ad-slot" aria-label="Iklan" hidden>
-              <div class="native-ad-label">Iklan</div>
-              <div class="native-ad-content">
-                <div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div>
-              </div>
-              <script>
-                const nativeAdSlot = document.querySelector(".native-ad-slot");
-                const nativeAdContainer = document.getElementById("container-4c7148c2e2f23b913be9dd10ba77ad61");
-                window.loadChocoNativeAd = function () {
-                  if (!nativeAdSlot || !nativeAdContainer || nativeAdContainer.dataset.requested === "true") return;
-                  nativeAdContainer.dataset.requested = "true";
-                  const adScript = document.createElement("script");
-                  adScript.async = true;
-                  adScript.dataset.cfasync = "false";
-                  adScript.src = "https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61";
-                  adScript.onerror = function () { nativeAdSlot.hidden = true; };
-                  nativeAdContainer.before(adScript);
-                  const observer = new MutationObserver(() => {
-                    if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) nativeAdSlot.hidden = false;
-                  });
-                  observer.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
-                };
-              </script>
-            </div>
-
-            <div class="sponsor-link-slot" id="sponsorLinkSlot" hidden>
-              <span class="sponsor-link-label">SPONSOR</span>
-              <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378"
-                 target="_blank" rel="sponsored noopener noreferrer">
-                Lihat penawaran sponsor <span aria-hidden="true">↗</span>
-              </a>
-            </div>
           </section>
 
           <section id="messages" aria-live="polite"></section>
@@ -1287,17 +1287,15 @@
 
             <div class="input-actions">
               <div class="input-hints">
-                <button class="tool-button future-feature" type="button"
-                  data-feature="Upload file" title="Upload file">
-                  <span>＋</span>
-                  <span class="tool-label">Lampiran</span>
-                </button>
-
-                <button class="tool-button future-feature" type="button"
-                  data-feature="Analisis gambar" title="Analisis gambar">
-                  <span>▧</span>
-                  <span class="tool-label">Gambar</span>
-                </button>
+                <div class="plus-menu-wrap">
+                  <button class="tool-button plus-trigger" id="plusMenuButton" type="button" aria-expanded="false" aria-controls="plusMenu" title="Buka alat">＋ <span class="tool-label">Alat</span></button>
+                  <div class="plus-menu" id="plusMenu" hidden>
+                    <div class="plus-menu-heading">Alat & fitur</div>
+                    <button class="plus-menu-item future-feature" type="button" data-feature="Lampiran" title="Lampiran"><span class="plus-menu-icon">↥</span><span><strong>Lampiran</strong><small>Upload dokumen dan file</small></span></button>
+                    <button class="plus-menu-item future-feature" type="button" data-feature="Gambar" title="Gambar"><span class="plus-menu-icon">▧</span><span><strong>Gambar</strong><small>Analisis atau gunakan gambar</small></span></button>
+                    <button class="plus-menu-item future-feature" type="button" data-feature="Pencarian web" title="Pencarian web"><span class="plus-menu-icon">⌕</span><span><strong>Pencarian web</strong><small>Jelajahi informasi di internet</small></span></button>
+                  </div>
+                </div>
               </div>
 
               <button class="send-button" id="send" type="submit"
@@ -1321,80 +1319,55 @@
         <div class="identity-title">Choco AI</div>
         <div class="identity-description">
           Representasi digital Hasby Prasetya Saprudin.
-          Dikembangkan secara mandiri dengan bantuan layanan model AI.
+          Dikembangkan oleh Hasby dengan bantuan layanan model AI.
         </div>
       </div>
 
-      <div class="divider"></div>
-
-      <div class="panel-heading">Kemampuan</div>
-
-      <div class="feature-list">
-        <div class="feature">
-          <div class="feature-icon">✧</div>
-          <div>
-            <div class="feature-name">Percakapan AI</div>
-            <div class="feature-status available">● Aktif</div>
-          </div>
+      <section class="ad-rail" aria-label="Area iklan dan sponsor">
+        <div class="ad-rail-heading">Sponsor</div>
+        <div class="native-ad-slot ad-placement" id="nativeAdPlacement" aria-label="Iklan banner native" hidden>
+          <div class="native-ad-label">IKLAN · NATIVE BANNER</div>
+          <div class="native-ad-content"><div id="container-4c7148c2e2f23b913be9dd10ba77ad61"></div></div>
+          <script>
+            const nativeAdSlot = document.querySelector(".native-ad-slot");
+            const nativeAdContainer = document.getElementById("container-4c7148c2e2f23b913be9dd10ba77ad61");
+            window.loadChocoNativeAd = function () {
+              if (!nativeAdSlot || !nativeAdContainer || nativeAdContainer.dataset.requested === "true") return;
+              nativeAdContainer.dataset.requested = "true";
+              const adScript = document.createElement("script");
+              adScript.async = true;
+              adScript.dataset.cfasync = "false";
+              adScript.src = "https://bauval.org/21/4c7148c2e2f23b913be9dd10ba77ad61";
+              adScript.onerror = function () { nativeAdSlot.hidden = true; };
+              nativeAdContainer.before(adScript);
+              const observer = new MutationObserver(() => {
+                if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) nativeAdSlot.hidden = false;
+              });
+              observer.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
+            };
+          </script>
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">◷</div>
-          <div>
-            <div class="feature-name">Memori permanen</div>
-            <div class="feature-status">Belum tersedia</div>
-          </div>
+        <div class="all-sizes-ad-slot ad-placement" id="allSizesAdPlacement">
+          <div class="native-ad-label">IKLAN · BANNER RESPONSIF</div>
+          <div class="all-sizes-ad-placeholder">Ruang banner responsif<br><span>Menunggu kode unit iklan</span></div>
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">▤</div>
-          <div>
-            <div class="feature-name">Upload file</div>
-            <div class="feature-status">Belum tersedia</div>
-          </div>
+        <div class="sponsor-link-slot ad-placement" id="sponsorLinkSlot" hidden>
+          <span class="sponsor-link-label">SMARTLINK · SPONSOR</span>
+          <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378" target="_blank" rel="sponsored noopener noreferrer">Lihat penawaran sponsor <span aria-hidden="true">↗</span></a>
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">▧</div>
-          <div>
-            <div class="feature-name">Analisis gambar</div>
-            <div class="feature-status">Belum tersedia</div>
-          </div>
+        <div class="social-ad-note ad-placement" id="socialAdPlacement" hidden>
+          <span class="ad-placement-label">SOCIAL BAR · IKLAN MENGAMBANG</span>
+          Format ini dikendalikan penyedia iklan.
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">◎</div>
-          <div>
-            <div class="feature-name">Pencarian web</div>
-            <div class="feature-status">Belum tersedia</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="panel-heading">Catatan</div>
-      <div class="tip-card">
-        <div class="tip-title">✦ Masih berkembang</div>
-        <div class="tip-text">
-          Identitas, pengetahuan, dan kemampuan Choco AI akan terus
-          dikembangkan. Jawaban yang belum diketahui sebaiknya tidak
-          ditebak.
-        </div>
-      </div>
+      </section>
     </aside>
   </div>
 
   <div class="modal-backdrop" id="settingsBackdrop" hidden>
     <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <header class="settings-header"><div><div class="panel-heading">KONTROL CHOCO AI</div><h2 id="settingsTitle">Pengaturan</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Tutup">×</button></header>
-      <div class="settings-body">
-        <label class="setting-field">Kelompok usia<select id="ageGroup"><option value="under18">Di bawah 18 tahun</option><option value="adult">18 tahun atau lebih</option><option value="unset">Belum diatur</option></select><small>Pilihan ini berdasarkan pengakuan sendiri, bukan verifikasi umur. Jika belum diatur, Choco AI memakai standar aman untuk remaja.</small></label>
-        <label class="setting-field">Panjang jawaban<select id="responseLength"><option value="short">Ringkas</option><option value="balanced">Seimbang</option><option value="detailed">Terperinci</option></select></label>
-        <label class="setting-toggle"><span><strong>Efek mengetik</strong><small>Tampilkan jawaban secara bertahap.</small></span><input id="typingEffect" type="checkbox" checked></label>
-        <label class="setting-toggle"><span><strong>Sapaan sesuai waktu</strong><small>Sesuaikan sapaan dengan jam perangkat.</small></span><input id="timeGreeting" type="checkbox" checked></label>
-      </div>
-      <footer class="settings-footer"><button class="auth-button primary" id="saveSettings" type="button">Simpan pengaturan</button></footer>
+      <div class="settings-body memory-settings-empty" aria-live="polite"></div>
+      <footer class="settings-footer"></footer>
     </section>
   </div>
   <div class="modal-backdrop" id="personalityBackdrop" hidden>
@@ -1410,6 +1383,7 @@
     </section>
   </div>
   <div class="toast" id="toast" role="status"></div>
+  <div class="login-notice" id="loginNotice" role="status" aria-live="polite"><strong>✦ Choco AI masih berkembang</strong>Identitas, pengetahuan, dan kemampuan Choco AI akan terus dikembangkan. Jawaban yang belum diketahui sebaiknya tidak ditebak.</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/auth.js" defer></script>
@@ -1442,10 +1416,23 @@
     }
     function openPanel(name) { document.getElementById(name + "Backdrop").hidden = false; }
     document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.openPanel)));
+    const accountMenuButton = document.getElementById("accountMenuButton");
+    const accountMenu = document.getElementById("accountMenu");
+    accountMenuButton.addEventListener("click", () => { const expanded = accountMenu.hidden; accountMenu.hidden = !expanded; accountMenuButton.setAttribute("aria-expanded", String(expanded)); });
+    document.addEventListener("click", event => { if (!event.target.closest(".account-menu-wrap")) { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); } });
+    document.getElementById("accountSettingsButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("settings"); });
+    document.getElementById("accountPersonalityButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("personality"); });
+    document.getElementById("accountLoginButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); document.getElementById("authLogin")?.click(); });
     document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => button.closest(".modal-backdrop").hidden = true));
     document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", event => { if (event.target === backdrop) backdrop.hidden = true; }));
-    document.getElementById("saveSettings").addEventListener("click", () => { savePreferenceFields(["ageGroup","responseLength","typingEffect","timeGreeting"]); document.getElementById("settingsBackdrop").hidden = true; updateWelcomeGreeting(); });
+    document.getElementById("saveSettings").addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; });
     document.getElementById("savePersonality").addEventListener("click", () => { savePreferenceFields(["tonePreference","detailPreference","humorPreference","emojiPreference"]); document.getElementById("personalityBackdrop").hidden = true; });
+
+    const plusMenuButton = document.getElementById("plusMenuButton");
+    const plusMenu = document.getElementById("plusMenu");
+    plusMenuButton.addEventListener("click", () => { const open = plusMenu.hidden; plusMenu.hidden = !open; plusMenuButton.setAttribute("aria-expanded", String(open)); });
+    document.addEventListener("click", event => { if (!event.target.closest(".plus-menu-wrap")) { plusMenu.hidden = true; plusMenuButton.setAttribute("aria-expanded", "false"); } });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") { plusMenu.hidden = true; plusMenuButton.setAttribute("aria-expanded", "false"); document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.hidden = true); } });
     loadPreferences();
     function updateWelcomeGreeting() {
       const heading = document.getElementById("welcomeHeading");
@@ -1599,7 +1586,6 @@
       scrollToBottom();
     }
 
-    document.getElementById("newChat").addEventListener("click", resetChat);
     document.getElementById("clearChat").addEventListener("click", resetChat);
 
     document.querySelectorAll("[data-prompt]").forEach(button => {
@@ -1613,8 +1599,10 @@
     document.querySelectorAll(".future-feature").forEach(button => {
       button.addEventListener("click", event => {
         event.preventDefault();
+        plusMenu.hidden = true;
+        plusMenuButton.setAttribute("aria-expanded", "false");
         showToast(
-          button.dataset.feature + " belum tersedia. Backend fiturnya belum dibuat."
+          button.dataset.feature + " belum aktif. Penempatan menunya sudah disiapkan, tetapi fungsi backend-nya belum tersedia."
         );
       });
     });
@@ -1668,6 +1656,9 @@
       const waiting = addMessage("", "assistant", { typing: true });
 
       try {
+        // Tunggu pemulihan sesi dan pemuatan memori agar pesan pertama setelah refresh
+        // tidak terkirim sebelum akun siap dan kehilangan konteks tersimpan.
+        if (window.chocoSupabaseReady) await window.chocoSupabaseReady;
         const response = await fetch("/.netlify/functions/chat", {
           method: "POST",
           headers: {
@@ -1720,9 +1711,12 @@
           { role: "assistant", content: reply }
         );
 
-        window.dispatchEvent(new CustomEvent("choco:save-message-pair", {
-          detail: { userMessage: message, assistantMessage: reply, title: conversationTitle || message }
-        }));
+        const savedPair = { userMessage: message, assistantMessage: reply, title: conversationTitle || message };
+        if (window.chocoIsAuthenticated?.() && typeof window.chocoSaveMessagePair === "function") {
+          await window.chocoSaveMessagePair(savedPair);
+        } else {
+          window.dispatchEvent(new CustomEvent("choco:save-message-pair", { detail: savedPair }));
+        }
 
         // Batasi riwayat di browser agar request tidak membengkak.
         if (history.length > 40) {
@@ -1761,7 +1755,8 @@
       if (!chocoUser || typeof window.chocoListConversations !== "function") return;
       const items = await window.chocoListConversations();
       if (!chocoUser) return;
-      if (!items.length) { showEmptyRecent(); return; }
+      if (items === null) { showEmptyRecent(); return null; }
+      if (!items.length) { showEmptyRecent(); return []; }
       recentList.replaceChildren();
       for (const conversation of items) {
         const item = document.createElement("div");
@@ -1771,6 +1766,7 @@
         item.addEventListener("click", () => openSavedConversation(conversation.id, conversation.title));
         recentList.appendChild(item);
       }
+      return items;
     }
 
     async function openSavedConversation(id, title) {
@@ -1788,20 +1784,60 @@
       scrollToBottom();
     }
 
-    window.addEventListener("choco:auth-changed", event => {
-      chocoUser = (event.detail && event.detail.user) || null;
-      if (chocoUser) refreshConversationList();
-      else showEmptyRecent();
+    let loginNoticeTimer = null;
+    let restoredUserId = null;
+    window.addEventListener("choco:auth-changed", async event => {
+      const detail = event.detail || {};
+      chocoUser = detail.user || null;
+      if (!chocoUser) restoredUserId = null;
+      const profileName = document.getElementById("profileName");
+      const profileSub = document.getElementById("profileSub");
+      const profileAvatar = document.getElementById("profileAvatar");
+      if (chocoUser) {
+        const metadata = chocoUser.user_metadata || {};
+        const displayName = metadata.full_name || metadata.name || (chocoUser.email ? chocoUser.email.split("@")[0] : "Pengguna");
+        profileName.textContent = displayName;
+        profileName.title = displayName;
+        profileSub.textContent = chocoUser.email || "Akun tersinkron";
+        profileSub.title = profileSub.textContent;
+        profileAvatar.textContent = Array.from(displayName.trim())[0]?.toUpperCase() || "U";
+        if (detail.eventType === "SIGNED_IN") {
+          const notice = document.getElementById("loginNotice");
+          notice.classList.add("show");
+          clearTimeout(loginNoticeTimer);
+          loginNoticeTimer = setTimeout(() => notice.classList.remove("show"), 10000);
+        }
+        const userId = chocoUser.id;
+        const conversations = await refreshConversationList();
+        if (conversations?.length && restoredUserId !== userId && chocoUser?.id === userId) {
+          restoredUserId = userId;
+          await openSavedConversation(conversations[0].id, conversations[0].title);
+        }
+      } else {
+        profileName.textContent = "Belum login";
+        profileName.title = "";
+        profileSub.textContent = "Akun pengguna";
+        profileSub.title = "";
+        profileAvatar.textContent = "?";
+        showEmptyRecent();
+      }
     });
     window.addEventListener("choco:conversations-changed", refreshConversationList);
     window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 
-  <!--
-    Popunder intentionally remains disabled because it can interrupt an active conversation.
-    Saved for possible later review only; this script does not execute:
-    <script data-cfasync="false" src="https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df"></script>
-  -->
+  <!-- Popunder tidak memiliki slot visual: skripnya membuka tab/jendela terpisah. -->
+  <script>
+    window.loadChocoPopunder = function () {
+      if (window.__chocoPopunderLoaded) return;
+      window.__chocoPopunderLoaded = true;
+      const script = document.createElement("script");
+      script.dataset.cfasync = "false";
+      script.src = "https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df";
+      script.onerror = () => { window.__chocoPopunderLoaded = false; script.remove(); };
+      document.body.appendChild(script);
+    };
+  </script>
 
   <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
     <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
@@ -1826,19 +1862,22 @@
       const reject = document.getElementById("sitePreferenceReject");
 
       const sponsorLinkSlot = document.getElementById("sponsorLinkSlot");
+      const socialAdPlacement = document.getElementById("socialAdPlacement");
       const preferencesLink = document.getElementById("openSitePreferences");
+      const messages = document.getElementById("messages");
+      const welcome = document.getElementById("welcome");
       let adsAllowed = false;
       let socialBarTimer = null;
 
       function loadSocialBarOnce() {
-        if (!adsAllowed) return;
+        if (!adsAllowed || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) return;
         try {
           if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
         } catch (error) {}
         if (socialBarTimer) clearTimeout(socialBarTimer);
         // Delay the floating format so it does not compete with the initial page load.
         socialBarTimer = setTimeout(() => {
-          if (!adsAllowed || document.visibilityState === "hidden") {
+          if (!adsAllowed || document.visibilityState === "hidden" || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) {
             socialBarTimer = null;
             return;
           }
@@ -1853,6 +1892,7 @@
           script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
           script.onerror = () => script.remove();
           document.head.appendChild(script);
+          if (socialAdPlacement) socialAdPlacement.hidden = false;
           try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
         }, 15000);
       }
@@ -1861,6 +1901,7 @@
         adsAllowed = true;
         if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
         if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
+        if (typeof window.loadChocoPopunder === "function") window.loadChocoPopunder();
         loadSocialBarOnce();
       }
 
@@ -1879,6 +1920,7 @@
         } else {
           if (socialBarTimer) clearTimeout(socialBarTimer);
           if (sponsorLinkSlot) sponsorLinkSlot.hidden = true;
+          if (socialAdPlacement) socialAdPlacement.hidden = true;
           // A third-party script already loaded cannot be reliably unloaded in place.
           if (wasAllowed) window.location.reload();
         }

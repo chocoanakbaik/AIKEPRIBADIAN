@@ -11,41 +11,43 @@
 
   const controls = document.createElement("div");
   controls.className = "auth-controls";
-  controls.innerHTML = '<span class="auth-label" id="authLabel">Belum login</span><button class="auth-button" id="authMemory" type="button" title="Simpan memori" hidden>+ Memori</button><button class="auth-button primary" id="authLogin" type="button">Login</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
-  const topActions = document.querySelector(".top-actions");
-  if (topActions) topActions.prepend(controls);
+  controls.innerHTML = '<span class="auth-label" id="authLabel">Memuat akun…</span><button class="auth-button primary" id="authLogin" type="button">Login Google</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
+  document.querySelector(".top-actions")?.prepend(controls);
 
   const label = controls.querySelector("#authLabel");
   const login = controls.querySelector("#authLogin");
   const logout = controls.querySelector("#authLogout");
-  const memoryButton = controls.querySelector("#authMemory");
   let db = null;
   let currentUser = null;
   let activeConversationId = null;
   let saveQueue = Promise.resolve();
   let savedMemories = [];
   let lastUserId = null;
+  let authEventVersion = 0;
+  let warnedDatabase = false;
 
-  function notify(text) {
-    if (typeof window.showToast === "function") window.showToast(text);
-    else alert(text);
+  function notify(message) {
+    if (typeof window.showToast === "function") window.showToast(message);
+    else console.warn(message);
   }
 
   async function init() {
     try {
-      const configResponse = await fetch("/.netlify/functions/supabase-config", { cache: "no-store" });
-      const config = await configResponse.json();
-      if (!configResponse.ok) throw new Error(config.error || "Konfigurasi Supabase gagal dimuat.");
-      if (!window.supabase || !window.supabase.createClient) throw new Error("Library Supabase gagal dimuat.");
+      const response = await fetch("/.netlify/functions/supabase-config", { cache: "no-store" });
+      const config = await response.json();
+      if (!response.ok) throw new Error(config.error || "Konfigurasi Supabase gagal dimuat.");
+      if (!window.supabase?.createClient) throw new Error("Library Supabase gagal dimuat.");
       db = window.supabase.createClient(config.url, config.key, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
       });
+
+      db.auth.onAuthStateChange((eventType, session) => {
+        // Supabase meminta callback auth tidak menjalankan operasi database di dalam callback.
+        queueMicrotask(() => { void setUser(session?.user || null, eventType); });
+      });
       const { data, error } = await db.auth.getSession();
       if (error) throw error;
-      await setUser(data.session?.user || null);
-      db.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user || null);
-      });
+      await setUser(data.session?.user || null, "INITIAL_SESSION");
     } catch (error) {
       label.textContent = "Auth belum siap";
       login.disabled = true;
@@ -54,37 +56,55 @@
     }
   }
 
-  async function setUser(user) {
+  async function setUser(user, eventType = "UNKNOWN") {
+    const version = ++authEventVersion;
     currentUser = user || null;
-    const newUserId = currentUser ? currentUser.id : null;
-    // Reset percakapan aktif hanya kalau akunnya beneran ganti (login/logout),
-    // bukan tiap token refresh atau tab balik fokus.
-    if (newUserId !== lastUserId) activeConversationId = null;
-    lastUserId = newUserId;
-    if (currentUser) {
-      label.textContent = currentUser.user_metadata?.full_name || currentUser.email || "Akun aktif";
-      login.hidden = true;
-      logout.hidden = false;
-      memoryButton.hidden = false;
-      try {
-        const { error } = await db.from("profiles").upsert({
-          id: currentUser.id,
-          display_name: currentUser.user_metadata?.full_name || currentUser.email || "Pengguna",
-          updated_at: new Date().toISOString()
-        }, { onConflict: "id" });
-        if (error) console.warn("Profil belum tersimpan:", error.message);
-        const memoryResult = await db.from("memories").select("content").eq("user_id", currentUser.id).order("created_at", { ascending: false }).limit(20);
-        if (memoryResult.error) console.warn("Memori gagal dimuat:", memoryResult.error.message);
-        else savedMemories = memoryResult.data.map(item => item.content);
-      } catch (e) { console.warn("Profil:", e); }
-    } else {
+    const userId = currentUser?.id || null;
+    if (userId !== lastUserId) {
+      activeConversationId = null;
+      savedMemories = [];
+      lastUserId = userId;
+    }
+
+    if (!currentUser) {
       label.textContent = "Belum login";
       login.hidden = false;
+      login.disabled = !db;
       logout.hidden = true;
-      memoryButton.hidden = true;
-      savedMemories = [];
+      window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: null, eventType } }));
+      return;
     }
-    window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: currentUser } }));
+
+    label.textContent = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email || "Akun aktif";
+    login.hidden = true;
+    logout.hidden = false;
+
+    try {
+      const profile = await db.from("profiles").upsert({
+        id: userId,
+        display_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email || "Pengguna",
+        email: currentUser.email || null,
+        avatar_url: currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "id" });
+      if (profile.error) throw profile.error;
+
+      const result = await db.from("memories").select("id,content,created_at")
+        .eq("user_id", userId).order("created_at", { ascending: false }).limit(30);
+      if (result.error) throw result.error;
+      if (version !== authEventVersion || currentUser?.id !== userId) return;
+      savedMemories = (result.data || []).map(row => row.content);
+      window.dispatchEvent(new CustomEvent("choco:memories-updated", { detail: { count: savedMemories.length } }));
+    } catch (error) {
+      console.error("Pemuatan profil/memori gagal:", error);
+      if (!warnedDatabase) {
+        notify("Akun berhasil login, tetapi tabel database belum siap atau policy Supabase menolak akses. Riwayat/memori belum bisa disinkronkan.");
+        warnedDatabase = true;
+      }
+    }
+
+    if (version !== authEventVersion || currentUser?.id !== userId) return;
+    window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: currentUser, eventType } }));
   }
 
   login.addEventListener("click", async () => {
@@ -98,87 +118,143 @@
       if (error) throw error;
     } catch (error) {
       notify("Login Google gagal: " + error.message);
-    } finally { login.disabled = false; }
+    } finally {
+      login.disabled = false;
+    }
   });
 
-  memoryButton.addEventListener("click", async () => {
-    if (!currentUser || !db) return notify("Login dulu untuk menyimpan memori.");
-    const content = prompt("Memori apa yang ingin Choco AI ingat untuk akun ini?");
-    if (!content || !content.trim()) return;
-    const clean = content.trim().slice(0, 1500);
-    const { error } = await db.from("memories").insert({ user_id: currentUser.id, content: clean });
-    if (error) return notify("Memori gagal disimpan: " + error.message);
-    savedMemories.unshift(clean);
-    savedMemories = savedMemories.slice(0, 20);
-    notify("Memori berhasil disimpan.");
+  logout.addEventListener("click", async () => {
+    if (!db) return;
+    logout.disabled = true;
+    const { error } = await db.auth.signOut();
+    logout.disabled = false;
+    if (error) notify("Gagal keluar: " + error.message);
+    else {
+      activeConversationId = null;
+      savedMemories = [];
+      notify("Berhasil logout.");
+    }
   });
 
   window.chocoGetMemories = () => savedMemories.slice(0, 20);
+  window.chocoIsAuthenticated = () => Boolean(currentUser && db);
 
   window.chocoListConversations = async () => {
     if (!currentUser || !db) return [];
+    const userId = currentUser.id;
     const { data, error } = await db.from("conversations")
       .select("id,title,updated_at")
-      .eq("user_id", currentUser.id)
+      .eq("user_id", userId)
       .order("updated_at", { ascending: false })
-      .limit(30);
+      .limit(50);
     if (error) {
-      console.warn("Daftar obrolan gagal dimuat:", error.message);
-      notify("Riwayat obrolan belum bisa dimuat. Periksa policy database.");
-      return [];
+      console.error("Daftar obrolan gagal dimuat:", error);
+      notify("Riwayat gagal dimuat. Pastikan migration database sudah dijalankan.");
+      return null;
     }
-    return data || [];
+    return currentUser?.id === userId ? (data || []) : [];
   };
 
   window.chocoOpenConversation = async (id) => {
     if (!currentUser || !db || !id) return null;
+    const userId = currentUser.id;
     const { data, error } = await db.from("messages")
-      .select("role,content")
-      .eq("conversation_id", id)
-      .eq("user_id", currentUser.id)
-      .order("created_at", { ascending: true })
-      .order("id", { ascending: true });
+      .select("role,content,created_at,id")
+      .eq("conversation_id", id).eq("user_id", userId)
+      .order("created_at", { ascending: true }).order("id", { ascending: true });
     if (error) {
-      console.warn("Pesan gagal dimuat:", error.message);
+      console.error("Pesan gagal dimuat:", error);
+      notify("Pesan percakapan gagal dimuat.");
       return null;
     }
+    if (currentUser?.id !== userId) return null;
     activeConversationId = id;
     return data || [];
   };
 
-  logout.addEventListener("click", async () => {
-    if (!db) return;
-    const { error } = await db.auth.signOut();
-    if (error) notify("Gagal keluar: " + error.message);
-    else notify("Berhasil logout.");
-  });
+  async function extractMemories(userMessage, assistantMessage, userId) {
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error || !data.session?.access_token || currentUser?.id !== userId) return;
+      const response = await fetch("/.netlify/functions/memory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + data.session.access_token },
+        body: JSON.stringify({ userMessage, assistantMessage })
+      });
+      if (!response.ok) {
+        console.warn("Ekstraksi memori gagal:", await response.text());
+        return;
+      }
+      const result = await response.json();
+      if (result.userId !== userId || currentUser?.id !== userId) {
+        console.warn("Respons memori tidak cocok dengan akun aktif; diabaikan.");
+        return;
+      }
+      const known = new Set(savedMemories.map(item => item.toLocaleLowerCase()));
+      const rows = [...new Set((Array.isArray(result.memories) ? result.memories : [])
+        .filter(item => typeof item === "string")
+        .map(item => item.trim().replace(/\s+/g, " ").slice(0, 240))
+        .filter(item => item.length >= 8 && !known.has(item.toLocaleLowerCase())))].slice(0, 3)
+        .map(content => ({ user_id: userId, content }));
+      if (!rows.length || currentUser?.id !== userId) return;
+      const { error: insertError } = await db.from("memories").insert(rows);
+      if (insertError) throw insertError;
+      savedMemories = [...rows.map(row => row.content), ...savedMemories].slice(0, 30);
+      window.dispatchEvent(new CustomEvent("choco:memories-updated", { detail: { count: savedMemories.length } }));
+    } catch (error) {
+      console.error("Memori jangka panjang gagal disimpan:", error);
+    }
+  }
 
-  window.addEventListener("choco:save-message-pair", event => {
-    const detail = event.detail || {};
-    if (!currentUser || !db || !detail.userMessage || !detail.assistantMessage) return;
-    saveQueue = saveQueue.then(async () => {
-      if (!activeConversationId) {
+  window.chocoSaveMessagePair = async ({ userMessage, assistantMessage, title }) => {
+    if (!currentUser || !db) {
+      notify("Pesan ini belum tersimpan ke akun. Login dulu agar riwayat tersinkron lintas perangkat.");
+      return false;
+    }
+    const userId = currentUser.id;
+    const task = async () => {
+      if (currentUser?.id !== userId) throw new Error("Akun berubah sebelum pesan tersimpan.");
+      let conversationId = activeConversationId;
+      if (!conversationId) {
         const { data, error } = await db.from("conversations").insert({
-          user_id: currentUser.id,
-          title: String(detail.title || detail.userMessage).slice(0, 120)
+          user_id: userId,
+          title: String(title || userMessage).slice(0, 120)
         }).select("id").single();
         if (error) throw error;
-        activeConversationId = data.id;
+        conversationId = data.id;
+        if (currentUser?.id !== userId) throw new Error("Akun berubah saat percakapan dibuat.");
+        activeConversationId = conversationId;
       }
       const rows = [
-        { conversation_id: activeConversationId, user_id: currentUser.id, role: "user", content: detail.userMessage },
-        { conversation_id: activeConversationId, user_id: currentUser.id, role: "assistant", content: detail.assistantMessage }
+        { conversation_id: conversationId, user_id: userId, role: "user", content: userMessage },
+        { conversation_id: conversationId, user_id: userId, role: "assistant", content: assistantMessage }
       ];
       const { error } = await db.from("messages").insert(rows);
       if (error) throw error;
-      await db.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", activeConversationId).eq("user_id", currentUser.id);
+      const { error: updateError } = await db.from("conversations")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", conversationId).eq("user_id", userId);
+      if (updateError) throw updateError;
       window.dispatchEvent(new CustomEvent("choco:conversations-changed"));
-    }).catch(error => {
+      void extractMemories(userMessage, assistantMessage, userId);
+      return true;
+    };
+    const pending = saveQueue.then(task, task);
+    saveQueue = pending.catch(error => console.error("Queue penyimpanan:", error));
+    try {
+      await pending;
+      return true;
+    } catch (error) {
       console.error("Penyimpanan percakapan gagal:", error);
-      notify("Jawaban tampil, tetapi belum tersimpan ke akun. Periksa policy database.");
-    });
-  });
+      notify("Pesan gagal tersimpan ke akun: " + (error.message || "periksa tabel dan policy Supabase."));
+      return false;
+    }
+  };
 
+  window.addEventListener("choco:save-message-pair", event => {
+    const detail = event.detail || {};
+    if (detail.userMessage && detail.assistantMessage) void window.chocoSaveMessagePair(detail);
+  });
   window.addEventListener("choco:new-chat", () => { activeConversationId = null; });
   window.chocoSupabaseReady = init();
 })();
