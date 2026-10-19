@@ -39,7 +39,7 @@ export default async (request) => {
 
   const prompt = [
     "Extract only durable, useful user memories from this chat exchange.",
-    "Return ONLY a valid JSON array of short Indonesian strings, maximum 3 items.",
+    "Return ONLY a valid JSON object with a "memories" key containing an array of short Indonesian strings, maximum 3 items.",
     "Store only stable user-provided facts, explicit preferences, corrections, ongoing project decisions, or commitments useful in future conversations.",
     "Do not store passwords, API keys, tokens, financial credentials, highly sensitive personal data, guesses, assistant claims, or temporary one-off questions.",
     "Do not infer facts. If there is no durable memory, return [].",
