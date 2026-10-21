@@ -1,0 +1,36 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# JavaScript tooling
+node_modules/
+.npm/
+
+# Model weights and generated training artifacts
+*.gguf
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.bin
+checkpoints/
+adapters/
+runs/
+outputs/
+
+# Local reports and temporary files
+.DS_Store
+Thumbs.db
+*.log
