@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "supabase/migrations/**"
+      - "supabase/config.toml"
       - ".github/workflows/supabase-deploy.yml"
   workflow_dispatch:
     inputs:
