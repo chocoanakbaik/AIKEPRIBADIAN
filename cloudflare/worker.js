@@ -145,8 +145,8 @@ export default {
     if (!limit.ok) return json({ error: limit.error }, limit.status);
 
     const preferences = body.preferences && typeof body.preferences === "object" ? body.preferences : {};
-    const responseLength = ["short", "medium", "long"].includes(preferences.responseLength)
-      ? preferences.responseLength : "medium";
+    const responseLength = ["short", "balanced", "detailed"].includes(preferences.responseLength)
+      ? preferences.responseLength : "balanced";
     const tone = ["formal", "casual", "adaptive"].includes(preferences.tonePreference)
       ? preferences.tonePreference : "adaptive";
     const detail = ["concise", "stepwise", "adaptive"].includes(preferences.detailPreference)
@@ -203,7 +203,7 @@ export default {
         body: JSON.stringify({
           model: env.GROQ_MODEL || MODEL_ID,
           messages,
-          max_completion_tokens: ({ short: 512, medium: 1024, long: 2048 })[responseLength]
+          max_completion_tokens: ({ short: 350, balanced: 700, detailed: 1100 })[responseLength]
         })
       });
       const data = await response.json();
