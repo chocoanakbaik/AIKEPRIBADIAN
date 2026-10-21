@@ -1659,11 +1659,14 @@
         // Tunggu pemulihan sesi dan pemuatan memori agar pesan pertama setelah refresh
         // tidak terkirim sebelum akun siap dan kehilangan konteks tersimpan.
         if (window.chocoSupabaseReady) await window.chocoSupabaseReady;
+        const accessToken = typeof window.chocoGetAccessToken === "function"
+          ? await window.chocoGetAccessToken()
+          : null;
+        const requestHeaders = { "Content-Type": "application/json" };
+        if (accessToken) requestHeaders.Authorization = "Bearer " + accessToken;
         const response = await fetch("/.netlify/functions/chat", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: requestHeaders,
           body: JSON.stringify({
             message,
             history,
