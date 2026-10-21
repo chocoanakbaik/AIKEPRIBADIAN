@@ -246,7 +246,7 @@
         .eq("id", conversationId).eq("user_id", userId);
       if (updateError) throw updateError;
       window.dispatchEvent(new CustomEvent("choco:conversations-changed"));
-      void extractMemories(userMessage, assistantMessage, userId);
+      await extractMemories(userMessage, assistantMessage, userId);
       return true;
     };
     const pending = saveQueue.then(task, task);
