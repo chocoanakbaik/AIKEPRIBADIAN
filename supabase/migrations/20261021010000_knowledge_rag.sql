@@ -86,12 +86,13 @@ $$;
 grant execute on function public.search_knowledge(text, integer) to anon, authenticated;
 
 create or replace function public.choco_set_knowledge_updated_at()
-returns trigger language plpgsql as $
+returns trigger language plpgsql as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$;
+$$;
+
 drop trigger if exists knowledge_documents_set_updated_at on public.knowledge_documents;
 create trigger knowledge_documents_set_updated_at
   before update on public.knowledge_documents

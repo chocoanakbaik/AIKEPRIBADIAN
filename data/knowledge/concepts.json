@@ -1,1 +1,68 @@
-[]
+[
+  {
+    "id": "rag-vs-finetuning",
+    "title": "Perbedaan RAG dan fine-tuning",
+    "content": "RAG mengambil dokumen yang relevan saat pertanyaan diterima lalu memasukkannya sebagai konteks model. Fine-tuning mengubah bobot model dasar melalui proses pelatihan. RAG biasanya lebih tepat untuk pengetahuan yang sering diperbarui, sedangkan fine-tuning dipertimbangkan setelah tersedia contoh perilaku yang bersih dan evaluasi yang terukur.",
+    "category": "ai-engineering",
+    "source": "curated-concept",
+    "tags": [
+      "RAG",
+      "fine-tuning",
+      "training",
+      "knowledge"
+    ]
+  },
+  {
+    "id": "memory-vs-history",
+    "title": "Perbedaan memori dan riwayat percakapan",
+    "content": "Riwayat percakapan merekam apa yang dikatakan dalam sesi. Memori menyimpan fakta atau preferensi yang dipilih untuk digunakan kembali di masa depan. Sistem yang andal perlu mengatur izin akses, koreksi, penghapusan, dan masa simpan untuk keduanya.",
+    "category": "data-design",
+    "source": "curated-concept",
+    "tags": [
+      "memory",
+      "conversation",
+      "privacy",
+      "database"
+    ]
+  },
+  {
+    "id": "ai-system-vs-model",
+    "title": "Sistem AI tidak sama dengan model AI",
+    "content": "Model menghasilkan prediksi atau teks berdasarkan input. Produk AI mencakup model serta antarmuka, instruksi, sumber pengetahuan, memori, autentikasi, validasi input dan output, pembatasan penggunaan, pengujian, pemantauan, dan mekanisme pemulihan ketika layanan gagal.",
+    "category": "architecture",
+    "source": "curated-concept",
+    "tags": [
+      "AI",
+      "architecture",
+      "model",
+      "backend",
+      "security"
+    ]
+  },
+  {
+    "id": "evaluation-before-training",
+    "title": "Evaluasi sebelum pelatihan ulang",
+    "content": "Sebelum melakukan fine-tuning, buat kumpulan pertanyaan uji dengan jawaban atau kriteria yang ditinjau manusia. Ukur relevansi retrieval, ketepatan fakta, konsistensi perilaku, latensi, tingkat kegagalan, dan konsumsi token. Perubahan hanya layak dipertahankan jika meningkatkan hasil tanpa menurunkan metrik penting lain.",
+    "category": "evaluation",
+    "source": "curated-concept",
+    "tags": [
+      "evaluation",
+      "benchmark",
+      "fine-tuning",
+      "quality"
+    ]
+  },
+  {
+    "id": "least-privilege-data",
+    "title": "Prinsip least privilege untuk data AI",
+    "content": "Setiap pengguna hanya boleh membaca atau mengubah data yang menjadi haknya. Dokumen yang dapat dibaca publik harus ditandai secara eksplisit. Kunci layanan rahasia tidak boleh ditaruh di frontend, dataset publik, log, atau repository.",
+    "category": "security",
+    "source": "curated-concept",
+    "tags": [
+      "security",
+      "RLS",
+      "privacy",
+      "secrets"
+    ]
+  }
+]

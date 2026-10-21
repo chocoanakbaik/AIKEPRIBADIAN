@@ -1,1 +1,71 @@
-[]
+[
+  {
+    "id": "project-stack",
+    "title": "Arsitektur aplikasi Choco AI",
+    "content": "Frontend aplikasi berada di folder public. Endpoint percakapan berjalan melalui Netlify Functions di netlify/functions. Fungsi chat memanggil Groq API untuk inferensi dan dapat mengambil pengetahuan dari file JSON lokal serta Supabase.",
+    "category": "architecture",
+    "source": "repository",
+    "tags": [
+      "Netlify",
+      "Groq",
+      "Supabase",
+      "backend",
+      "frontend"
+    ]
+  },
+  {
+    "id": "rag-sources",
+    "title": "Sumber pengetahuan RAG",
+    "content": "RAG Choco AI menggabungkan dokumen lokal dari data/knowledge/facts.json, data/knowledge/concepts.json, dan data/knowledge/experiences.json dengan pencarian teks penuh Supabase jika konfigurasi dan migrasinya tersedia. Sistem lokal menggunakan pencocokan leksikal ringan, bukan pencarian vektor.",
+    "category": "knowledge",
+    "source": "docs/rag-knowledge.md",
+    "tags": [
+      "RAG",
+      "retrieval",
+      "knowledge",
+      "Supabase",
+      "JSON"
+    ]
+  },
+  {
+    "id": "persistent-data",
+    "title": "Penyimpanan akun dan memori",
+    "content": "Migrasi account_sync menyediakan tabel profiles, conversations, messages, dan memories. Row Level Security digunakan untuk membatasi data akun berdasarkan user yang terautentikasi. Riwayat percakapan dan memori merupakan dua jenis data yang berbeda.",
+    "category": "data",
+    "source": "supabase/migrations/20261019010000_account_sync.sql",
+    "tags": [
+      "database",
+      "RLS",
+      "memory",
+      "conversation",
+      "auth"
+    ]
+  },
+  {
+    "id": "model-provider",
+    "title": "Model dan penyedia inferensi",
+    "content": "Choco AI menggunakan Groq API untuk inferensi. Nama model dapat ditentukan melalui variabel lingkungan GROQ_MODEL; nilai fallback dalam fungsi chat saat ini adalah openai/gpt-oss-20b. Mengganti model API tidak sama dengan melatih model fondasi sendiri.",
+    "category": "model",
+    "source": "netlify/functions/chat.js",
+    "tags": [
+      "Groq",
+      "model",
+      "inference",
+      "GROQ_MODEL"
+    ]
+  },
+  {
+    "id": "quality-pipeline",
+    "title": "Pengujian otomatis di GitHub Actions",
+    "content": "Workflow AI Quality Checks memeriksa sintaks JavaScript, skrip inline frontend, struktur data pengetahuan, keamanan dasar migrasi, unit test retrieval, dan benchmark retrieval. Pemeriksaan ini berjalan di runner GitHub sehingga tidak membutuhkan komputasi laptop pengguna.",
+    "category": "quality",
+    "source": ".github/workflows/quality.yml",
+    "tags": [
+      "GitHub Actions",
+      "CI",
+      "testing",
+      "evaluation",
+      "MLOps"
+    ]
+  }
+]
