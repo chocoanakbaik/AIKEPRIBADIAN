@@ -137,6 +137,16 @@
   });
 
   window.chocoGetMemories = () => savedMemories.slice(0, 20);
+  window.chocoGetAccessToken = async () => {
+    if (!db) return null;
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error) return null;
+      return data.session?.access_token || null;
+    } catch {
+      return null;
+    }
+  };
   window.chocoIsAuthenticated = () => Boolean(currentUser && db);
 
   window.chocoListConversations = async () => {
