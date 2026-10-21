@@ -111,7 +111,7 @@ async function retrieveDatabaseKnowledge(message, request) {
   const token = tokenMatch?.[1]?.trim() || anonKey;
 
   try {
-    const response = await fetch(supabaseUrl.replace(/\\/+$/, "") + "/rest/v1/rpc/search_knowledge", {
+    const response = await fetch(supabaseUrl.replace(/\/+$/, "") + "/rest/v1/rpc/search_knowledge", {
       method: "POST",
       headers: {
         apikey: anonKey,
@@ -204,7 +204,7 @@ export default async (request) => {
   if (knowledgeContext) {
     messages.push({
       role: "user",
-      content: "[RAG_CONTEXT_BEGIN]\\n" + knowledgeContext + "\\n[RAG_CONTEXT_END]"
+      content: "[RAG_CONTEXT_BEGIN]\n" + knowledgeContext + "\n[RAG_CONTEXT_END]"
     });
   }
 
