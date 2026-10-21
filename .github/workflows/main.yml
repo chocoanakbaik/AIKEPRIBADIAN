@@ -2,22 +2,44 @@ name: Sync to Hugging Face Spaces
 
 on:
   push:
-    branches: [main] # Ganti dengan nama branch utama Anda (misal: master atau main)
-
-  # Mengizinkan menjalankan workflow ini secara manual dari tab Actions
+    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository snapshot
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          lfs: true
-
-      - name: Push to Hub
+          fetch-depth: 1
+          lfs: false
+      - name: Publish source snapshot to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://hanschoco:$HF_TOKEN@huggingface.co/spaces/hanschoco/AIKEPRIBADIAN main
+          SOURCE_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          if [[ -z "$HF_TOKEN" ]]; then
+            echo "::notice::HF sync skipped because the HF_TOKEN Actions secret is not configured."
+            exit 0
+          fi
+
+          # The Space runs run.py and does not use the web UI PNGs. Publish a
+          # clean snapshot instead of mirroring GitHub history, which contains
+          # binary assets that Hugging Face rejects without Xet/LFS migration.
+          mkdir -p /tmp/hf-space
+          cp -a . /tmp/hf-space/
+          rm -rf /tmp/hf-space/.git
+          rm -f /tmp/hf-space/public/assets/choco-avatar.png /tmp/hf-space/public/assets/choco-logo.png
+
+          cd /tmp/hf-space
+          git init -b main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Sync source snapshot from GitHub $SOURCE_SHA"
+          git push --force "https://hanschoco:${HF_TOKEN}@huggingface.co/spaces/hanschoco/AIKEPRIBADIAN" main
