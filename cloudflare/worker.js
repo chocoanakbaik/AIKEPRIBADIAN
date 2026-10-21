@@ -44,7 +44,7 @@ async function hash(value) {
 
 async function checkRateLimit(request, env) {
   if (!env.DB) return { ok: false, status: 503, error: "Binding D1 DB belum terpasang." };
-  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const ip = request.headers.get("X-Choco-Client-IP") || request.headers.get("CF-Connecting-IP") || "unknown";
   const ipHash = await hash(ip);
   const bucket = Math.floor(Date.now() / 600000);
   try {
@@ -130,7 +130,7 @@ export default {
     if (origin && origin !== ALLOWED_ORIGIN) {
       return json({ error: "Origin tidak diizinkan." }, 403);
     }
-    if (!env.GROQ_API_KEY) {
+    if (!env.CHAT_PROXY_SECRET || request.headers.get("X-Choco-Proxy-Secret") !== env.CHAT_PROXY_SECRET) {\n      return json({ error: "Permintaan backend tidak terautentikasi." }, 401);\n    }\n    if (!env.GROQ_API_KEY) {
       return json({ error: "Secret GROQ_API_KEY belum dipasang di Cloudflare Worker." }, 503);
     }
 
