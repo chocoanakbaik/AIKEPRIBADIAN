@@ -117,7 +117,10 @@ export default {
     if (origin && origin !== ALLOWED_ORIGIN) {
       return json({ error: "Origin tidak diizinkan." }, 403);
     }
-    if (!env.CHAT_PROXY_SECRET || request.headers.get("X-Choco-Proxy-Secret") !== env.CHAT_PROXY_SECRET) {\n      return json({ error: "Permintaan backend tidak terautentikasi." }, 401);\n    }\n    if (!env.GROQ_API_KEY) {
+    if (!env.CHAT_PROXY_SECRET || request.headers.get("X-Choco-Proxy-Secret") !== env.CHAT_PROXY_SECRET) {
+      return json({ error: "Permintaan backend tidak terautentikasi." }, 401);
+    }
+    if (!env.GROQ_API_KEY) {
       return json({ error: "Secret GROQ_API_KEY belum dipasang di Cloudflare Worker." }, 503);
     }
 
