@@ -1,0 +1,33 @@
+name: AI Quality Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check backend JavaScript syntax
+        run: |
+          node --check netlify/functions/chat.js
+          node --check netlify/functions/memory.js
+          node --check public/auth.js
+      - name: Validate knowledge data
+        run: node scripts/validate-knowledge.mjs
+      - name: Run retrieval unit tests
+        run: node --test tests/*.test.mjs
+      - name: Evaluate retrieval baseline
+        run: node scripts/evaluate-retrieval.mjs
