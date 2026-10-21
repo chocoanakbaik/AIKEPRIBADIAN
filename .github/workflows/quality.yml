@@ -25,8 +25,12 @@ jobs:
           node --check netlify/functions/chat.js
           node --check netlify/functions/memory.js
           node --check public/auth.js
+      - name: Check inline frontend JavaScript
+        run: node scripts/check-inline-scripts.mjs
       - name: Validate knowledge data
         run: node scripts/validate-knowledge.mjs
+      - name: Validate database migration security
+        run: node scripts/validate-migrations.mjs
       - name: Run retrieval unit tests
         run: node --test tests/*.test.mjs
       - name: Evaluate retrieval baseline
