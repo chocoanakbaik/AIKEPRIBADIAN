@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: hf-space-sync
+  cancel-in-progress: true
+
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
