@@ -107,7 +107,7 @@ async function retrieveDatabaseKnowledge(message, request) {
   if (!supabaseUrl || !anonKey) return [];
 
   const incomingAuthorization = request.headers.get("authorization") || "";
-  const tokenMatch = incomingAuthorization.match(/^Bearer\\s+(.+)$/i);
+  const tokenMatch = incomingAuthorization.match(/^Bearer\s+(.+)$/i);
   const token = tokenMatch?.[1]?.trim() || anonKey;
 
   try {
