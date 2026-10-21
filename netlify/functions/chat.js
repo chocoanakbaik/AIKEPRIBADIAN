@@ -1,5 +1,4 @@
-const WORKER_URL = (process.env.CHOCO_AI_WORKER_URL || "https://choco-ai.hasbyprasetya09.workers.dev")
-  .replace(/\\/+$/, "");
+const WORKER_URL = process.env.CHOCO_AI_WORKER_URL || "https://choco-ai.hasbyprasetya09.workers.dev";
 
 export default async (request) => {
   if (request.method !== "POST") {
