@@ -1,0 +1,96 @@
+[
+  {
+    "id": "creator-background",
+    "title": "Latar belakang pengembang Choco AI",
+    "content": "Hasby Prasetya Saprudin, yang juga memakai nama panggilan Choco, adalah pengembang mandiri di balik proyek Choco AI/AIKEPRIBADIAN. Latar pendidikan yang pernah dicatat: SMK Negeri 1 Japara, jurusan Desain Komunikasi Visual (DKV). Informasi ini adalah profil pengembang, bukan bukti bahwa orang yang sedang memakai aplikasi adalah Hasby.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "Choco",
+      "pengembang",
+      "pendidikan",
+      "DKV",
+      "identitas"
+    ]
+  },
+  {
+    "id": "creator-skills",
+    "title": "Keahlian pengembang",
+    "content": "Keahlian yang pernah dicatat untuk Hasby: Canva, CorelDRAW, CapCut, dan Microsoft Word; Photoshop tingkat menengah; Excel tingkat dasar. Perlakukan tingkat keahlian ini sebagai informasi profil yang pernah dicatat, bukan sertifikasi profesional.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "skills",
+      "keahlian",
+      "Canva",
+      "CorelDRAW",
+      "CapCut",
+      "Word",
+      "Photoshop",
+      "Excel"
+    ]
+  },
+  {
+    "id": "creator-work-experience",
+    "title": "Pengalaman kerja pengembang",
+    "content": "Pengalaman kerja yang pernah dicatat: helper bagian pengemasan di Nabati, sekitar Agustus sampai Desember 2025. Jangan menambah jabatan, tanggung jawab, atau pencapaian yang tidak tercatat.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "pengalaman kerja",
+      "Nabati",
+      "helper",
+      "pengemasan",
+      "CV"
+    ]
+  },
+  {
+    "id": "creator-projects",
+    "title": "Proyek yang dikembangkan Hasby",
+    "content": "Proyek utama yang tercatat: Choco AI/AIKEPRIBADIAN, yaitu representasi digital berbasis AI yang dikembangkan mandiri; Choco AI Help Center, pusat bantuan untuk produk Choco; dan KasirKita, aplikasi kasir yang masih dalam pengembangan. Chocobot/Chocobot Guardian adalah proyek terpisah dan tidak boleh disamakan dengan AIKEPRIBADIAN.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "proyek",
+      "Choco AI",
+      "AIKEPRIBADIAN",
+      "Help Center",
+      "KasirKita",
+      "Chocobot"
+    ]
+  },
+  {
+    "id": "creator-development-preferences",
+    "title": "Preferensi kerja saat mengembangkan proyek",
+    "content": "Saat membantu Hasby mengerjakan proyek coding, utamakan perubahan nyata langsung di repo GitHub jika akses tersedia, periksa struktur dan isi file sebelum mengubahnya, berikan file lengkap atau perubahan yang jelas, hindari laporan kemajuan tanpa hasil, dan sisakan deployment manual untuk Hasby di tahap akhir. Ia mengutamakan solusi gratis atau berbiaya rendah dan tidak ingin diminta mengulang langkah yang tidak perlu.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "preferensi coding",
+      "GitHub",
+      "deployment",
+      "hemat biaya",
+      "workflow"
+    ]
+  },
+  {
+    "id": "creator-product-goals",
+    "title": "Arah pengembangan produk",
+    "content": "Hasby ingin mengembangkan produk digital yang dapat dijual berulang kali, termasuk aplikasi, template, atau alat produktivitas, dan mempertimbangkan Projects.co.id sebagai tempat menjual produk. Saat membantu, bedakan ide, fitur yang direncanakan, dan fitur yang benar-benar sudah selesai.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Hasby",
+      "produk digital",
+      "Projects.co.id",
+      "monetisasi",
+      "aplikasi",
+      "template"
+    ]
+  }
+]
