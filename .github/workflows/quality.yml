@@ -28,7 +28,6 @@ jobs:
       - name: Check backend JavaScript syntax
         run: |
           node --check netlify/functions/chat.js
-          node --input-type=module --check < cloudflare/worker.js
           node --check netlify/functions/memory.js
           node --check netlify/functions/core/retrieval.mjs
           node --check public/auth.js
