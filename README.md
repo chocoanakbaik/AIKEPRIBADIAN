@@ -12,6 +12,8 @@ pinned: false
 
 > A personal AI designed to become a highly faithful digital representation of Choco.
 
+> **Brand induk:** The Choco Studios (TCS). Proyek ini dikembangkan secara mandiri oleh Hasby Prasetya Saprudin sebagai solo developer; TCS adalah identitas branding, bukan pernyataan bahwa proyek telah berbadan hukum sebagai perusahaan.
+
 ## 1. Project Overview
 
 **Choco AI** adalah proyek untuk membangun sebuah AI personal yang dirancang untuk merepresentasikan Choco secara sedekat mungkin melalui:
