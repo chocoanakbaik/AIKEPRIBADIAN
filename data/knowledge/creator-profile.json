@@ -1,5 +1,27 @@
 [
   {
+    "id": "creator-profile-overview",
+    "title": "Ringkasan profil Hasby atau Choco",
+    "content": "Ringkasan profil pengembang: Hasby Prasetya Saprudin, biasa dipanggil Choco, adalah pengembang mandiri Choco AI/AIKEPRIBADIAN. Ia berlatar pendidikan DKV, memiliki keahlian desain dan pembuatan konten, pernah bekerja sebagai helper pengemasan, serta mengembangkan Choco AI, Choco AI Help Center, dan KasirKita. Ia menyukai bantuan coding yang praktis, langsung memeriksa repo, hemat biaya, dan tidak bertele-tele. Ini adalah informasi profil pengembang yang tersedia, bukan bukti identitas orang yang sedang menggunakan chat.",
+    "category": "creator-profile",
+    "source": "curated-creator-profile",
+    "tags": [
+      "gw",
+      "gue",
+      "aku",
+      "saya",
+      "tentang gw",
+      "tentang saya",
+      "profil gw",
+      "profil saya",
+      "siapa gw",
+      "siapa saya",
+      "Hasby",
+      "Choco",
+      "pengembang"
+    ]
+  },
+  {
     "id": "creator-background",
     "title": "Latar belakang pengembang Choco AI",
     "content": "Hasby Prasetya Saprudin, yang juga memakai nama panggilan Choco, adalah pengembang mandiri di balik proyek Choco AI/AIKEPRIBADIAN. Latar pendidikan yang pernah dicatat: SMK Negeri 1 Japara, jurusan Desain Komunikasi Visual (DKV). Informasi ini adalah profil pengembang, bukan bukti bahwa orang yang sedang memakai aplikasi adalah Hasby.",
