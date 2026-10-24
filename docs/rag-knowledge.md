@@ -1,31 +1,23 @@
 # Choco AI knowledge base (RAG)
 
-Choco AI retrieves relevant references before asking Groq to generate a reply. It combines reviewed local JSON documents with the optional Supabase full-text index. The current implementation is deliberately lightweight and does not require a vector database.
+Choco AI uses reviewed local documents as retrieval context before asking Groq to generate a reply. The retrieval implementation is a dependency-free lexical matcher; it is not semantic/vector search. The chat endpoint imports the local corpus, normalizes it, retrieves a bounded number of relevant records per question, and marks retrieved text as reference data rather than instructions.
 
 ## Local repository knowledge
 
-Reviewed starter records live in:
+- `data/knowledge/creator-profile.json`: reviewed creator profile, development preferences, and projects.
 - `data/knowledge/facts.json`: verifiable facts about this repository and runtime.
-- `data/knowledge/concepts.json`: general AI engineering concepts.
-- `data/knowledge/experiences.json`: real personal experiences only when supplied and approved; this file intentionally starts empty.
+- `data/knowledge/concepts.json`: general AI-engineering concepts.
+- `data/knowledge/experiences.json`: approved real personal experiences only; this file intentionally starts empty.
+- `data/knowledge/project-portfolio.json`: project catalog and the relationship between Choco AI and Sara; distinguishes purpose, implementation, planned scope, and unverified production behavior.
 
-Each file is a JSON array. Records use an `id`, `title`, `content`, `category`, `source`, and optional `tags`. Content must stay below 12,000 characters. GitHub Actions validates the records and runs retrieval tests against both a fixture and the real repository corpus.
+Each record uses an `id`, `title`, `content`, `category`, `source`, and optional `tags`. Keep each record below 12,000 characters. GitHub Actions validates IDs, fields, length limits, and retrieval tests against fixtures and repository data.
 
-Do not put credentials, private user conversations, authentication tokens, or other users' private data into these public repository files. Do not fabricate personal facts or experiences to make the corpus look complete.
+Do not put credentials, private user conversations, authentication tokens, or other users' private data into these public repository files. Do not fabricate personal facts or experiences. Keep project statuses anchored to each project's README and current implementation.
 
 ## Supabase knowledge documents
 
-The migration `20261021010000_knowledge_rag.sql` creates `public.knowledge_documents`. After the migration is applied:
-- Add documents through Supabase Table Editor while signed in as the intended owner.
-- Set `owner_id` to that owner's authenticated UUID.
-- Keep `visibility = private` unless content is intentionally suitable for every visitor.
-- Set `visibility = public` only for content that may be returned to guest users.
-- Keep content factual, reviewed, and scoped to one subject per document.
-
-The browser sends its current Supabase access token to the chat endpoint. The backend calls `search_knowledge` using the anon key and that token. Row-level security ensures private records are retrievable only by their owner; the backend does not use or expose a service-role key.
-
-If the migration is not yet applied or Supabase retrieval fails, chat falls back to local repository retrieval and normal model response. RAG is an enhancement, not a hard dependency.
+The repository contains a migration for a `knowledge_documents` table and search function. However, the current `netlify/functions/chat.js` path reviewed for this branch retrieves the locally imported JSON corpus; it does not yet call the Supabase search function. Do not describe private Supabase knowledge as live retrieval until that integration is implemented and tested. If dynamic private knowledge is added later, preserve owner scoping and row-level security, and never expose a service-role key.
 
 ## Search limitations and evaluation
 
-This first version uses PostgreSQL full-text search and lightweight lexical matching. It is not semantic/vector search. The quality workflow measures retrieval against fixtures and the actual local corpus; consider embeddings only if real test queries show that lexical search is insufficient.
+The implementation uses lexical token matching. It can miss paraphrases, spelling variants, or questions with too little token overlap. The quality workflow should include queries for identity, projects, architecture, privacy, memory, and feature status. Consider embeddings only if evaluation shows lexical retrieval is insufficient. CI passing does not prove production credentials, database migrations, authentication, or the live site are configured correctly.

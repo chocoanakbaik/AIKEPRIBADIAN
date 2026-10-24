@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
 
 const files = [
+  "data/knowledge/creator-profile.json",
   "data/knowledge/facts.json",
   "data/knowledge/concepts.json",
-  "data/knowledge/experiences.json"
+  "data/knowledge/experiences.json",
+  "data/knowledge/project-portfolio.json"
 ];
 
 const seenIds = new Set();

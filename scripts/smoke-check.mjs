@@ -20,19 +20,24 @@ for (const file of requiredFiles) {
   console.log(`PASS required file: ${file}`);
 }
 
-const [facts, concepts, experiences] = await Promise.all([
+const [creatorProfile, facts, concepts, experiences, projectPortfolio] = await Promise.all([
+  readFile("data/knowledge/creator-profile.json", "utf8").then(JSON.parse),
   readFile("data/knowledge/facts.json", "utf8").then(JSON.parse),
   readFile("data/knowledge/concepts.json", "utf8").then(JSON.parse),
-  readFile("data/knowledge/experiences.json", "utf8").then(JSON.parse)
+  readFile("data/knowledge/experiences.json", "utf8").then(JSON.parse),
+  readFile("data/knowledge/project-portfolio.json", "utf8").then(JSON.parse)
 ]);
-const documents = normalizeKnowledgeSources([facts, concepts, experiences]);
+const documents = normalizeKnowledgeSources([creatorProfile, facts, concepts, experiences, projectPortfolio]);
 assert.ok(documents.length >= 5, "Local knowledge corpus must contain reviewed, useful documents.");
 
 const cases = [
   { query: "Groq API Netlify frontend backend", expected: "project-stack" },
   { query: "retrieval augmented generation knowledge documents", expected: "rag-sources" },
   { query: "memory versus conversation history database", expected: "memory-vs-history" },
-  { query: "evaluation benchmark before fine tuning", expected: "evaluation-before-training" }
+  { query: "evaluation benchmark before fine tuning", expected: "evaluation-before-training" },
+  { query: "KasirKita Windows SQLite cashier products customers suppliers", expected: "project-kasirkita" },
+  { query: "Sara Choco AI Help Center separate assistant relationship", expected: "assistant-relationship" },
+  { query: "Chocobot Guardian Windows local system utility", expected: "project-chocobot-guardian" }
 ];
 
 let passed = 0;
