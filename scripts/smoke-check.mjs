@@ -39,7 +39,7 @@ const cases = [
   { query: "Sara Choco AI Help Center separate assistant relationship", expected: "assistant-relationship" },
   { query: "Chocobot Guardian Windows local system utility", expected: "project-chocobot-guardian" },
   { query: "daftar semua proyek produk portofolio lengkap Hasby", expected: "project-portfolio-index" },
-  { query: "siapa payung utama yang menaungi semua proyek The Choco Studios", expected: "brand-hierarchy-choco-ecosystem" }
+  { query: "siapa payung utama The Choco Corporation, hubungan TCC dan The Choco Studios TCS untuk semua proyek", expected: "brand-hierarchy-choco-ecosystem" }
 ];
 
 let passed = 0;
