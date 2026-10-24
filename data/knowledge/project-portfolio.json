@@ -1,8 +1,8 @@
 [
   {
     "id": "portfolio-owner-and-brand",
-    "title": "Pengembang dan identitas The Choco Studios",
-    "content": "Hasby Prasetya Saprudin adalah pengembang mandiri di balik portofolio proyek Choco. The Choco Studios (TCS) adalah identitas branding payung bagi beberapa proyek, bukan klaim bahwa TCS telah berbadan hukum sebagai perusahaan. Status setiap proyek harus dibedakan antara source code tersedia, sedang dikembangkan, direncanakan, siap rilis, dan terverifikasi berjalan di produksi. Gunakan repository dan README tiap proyek sebagai sumber utama; jangan menambah detail yang tidak tercatat.",
+    "title": "Struktur identitas dan payung brand ekosistem Choco",
+    "content": "Hasby Prasetya Saprudin adalah pengembang mandiri di balik portofolio proyek Choco. Dalam struktur branding/organisasi internal yang dipakai untuk menjelaskan ekosistem, The Choco Corporation adalah nama payung utama yang menaungi proyek-proyek dan produk terkait; The Choco Studios (TCS) adalah identitas studio/brand kreatif di bawah ekosistem payung tersebut. Urutan yang dimaksud: The Choco Corporation → The Choco Studios dan unit/brand proyek terkait → produk dan proyek seperti Choco AI, Sara/Help Center, KasirKita, Chocobot Guardian, Privacy Guardian, Choco Panel Admin, The Choco Studios Information, dan why-me. Ini menjelaskan hierarki branding dan pengelolaan internal; jangan mengklaim status badan hukum, kepemilikan saham, atau struktur legal resmi tanpa dokumen yang membuktikannya. Hasby tetap pengembang/pemilik proyek yang disebut dalam profil. Status setiap proyek harus dibedakan antara source code tersedia, sedang dikembangkan, direncanakan, siap rilis, dan terverifikasi berjalan di produksi.",
     "category": "portfolio",
     "source": "curated-project-portfolio",
     "tags": [
@@ -16,7 +16,15 @@
       "portfolio",
       "portofolio",
       "siapa",
-      "pencipta"
+      "pencipta",
+      "The Choco Corporation",
+      "payung utama",
+      "organisasi induk",
+      "parent brand",
+      "umbrella brand",
+      "hierarki brand",
+      "perusahaan induk",
+      "induk semua proyek"
     ]
   },
   {
@@ -212,7 +220,7 @@
   {
     "id": "project-portfolio-index",
     "title": "Daftar lengkap portofolio proyek Hasby",
-    "content": "Saat ditanya daftar semua proyek, karya, atau produk yang dikembangkan Hasby, gunakan ringkasan portofolio ini untuk menyebutkan seluruh proyek yang tercatat, lalu jelaskan proyek spesifik dari referensi detail masing-masing. Proyek yang tercatat: (1) Choco AI/AIKEPRIBADIAN, representasi digital berbasis AI dan aplikasi chat utama, masih beta/pengembangan; (2) Choco AI Help Center dengan Sara, pusat bantuan yang terpisah dari Choco AI chat; (3) KasirKita Desktop, aplikasi POS lokal untuk Windows yang masih dalam pengembangan dan belum siap dijual; (4) Chocobot Guardian, utilitas Windows lokal untuk diagnosis/monitoring dan keamanan komputer, masih tahap fondasi dengan engine tertentu belum selesai; (5) Privacy Guardian Windows, alat bantu menganalisis dan memahami dokumen kebijakan privasi/layanan, bukan nasihat hukum; (6) Choco Panel Admin, dashboard owner untuk operasi, keamanan, masukan, moderasi, dan integrasi antarlayanan, masih tahap fondasi; (7) The Choco Studios Information, situs informasi publik TCS dan katalog proyek; (8) why-me, proyek kreatif naratif tentang empati dan dampak penilaian/relasi keluarga, masih tahap konsep dan belum memiliki versi playable. The Choco Studios adalah identitas branding payung, bukan satu produk yang sama dengan semua proyeknya. Projects.co.id merupakan kemungkinan jalur distribusi produk digital, bukan bukti semua produk telah terdaftar atau terjual. Setiap status berasal dari source/README yang diperiksa dan tidak membuktikan perilaku produksi kecuali diuji secara terpisah. Jika pertanyaan meminta daftar seluruh proyek, jangan hanya menyebutkan beberapa hasil retrieval; sebutkan kedelapan entri di indeks ini dan tandai mana yang masih konsep/pengembangan.",
+    "content": "Saat ditanya daftar semua proyek, karya, atau produk yang dikembangkan Hasby, gunakan ringkasan portofolio ini untuk menyebutkan seluruh proyek yang tercatat, lalu jelaskan proyek spesifik dari referensi detail masing-masing. Proyek yang tercatat: (1) Choco AI/AIKEPRIBADIAN, representasi digital berbasis AI dan aplikasi chat utama, masih beta/pengembangan; (2) Choco AI Help Center dengan Sara, pusat bantuan yang terpisah dari Choco AI chat; (3) KasirKita Desktop, aplikasi POS lokal untuk Windows yang masih dalam pengembangan dan belum siap dijual; (4) Chocobot Guardian, utilitas Windows lokal untuk diagnosis/monitoring dan keamanan komputer, masih tahap fondasi dengan engine tertentu belum selesai; (5) Privacy Guardian Windows, alat bantu menganalisis dan memahami dokumen kebijakan privasi/layanan, bukan nasihat hukum; (6) Choco Panel Admin, dashboard owner untuk operasi, keamanan, masukan, moderasi, dan integrasi antarlayanan, masih tahap fondasi; (7) The Choco Studios Information, situs informasi publik TCS dan katalog proyek; (8) why-me, proyek kreatif naratif tentang empati dan dampak penilaian/relasi keluarga, masih tahap konsep dan belum memiliki versi playable. Dalam struktur branding internal, The Choco Corporation adalah payung utama; The Choco Studios (TCS) adalah studio/brand kreatif di bawah ekosistem tersebut. Ini bukan pernyataan status badan hukum. The Choco Studios Information adalah situs informasi publik, bukan nama induk. Projects.co.id merupakan kemungkinan jalur distribusi produk digital, bukan bukti semua produk telah terdaftar atau terjual. Setiap status berasal dari source/README yang diperiksa dan tidak membuktikan perilaku produksi kecuali diuji secara terpisah. Jika pertanyaan meminta daftar seluruh proyek, jangan hanya menyebutkan beberapa hasil retrieval; sebutkan kedelapan entri di indeks ini dan tandai mana yang masih konsep/pengembangan.",
     "category": "portfolio-index",
     "source": "curated-project-portfolio",
     "tags": [
@@ -234,6 +242,31 @@
       "Panel Admin",
       "TCS Information",
       "why-me"
+    ]
+  },
+  {
+    "id": "brand-hierarchy-choco-ecosystem",
+    "title": "Siapa payung utama seluruh proyek dan produk Choco?",
+    "content": "Untuk pertanyaan siapa yang menaungi atau menjadi payung utama seluruh ekosistem, jawaban yang dipakai dalam struktur branding internal adalah The Choco Corporation. The Choco Studios (TCS) adalah identitas studio/brand kreatif di bawah ekosistem tersebut, bukan nama yang menggantikan payung utama. Peta sederhananya: The Choco Corporation → The Choco Studios serta brand/unit terkait → produk dan proyek: Choco AI, Choco AI Help Center dengan Sara, KasirKita, Chocobot Guardian, Privacy Guardian Windows, Choco Panel Admin, The Choco Studios Information, dan why-me. Struktur ini menjelaskan hierarki branding/pengelolaan internal, bukan bukti status badan hukum atau struktur legal resmi. Hasby Prasetya Saprudin adalah pengembang mandiri di balik proyek-proyek yang tercatat. Jangan mencampuradukkan organisasi payung, studio kreatif, produk, situs, dan asisten AI.",
+    "category": "brand-hierarchy",
+    "source": "curated-brand-hierarchy",
+    "tags": [
+      "The Choco Corporation",
+      "The Choco Studios",
+      "TCS",
+      "payung",
+      "payung utama",
+      "yang menaungi",
+      "induk",
+      "organisasi induk",
+      "semua proyek",
+      "semua produk",
+      "brand hierarchy",
+      "parent brand",
+      "umbrella",
+      "ekosistem Choco",
+      "siapa yang bikin",
+      "kepemilikan"
     ]
   }
 ]
