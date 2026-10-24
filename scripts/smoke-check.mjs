@@ -37,7 +37,8 @@ const cases = [
   { query: "evaluation benchmark before fine tuning", expected: "evaluation-before-training" },
   { query: "KasirKita Windows SQLite cashier products customers suppliers", expected: "project-kasirkita" },
   { query: "Sara Choco AI Help Center separate assistant relationship", expected: "assistant-relationship" },
-  { query: "Chocobot Guardian Windows local system utility", expected: "project-chocobot-guardian" }
+  { query: "Chocobot Guardian Windows local system utility", expected: "project-chocobot-guardian" },
+  { query: "daftar semua proyek produk portofolio lengkap Hasby", expected: "project-portfolio-index" }
 ];
 
 let passed = 0;
