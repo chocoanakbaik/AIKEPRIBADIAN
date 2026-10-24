@@ -38,7 +38,8 @@ const cases = [
   { query: "KasirKita Windows SQLite cashier products customers suppliers", expected: "project-kasirkita" },
   { query: "Sara Choco AI Help Center separate assistant relationship", expected: "assistant-relationship" },
   { query: "Chocobot Guardian Windows local system utility", expected: "project-chocobot-guardian" },
-  { query: "daftar semua proyek produk portofolio lengkap Hasby", expected: "project-portfolio-index" }
+  { query: "daftar semua proyek produk portofolio lengkap Hasby", expected: "project-portfolio-index" },
+  { query: "siapa payung utama yang menaungi semua proyek The Choco Corporation", expected: "brand-hierarchy-choco-ecosystem" }
 ];
 
 let passed = 0;
