@@ -2,7 +2,7 @@
   {
     "id": "portfolio-owner-and-brand",
     "title": "Struktur identitas dan payung brand ekosistem Choco",
-    "content": "Hasby Prasetya Saprudin adalah pengembang mandiri di balik portofolio proyek Choco. Dalam struktur branding internal, The Choco Studios (TCS) adalah identitas payung utama yang menaungi proyek-proyek dan produk terkait. Peta sederhananya: The Choco Studios (TCS) → produk dan proyek seperti Choco AI, Sara/Help Center, KasirKita, Chocobot Guardian, Privacy Guardian, Choco Panel Admin, The Choco Studios Information, dan why-me. Ini menjelaskan hierarki branding dan pengelolaan internal, bukan klaim status badan hukum atau struktur legal resmi. Hasby tetap pengembang mandiri di balik proyek-proyek yang tercatat. Status setiap proyek harus dibedakan antara source code tersedia, sedang dikembangkan, direncanakan, siap rilis, dan terverifikasi berjalan di produksi.",
+    "content": "Hasby Prasetya Saprudin adalah pengembang mandiri di balik portofolio proyek Choco. Dalam struktur branding internal, The Choco Corporation (TCC) adalah identitas payung ekosistem brand, sedangkan The Choco Studios (TCS) adalah studio/identitas kreatif di bawah payung tersebut. Peta sederhananya: The Choco Corporation → The Choco Studios → produk dan proyek terkait, termasuk Choco AI, Sara/Help Center, KasirKita, Chocobot Guardian, Privacy Guardian, Choco Panel Admin, The Choco Studios Information, dan why-me. Ini menjelaskan hierarki branding dan pengelolaan internal, bukan klaim bahwa TCC atau TCS sudah berbadan hukum atau merupakan struktur legal resmi. Hasby tetap pengembang mandiri di balik proyek-proyek. Status tiap proyek harus dibedakan antara branch source, tes/build berhasil, rilis publik, dan perilaku terverifikasi di produksi.",
     "category": "portfolio",
     "source": "curated-project-portfolio",
     "tags": [
@@ -23,7 +23,14 @@
       "hierarki brand",
       "induk semua proyek",
       "brand induk",
-      "ekosistem Choco"
+      "ekosistem Choco",
+      "The Choco Corporation",
+      "TCC",
+      "parent organization",
+      "payung organisasi",
+      "brand umbrella",
+      "The Choco Studios sebagai studio",
+      "hierarki TCC TCS"
     ]
   },
   {
@@ -89,9 +96,9 @@
   {
     "id": "project-kasirkita",
     "title": "KasirKita Desktop",
-    "content": "KasirKita adalah aplikasi kasir desktop untuk usaha kecil, di repository chocoanakbaik/KasirKita, memakai Python/Tkinter dan SQLite lokal. README menyatakan produk masih dalam pengembangan dan belum siap dijual. Source mencakup alur kasir tunai, produk dan stok, SKU/barcode Code 128, histori transaksi, struk TXT/PDF, laporan CSV/XLSX/PDF, retur, pengeluaran operasional, ringkasan laba berdasarkan harga modal, pajak opsional yang nonaktif secara default, backup/restore, tutorial offline, dan log lokal. Tahap akun mencakup pemilik/pegawai serta data pelanggan/supplier. Data inti dirancang tersimpan lokal di Windows, lokasi default %LOCALAPPDATA%\\KasirKita; alur kasir inti tidak bergantung pada Choco AI, Supabase, atau internet. Target Windows 10/11; Windows 8.1 belum terverifikasi pada perangkat fisik. Dalam keputusan branding saat ini, KasirKita berada di bawah payung The Choco Studios (TCS). Jangan menyatakan status badan hukum tanpa dasar yang terverifikasi.",
+    "content": "KasirKita adalah aplikasi kasir desktop untuk usaha kecil, di repository chocoanakbaik/KasirKita, memakai Python/Tkinter dan SQLite lokal. Branch product/release-readiness-2026-10 saat ini berisi kandidat rilis internal dengan transaksi tunai, produk dan stok, SKU/barcode Code 128, histori transaksi, struk TXT/PDF, laporan CSV/XLSX/PDF, retur, pengeluaran, ringkasan laba berdasarkan harga modal, pajak opsional nonaktif default, backup/restore, tutorial offline, serta akun pemilik/pegawai dan data pelanggan/supplier. Branch tersebut menambahkan panduan pengguna, draf listing Projects.co.id, konsistensi versi, bahasa installer Indonesia, dan perpindahan ID login dari NIK ke ID lokal dengan migrasi database v5. Tes otomatis Windows/Ubuntu dan build installer berhasil untuk revisi yang sudah diuji. Namun PR #1 masih draft, belum digabung ke main, belum dideploy, dan tes pemasangan/backup/restore/uninstall pada Windows bersih masih diperlukan; produk belum siap dijual. Data utama dirancang lokal pada %LOCALAPPDATA%\\\\KasirKita. Hierarki branding: The Choco Corporation (TCC) sebagai payung, dengan The Choco Studios (TCS) sebagai studio kreatif di bawahnya. Jangan mengklaim status legal badan usaha atau kesiapan produksi dari status CI saja.",
     "category": "product",
-    "source": "repository-readme",
+    "source": "repository-readme-and-branch-verification",
     "tags": [
       "KasirKita",
       "kasir",
@@ -112,9 +119,9 @@
   {
     "id": "project-chocobot-guardian",
     "title": "Chocobot Guardian",
-    "content": "Chocobot Guardian adalah utilitas desktop Windows untuk membantu memeriksa, memantau, mendiagnosis, dan mengelola kondisi komputer secara lokal. Repository aktif yang tercatat: chocoanakbaik/chocobot_guardian; repository bernama chocobot-guardian tampak kosong saat diperiksa dan bukan sumber utama. README menyebut tahap Foundation/Active Development: fondasi UI, konfigurasi, logging, splash screen, dan arsitektur modular ada di source, sementara sejumlah engine masih direncanakan atau dapat berupa placeholder. Arah fitur mencakup monitoring sistem, pemeriksaan file/hash, inspeksi tautan lokal, utilitas jaringan, karantina/whitelist, dan konversi file. Fitur rencana tidak boleh disebut fitur selesai. Chocobot Guardian adalah produk terpisah, bukan Choco AI/AIKEPRIBADIAN atau Sara.",
+    "content": "Chocobot Guardian adalah utilitas desktop Windows lokal. Repository aktif: chocoanakbaik/chocobot_guardian. Branch product/functional-release-2026-10 menghubungkan utilitas yang dapat diuji: pemeriksaan struktur URL dan indikator heuristik secara offline, metadata file dan SHA-256, ringkasan folder yang dibatasi jumlah file, pemeriksaan ekstensi/signature file yang bersifat read-only, diagnostik DNS, satu ping, satu tes port TCP, informasi perangkat, dan snapshot sumber daya/proses. Ini bukan antivirus, tidak memberi jaminan file aman, tidak menyediakan proteksi real-time atau karantina otomatis. Tes otomatis pada Windows/Ubuntu dan build PyInstaller serta smoke-test executable berhasil pada commit 95d4b854c40cdbdee4e03634a043ed8dbee69d4e; setelahnya, branch menambah pembacaan aset logo dari lokasi paket yang benar dan halaman informasi sistem/monitor, yang CI-nya masih perlu diperiksa ulang. PR #1 masih draft, belum masuk main dan belum dirilis. Jangan menyatakan seluruh fitur lanjutan selesai; modul konversi dokumen, scanning malware, real-time protection, dan tindakan karantina belum tersedia dalam MVP.",
     "category": "product",
-    "source": "repository-readme",
+    "source": "repository-readme-and-branch-verification",
     "tags": [
       "Chocobot Guardian",
       "chocobot_guardian",
@@ -131,9 +138,9 @@
   {
     "id": "project-privacy-guardian",
     "title": "Privacy Guardian Windows",
-    "content": "Privacy Guardian Windows adalah aplikasi desktop Windows untuk membantu memahami dokumen Privacy Policy, Terms of Service, Cookie Policy, Data Policy, serta ketentuan terkait. Repository: chocoanakbaik/privacy_guardian_windows. Tujuan analisis mencakup pengumpulan dan penggunaan data, pembagian data, retensi, tracking/cookies, hak pengguna, dan klausul penting. Hasilnya alat bantu membaca dokumen, bukan pengganti dokumen asli atau nasihat hukum. Status fitur spesifik dan kesiapan rilis harus mengacu pada source, pengujian, dan checklist terbaru; README saja bukan bukti semua kemampuan telah diverifikasi.",
+    "content": "Privacy Guardian Windows adalah aplikasi desktop Windows untuk membantu pengguna memahami teks dokumen kebijakan. Branch product/functional-mvp-2026-10 di repository chocoanakbaik/privacy_guardian_windows mengubah fondasi menjadi MVP WinForms .NET 8: tempel teks atau buka TXT/Markdown/HTML hingga 5 MB, deteksi pola untuk pengumpulan/penggunaan/pembagian data, retensi, tracking, hak pengguna, pengecualian dan transfer lintas negara, tampilkan kutipan serta nomor baris, lalu ekspor temuan CSV/TXT. Unit test dan build CI berhasil pada commit 15611b1ec7b50c79f9861863d36870b1abcfb262. Ini analisis berbasis pola, bukan AI semantik, bukan penasihat hukum, bukan penilaian aman/tidak aman; hasil dapat false positive atau melewatkan informasi. PDF/DOCX/OCR/URL crawling belum tersedia. PR #1 masih draft dan belum digabung ke main atau dirilis. Uji manual installer di Windows bersih, lisensi, dan panduan rilis masih diperlukan sebelum dijual.",
     "category": "product",
-    "source": "repository-readme",
+    "source": "repository-readme-and-branch-verification",
     "tags": [
       "Privacy Guardian",
       "Privacy Guardian Windows",
@@ -220,7 +227,7 @@
   {
     "id": "project-portfolio-index",
     "title": "Daftar lengkap portofolio proyek Hasby",
-    "content": "Saat ditanya daftar semua proyek, karya, atau produk yang dikembangkan Hasby, gunakan ringkasan portofolio ini untuk menyebutkan seluruh proyek yang tercatat, lalu jelaskan proyek spesifik dari referensi detail masing-masing. Proyek yang tercatat: (1) Choco AI/AIKEPRIBADIAN, representasi digital berbasis AI dan aplikasi chat utama, masih beta/pengembangan; (2) Choco AI Help Center dengan Sara, pusat bantuan yang terpisah dari Choco AI chat; (3) KasirKita Desktop, aplikasi POS lokal untuk Windows yang masih dalam pengembangan dan belum siap dijual; (4) Chocobot Guardian, utilitas Windows lokal untuk diagnosis/monitoring dan keamanan komputer, masih tahap fondasi dengan engine tertentu belum selesai; (5) Privacy Guardian Windows, alat bantu menganalisis dan memahami dokumen kebijakan privasi/layanan, bukan nasihat hukum; (6) Choco Panel Admin, dashboard owner untuk operasi, keamanan, masukan, moderasi, dan integrasi antarlayanan, masih tahap fondasi; (7) The Choco Studios Information, situs informasi publik TCS dan katalog proyek; (8) why-me, proyek kreatif naratif tentang empati dan dampak penilaian/relasi keluarga, masih tahap konsep dan belum memiliki versi playable. Dalam struktur branding internal, The Choco Studios (TCS) adalah payung utama bagi proyek-proyek tersebut. Ini menjelaskan branding, bukan bukti status badan hukum. The Choco Studios Information adalah situs informasi publik, bukan nama induk. Projects.co.id merupakan kemungkinan jalur distribusi produk digital, bukan bukti semua produk telah terdaftar atau terjual. Setiap status berasal dari source/README yang diperiksa dan tidak membuktikan perilaku produksi kecuali diuji secara terpisah. Jika pertanyaan meminta daftar seluruh proyek, jangan hanya menyebutkan beberapa hasil retrieval; sebutkan kedelapan entri di indeks ini dan tandai mana yang masih konsep/pengembangan.",
+    "content": "Saat ditanya daftar semua proyek, karya, atau produk yang dikembangkan Hasby, sebutkan seluruh proyek dalam indeks ini lalu jelaskan detail dan status masing-masing. Proyek: (1) Choco AI/AIKEPRIBADIAN, representasi digital berbasis AI dan chat utama, masih beta/pengembangan; (2) Choco AI Help Center dengan Sara, pusat bantuan terpisah dari Choco AI; (3) KasirKita Desktop, aplikasi kasir offline Windows dengan branch kandidat rilis internal yang telah lulus tes/build CI tetapi masih butuh uji manual dan belum siap dijual; (4) Chocobot Guardian, utilitas Windows lokal untuk URL/file/hash/folder/jaringan dan informasi/monitor sistem pada branch pengembangan, bukan antivirus dan belum dirilis; (5) Privacy Guardian Windows, MVP lokal untuk analisis teks kebijakan berbasis pola dengan kutipan dan ekspor CSV/TXT, bukan penasihat hukum dan belum dirilis; (6) Choco Panel Admin, dashboard owner dengan sebagian fondasi dan integrasi yang masih direncanakan; (7) The Choco Studios Information, situs informasi publik dan katalog produk/proyek; (8) why-me, proyek naratif tentang empati dan dampak penilaian/relasi keluarga yang masih konsep dan belum playable. Untuk status cabang pengembangan, bedakan tes CI lulus dari merge main, deploy, dan uji manual. Branding internal: The Choco Corporation (TCC) adalah identitas payung, The Choco Studios (TCS) adalah studio kreatif di bawah TCC, kemudian produk/proyek berada di bawah ekosistem tersebut. Hierarki ini menjelaskan branding internal, bukan status badan hukum. Projects.co.id adalah kemungkinan jalur distribusi, bukan bukti semua produk sudah terdaftar atau terjual.",
     "category": "portfolio-index",
     "source": "curated-project-portfolio",
     "tags": [
@@ -247,7 +254,7 @@
   {
     "id": "brand-hierarchy-choco-ecosystem",
     "title": "Apa payung utama seluruh proyek dan produk Choco?",
-    "content": "Untuk pertanyaan siapa yang menaungi atau menjadi payung utama seluruh ekosistem, jawaban dalam struktur branding internal adalah The Choco Studios (TCS). Peta sederhananya: The Choco Studios (TCS) → produk dan proyek terkait, termasuk Choco AI, Choco AI Help Center dengan Sara, KasirKita, Chocobot Guardian, Privacy Guardian Windows, Choco Panel Admin, The Choco Studios Information, dan why-me. Struktur ini menjelaskan hierarki branding/pengelolaan internal, bukan bukti status badan hukum atau struktur legal resmi. Hasby Prasetya Saprudin adalah pengembang mandiri di balik proyek-proyek yang tercatat. Jangan mencampuradukkan payung brand, produk, situs, dan asisten AI.",
+    "content": "Untuk pertanyaan siapa yang menaungi ekosistem, jawaban dalam struktur branding internal adalah The Choco Corporation (TCC) sebagai identitas payung utama. The Choco Studios (TCS) adalah studio/identitas kreatif di bawah TCC. Peta sederhananya: The Choco Corporation → The Choco Studios → produk dan proyek seperti Choco AI, Choco AI Help Center dengan Sara, KasirKita, Chocobot Guardian, Privacy Guardian Windows, Choco Panel Admin, The Choco Studios Information, dan why-me. Hasby Prasetya Saprudin adalah pengembang mandiri di balik portofolio tersebut. Struktur ini menjelaskan hierarki branding/pengelolaan internal, bukan bukti badan hukum atau struktur legal resmi. Jangan menyamakan TCC (payung), TCS (studio), situs informasi, produk, atau asisten AI.",
     "category": "brand-hierarchy",
     "source": "curated-brand-hierarchy",
     "tags": [
@@ -266,7 +273,12 @@
       "ekosistem Choco",
       "siapa yang bikin",
       "kepemilikan",
-      "brand induk"
+      "brand induk",
+      "The Choco Corporation",
+      "TCC",
+      "parent organization",
+      "payung TCC",
+      "studio kreatif TCS di bawah TCC"
     ]
   }
 ]
