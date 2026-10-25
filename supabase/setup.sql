@@ -35,6 +35,10 @@ create table if not exists public.payment_events (
 );
 alter table public.payment_events enable row level security;
 revoke all on public.payment_events from anon, authenticated;
+grant select, insert, update, delete on public.chat_history to service_role;
+grant select, insert, update, delete on public.user_subscriptions to service_role;
+grant select, insert, update, delete on public.payment_events to service_role;
+grant usage, select on all sequences in schema public to service_role;
 
 -- Buat status free otomatis saat akun baru dibuat. Upsert tetap dilakukan backend untuk akun lama.
 create or replace function public.choco_create_free_subscription()
