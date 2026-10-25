@@ -64,37 +64,30 @@ export default async (request) => {
     const paidAmount = Number(event.gross_amount);
     if (!expectedAmount || !Number.isFinite(paidAmount) || paidAmount < expectedAmount) return respond(400, { error: "Nominal pembayaran tidak memenuhi harga premium yang dikonfigurasi." });
 
-    // Catat order agar webhook yang dikirim ulang tidak menambah masa aktif berkali-kali.
-    const orders = await supabase("payment_events?order_id=eq." + encodeURIComponent(orderId) + "&select=order_id&limit=1");
-    if (orders?.length) return respond(200, { received: true, duplicate: true });
-
-    // Kunci order_id dengan unique constraint di database; penambahan masa aktif dilakukan satu kali.
-    await supabase("payment_events", {
+    // RPC SQL membuat pencatatan order dan perpanjangan premium dalam satu transaksi.
+    // Constraint unik order_id mencegah webhook duplikat menambah 30 hari berkali-kali.
+    const base = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!base || !serviceKey) throw new Error("Konfigurasi database server belum lengkap.");
+    const rpcResponse = await fetch(base.replace(/\\/$/, "") + "/rest/v1/rpc/choco_activate_premium_payment", {
       method: "POST",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ order_id: orderId, user_id: userId, gross_amount: paidAmount, transaction_status: event.transaction_status })
+      headers: {
+        apikey: serviceKey,
+        Authorization: "Bearer " + serviceKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        p_order_id: orderId,
+        p_user_id: userId,
+        p_gross_amount: paidAmount,
+        p_transaction_status: event.transaction_status
+      })
     });
+    const activation = await rpcResponse.json().catch(() => ({}));
+    if (!rpcResponse.ok) throw new Error("Aktivasi pembayaran gagal (" + rpcResponse.status + ").");
+    if (activation.duplicate) return respond(200, { received: true, duplicate: true, expiresAt: activation.expires_at || null });
+    return respond(200, { received: true, premiumActivated: true, expiresAt: activation.expires_at });
 
-    // Tambahkan 30 hari dari tanggal expired mendatang, atau dari sekarang jika sudah free/kedaluwarsa.
-    const rows = await supabase("user_subscriptions?user_id=eq." + encodeURIComponent(userId) + "&select=user_id,status,expires_at&limit=1");
-    const current = rows?.[0];
-    const now = Date.now();
-    const previousExpiry = current?.status === "premium" && current.expires_at && new Date(current.expires_at).getTime() > now
-      ? new Date(current.expires_at).getTime()
-      : now;
-    const expiresAt = new Date(previousExpiry + 30 * 24 * 60 * 60 * 1000).toISOString();
-    if (current) {
-      await supabase("user_subscriptions?user_id=eq." + encodeURIComponent(userId), {
-        method: "PATCH", headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ status: "premium", expires_at: expiresAt, updated_at: new Date().toISOString() })
-      });
-    } else {
-      await supabase("user_subscriptions", {
-        method: "POST", headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ user_id: userId, status: "premium", expires_at: expiresAt })
-      });
-    }
-    return respond(200, { received: true, premiumActivated: true, expiresAt });
   } catch (error) {
     console.error("payment-webhook error:", error.message);
     return respond(500, { error: "Webhook gagal diproses. Provider dapat mengirim ulang notifikasi." });
