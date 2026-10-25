@@ -57,3 +57,50 @@ for each row execute function public.choco_create_free_subscription();
 -- Netlify environment variables wajib: SUPABASE_URL, SUPABASE_ANON_KEY,
 -- SUPABASE_SERVICE_ROLE_KEY, GROQ_API_KEY, MIDTRANS_SERVER_KEY, PREMIUM_PRICE_IDR.
 -- Jangan pernah menaruh service role key atau Midtrans server key di frontend/repository.
+
+
+-- Transaksi atomik: deduplikasi order, catat pembayaran, dan aktifkan premium.
+-- Jika ada kegagalan di tengah proses, PostgreSQL membatalkan seluruh transaksi.
+create or replace function public.choco_activate_premium_payment(
+  p_order_id text,
+  p_user_id uuid,
+  p_gross_amount numeric,
+  p_transaction_status text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inserted_order text;
+  resulting_expiry timestamptz;
+begin
+  insert into public.payment_events (order_id, user_id, gross_amount, transaction_status)
+  values (p_order_id, p_user_id, p_gross_amount, p_transaction_status)
+  on conflict (order_id) do nothing
+  returning order_id into inserted_order;
+
+  if inserted_order is null then
+    select expires_at into resulting_expiry
+      from public.user_subscriptions where user_id = p_user_id;
+    return jsonb_build_object('duplicate', true, 'expires_at', resulting_expiry);
+  end if;
+
+  insert into public.user_subscriptions (user_id, status, expires_at, updated_at)
+  values (p_user_id, 'premium', now() + interval '30 days', now())
+  on conflict (user_id) do update
+    set status = 'premium',
+        expires_at = greatest(
+          now(),
+          coalesce(public.user_subscriptions.expires_at, now())
+        ) + interval '30 days',
+        updated_at = now()
+  returning expires_at into resulting_expiry;
+
+  return jsonb_build_object('duplicate', false, 'expires_at', resulting_expiry);
+end;
+$$;
+
+revoke all on function public.choco_activate_premium_payment(text, uuid, numeric, text) from public, anon, authenticated;
+grant execute on function public.choco_activate_premium_payment(text, uuid, numeric, text) to service_role;
