@@ -69,7 +69,7 @@ export default async (request) => {
     const base = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!base || !serviceKey) throw new Error("Konfigurasi database server belum lengkap.");
-    const rpcResponse = await fetch(base.replace(/\\/$/, "") + "/rest/v1/rpc/choco_activate_premium_payment", {
+    const rpcResponse = await fetch(base.replace(/\/$/, "") + "/rest/v1/rpc/choco_activate_premium_payment", {
       method: "POST",
       headers: {
         apikey: serviceKey,
