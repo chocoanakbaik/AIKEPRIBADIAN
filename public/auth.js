@@ -11,7 +11,7 @@
 
   const controls = document.createElement("div");
   controls.className = "auth-controls";
-  controls.innerHTML = '<span class="auth-label" id="authLabel">Memuat akun…</span><button class="auth-button primary" id="authLogin" type="button">Login Google</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
+  controls.innerHTML = '<span class="auth-label" id="authLabel">Memuat akun…</span><button class="auth-button primary" id="authLogin" type="button">Login Email</button><button class="auth-button" id="authLogout" type="button" hidden>Keluar</button>';
   document.querySelector(".top-actions")?.prepend(controls);
 
   const label = controls.querySelector("#authLabel");
@@ -107,17 +107,24 @@
     window.dispatchEvent(new CustomEvent("choco:auth-changed", { detail: { user: currentUser, eventType } }));
   }
 
+  // Magic Link / Email OTP tidak bergantung pada Google OAuth.
   login.addEventListener("click", async () => {
     if (!db) return notify("Koneksi Supabase belum siap.");
+    const email = window.prompt("Masukkan alamat email untuk menerima link login atau kode OTP:");
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      if (email !== null) notify("Format email belum valid.");
+      return;
+    }
     login.disabled = true;
     try {
-      const { error } = await db.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: window.location.origin }
+      const { error } = await db.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: window.location.origin }
       });
       if (error) throw error;
+      notify("Link login atau kode OTP dikirim ke email lu. Cek inbox dan folder spam.");
     } catch (error) {
-      notify("Login Google gagal: " + error.message);
+      notify("Login email gagal: " + error.message);
     } finally {
       login.disabled = false;
     }
