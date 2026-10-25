@@ -1665,7 +1665,7 @@
           : null;
         const requestHeaders = { "Content-Type": "application/json" };
         if (accessToken) requestHeaders.Authorization = "Bearer " + accessToken;
-        const response = await fetch("/.netlify/functions/chat", {
+        const response = await fetch("/.netlify/functions/tanya-ai", {
           method: "POST",
           headers: requestHeaders,
           body: JSON.stringify({
@@ -1693,6 +1693,13 @@
             { error: true }
           );
           return;
+        }
+
+        // Notifikasi langganan kedaluwarsa berasal dari hasil validasi backend.
+        if (data.subscriptionExpired === true) {
+          const expiryNotice = "Masa aktif Choco AI Premium lu sudah habis. Akun otomatis kembali ke paket Free.";
+          if (typeof window.showToast === "function") window.showToast(expiryNotice);
+          else window.alert(expiryNotice);
         }
 
         const reply = typeof data.reply === "string"
