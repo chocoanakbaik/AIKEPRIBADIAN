@@ -1442,6 +1442,23 @@
 
     const plusMenuButton = document.getElementById("plusMenuButton");
     const plusMenu = document.getElementById("plusMenu");
+    function renderModelMode() {
+      document.querySelectorAll("[data-model-mode]").forEach(button => {
+        button.setAttribute("aria-pressed", String(button.dataset.modelMode === modelMode));
+      });
+    }
+    document.querySelectorAll("[data-model-mode]").forEach(button => {
+      button.addEventListener("click", () => {
+        modelMode = button.dataset.modelMode;
+        try { localStorage.setItem("chocoModelMode", modelMode); } catch {}
+        renderModelMode();
+        plusMenu.hidden = true;
+        plusMenuButton.setAttribute("aria-expanded", "false");
+        const names = { standard: "Standar", reasoning: "Penalaran", vision: "Analisis Gambar" };
+        showToast("Mode AI diubah ke " + names[modelMode] + ".");
+      });
+    });
+    renderModelMode();
     plusMenuButton.addEventListener("click", () => { const open = plusMenu.hidden; plusMenu.hidden = !open; plusMenuButton.setAttribute("aria-expanded", String(open)); });
     document.addEventListener("click", event => { if (!event.target.closest(".plus-menu-wrap")) { plusMenu.hidden = true; plusMenuButton.setAttribute("aria-expanded", "false"); } });
     document.addEventListener("keydown", event => { if (event.key === "Escape") { plusMenu.hidden = true; plusMenuButton.setAttribute("aria-expanded", "false"); document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.hidden = true); } });
