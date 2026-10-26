@@ -66,7 +66,7 @@ async function authenticate(request) {
   return user?.id ? user : null;
 }
 
-// CORS dibatasi ke domain aplikasi bila CHOCO_ALLOWED_ORIGIN diatur di Netlify.
+// CORS dibatasi ke domain aplikasi bila CHOCO_ALLOWED_ORIGIN diatur di environment server.
 export default async (request) => {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...JSON_HEADERS, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS" } });
   if (request.method !== "POST") return respond(405, { error: "Metode tidak diizinkan." });
@@ -111,7 +111,7 @@ export default async (request) => {
 
     // Kunci Groq hanya digunakan di serverless function.
     const groqKey = process.env.GROQ_API_KEY;
-    if (!groqKey) return respond(503, { error: "GROQ_API_KEY belum dikonfigurasi di Netlify." });
+    if (!groqKey) return respond(503, { error: "GROQ_API_KEY belum dikonfigurasi di environment server." });
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: "Bearer " + groqKey, "Content-Type": "application/json" },
@@ -162,6 +162,6 @@ export default async (request) => {
     });
   } catch (error) {
     console.error("tanya-ai error:", error.message);
-    return respond(500, { error: "Terjadi kesalahan server. Periksa konfigurasi Netlify dan Supabase." });
+    return respond(500, { error: "Terjadi kesalahan server. Periksa konfigurasi environment dan Supabase." });
   }
 };
