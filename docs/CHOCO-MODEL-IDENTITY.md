@@ -28,7 +28,7 @@ Nama produk tidak menyatakan jumlah parameter, ukuran model, atau bahwa The Choc
 - [x] Backend endpoint `tanya-ai` memilih profil model berdasarkan `modelMode` (`standard`, `reasoning`, atau `vision`).
 - [x] Backend menyisipkan identitas produk aktif ke instruksi sistem.
 - [x] Respons backend mengirim `productModel` dan `modelMode`, bukan ID model API.
-- [ ] Pemilih mode pada UI dihubungkan ke `modelMode`.
+- [x] Pemilih mode pada UI dihubungkan ke `modelMode` dan pilihan disimpan di browser.
 - [ ] Payload gambar dihubungkan dan diuji untuk mode Analisis Gambar.
 - [ ] Fallback runtime diuji agar identitas selalu sesuai dengan model produk yang benar-benar aktif.
 - [ ] Integrasi Vercel dan pengujian end-to-end selesai.
