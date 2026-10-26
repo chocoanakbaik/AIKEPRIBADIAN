@@ -29,7 +29,7 @@ Jangan membuat beberapa entri dengan nama `GROQ_MODEL` yang sama. Model pilihan 
 ## Deployment
 
 1. Import repository ini ke Vercel.
-2. Pilih branch `vercel-migration untuk preview terlebih dahulu.
+2. Pilih branch `vercel-migration` untuk preview terlebih dahulu.
 3. Atur Environment Variables untuk Preview dan Production sesuai kebutuhan.
 4. Deploy preview dan uji halaman, chat, autentikasi Supabase, memori, serta webhook pembayaran sebelum menggabungkan pull request.
 5. Setelah domain Vercel ditetapkan, atur `CHOCO_ALLOWED_ORIGIN` ke origin tersebut dan redeploy preview.
