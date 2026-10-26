@@ -35,6 +35,12 @@ Jangan membuat beberapa entri dengan nama `GROQ_MODEL` yang sama. Model pilihan 
 5. Setelah domain Vercel ditetapkan, atur `CHOCO_ALLOWED_ORIGIN` ke origin tersebut dan redeploy preview.
 6. Jangan hapus situs Netlify lama sampai alur utama di Vercel teruji.
 
+## Pemeriksaan wajib sebelum preview
+
+- Endpoint `netlify/functions/tanya-ai.js` membaca tabel `public.chat_history` dan `public.user_subscriptions`. Migrasi `supabase/migrations/20261019010000_account_sync.sql` hanya menyiapkan `profiles`, `conversations`, `messages`, dan `memories`. Pastikan dua tabel yang dibaca endpoint memang sudah ada di project Supabase aktif; jangan menganggap migrasi akun otomatis membuatnya.
+- Mode `vision` di antarmuka masih ditandai belum terhubung sepenuhnya. Pemilihan mode itu bukan bukti bahwa upload atau pengiriman gambar sudah didukung. Uji hanya fitur chat teks untuk validasi migrasi dasar.
+- Endpoint utama frontend adalah `/.netlify/functions/tanya-ai`, yang diteruskan ke `/api/tanya-ai` oleh rewrite Vercel.
+
 ## Batas validasi
 
 Penambahan file konfigurasi bukan bukti bahwa deployment sudah berhasil. Build dan pengujian endpoint tetap harus dijalankan di preview Vercel karena membutuhkan environment variables dan layanan Supabase/Groq yang aktif.
