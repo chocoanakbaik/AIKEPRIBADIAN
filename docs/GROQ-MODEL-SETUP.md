@@ -10,19 +10,21 @@ Dokumen ini menjadi daftar konfigurasi model untuk migrasi Choco AI ke Vercel. J
 | Function calling / tool use | GPT OSS 20B | Pemanggilan fungsi dan tools | Menunggu snippet tool-use |
 | Text-to-speech | Orpheus English | Keluaran suara berbahasa Inggris | Menunggu snippet |
 | Speech-to-text | Whisper Large v3 Turbo | Transkripsi audio | Menunggu snippet |
-| Text-to-text | GPT OSS 20B | Model chat default | ID dikonfirmasi: `openai/gpt-oss-20b` |
+| Text-to-text | GPT OSS 20B | Model chat default | Menunggu snippet text-to-text |
 | Vision | Qwen 3.8 27B | Analisis gambar | Menunggu snippet |
 | Multilingual | GPT OSS 120B | Percakapan multibahasa | Menunggu snippet |
 | Safety / moderation | Safety GPT OSS 20B | Pemeriksaan keamanan konten | Menunggu snippet |
 
 ## Snippet yang sudah diterima
 
-### Text-to-text — GPT OSS 20B
+### Reasoning — GPT OSS 20B
 
 - Model ID: `openai/gpt-oss-20b`
 - SDK pada contoh pengguna: Python `groq`
 - Endpoint: chat completions
 - Parameter yang ditunjukkan: `reasoning_effort="medium"`, streaming aktif, `max_completion_tokens=2048`.
+
+Catatan: pilihan kemampuan Reasoning yang direncanakan sebelumnya adalah GPT OSS 120B. Snippet yang baru dikirim pengguna ternyata menggunakan GPT OSS 20B untuk reasoning, jadi ID ini dicatat sebagai contoh reasoning 20B, bukan sebagai konfirmasi model Text-to-text. Pilihan model final untuk tiap kemampuan tetap perlu mengikuti keputusan pengguna dan model ID yang tersedia di Groq.
 
 Contoh yang dikirim pengguna menggunakan Python. Implementasi Vercel akan memakai JavaScript/TypeScript di backend jika proyek Vercel menggunakan runtime Node.js; jangan menempelkan contoh Python langsung ke frontend atau fungsi JavaScript.
 
@@ -37,8 +39,8 @@ Beberapa kemampuan menggunakan endpoint berbeda. Chat/text, vision, audio transc
 Tambahkan API key di Vercel Project → Settings → Environment Variables:
 
 - `GROQ_API_KEY` = API key baru dari Groq
-- `GROQ_MODEL_TEXT` = `openai/gpt-oss-20b`
-- `GROQ_MODEL_REASONING` = ID resmi model reasoning GPT OSS 120B
+- `GROQ_MODEL_TEXT` = ID resmi model text-to-text setelah snippet diterima
+- `GROQ_MODEL_REASONING` = ID resmi model reasoning yang dipilih
 - `GROQ_MODEL_TOOLS` = ID resmi model function calling GPT OSS 20B
 - `GROQ_MODEL_VISION` = ID resmi model vision Qwen 3.8 27B
 - `GROQ_MODEL_STT` = ID resmi model Whisper Large v3 Turbo
@@ -51,21 +53,22 @@ Gunakan nama variabel ini sebagai rancangan konfigurasi. Backend harus membaca v
 ## Yang perlu disalin dari Groq
 
 Kirim snippet kode atau setidaknya ID model dan endpoint dari Groq untuk:
-1. GPT OSS 120B (reasoning)
+1. GPT OSS 120B (reasoning, sesuai pilihan awal)
 2. GPT OSS 20B (function calling/tool use, pastikan contoh menunjukkan tools/function calling)
 3. Orpheus English (text-to-speech)
 4. Whisper Large v3 Turbo (speech-to-text)
-5. Qwen 3.8 27B (vision)
-6. Safety GPT OSS 20B (safety/moderation)
+5. GPT OSS 20B (text-to-text, model chat default)
+6. Qwen 3.8 27B (vision)
+7. Safety GPT OSS 20B (safety/moderation)
 
-GPT OSS 20B untuk text-to-text sudah diterima. GPT OSS 20B untuk tool-use tetap perlu contoh yang memperlihatkan dukungan tools, meskipun ID modelnya sama.
+GPT OSS 20B sudah terlihat digunakan pada snippet reasoning yang baru diterima. Snippet terpisah masih dibutuhkan untuk mengonfirmasi model text-to-text dan tool-use sesuai tugasnya.
 
 Hapus API key rahasia dari snippet sebelum membagikannya. Setelah ID/endpoint diverifikasi, konfigurasi ini dapat dihubungkan ke backend Vercel.
 
 ## Status
 
-- [x] Pilihan model per kemampuan ditetapkan.
-- [x] ID GPT OSS 20B untuk text-to-text dikonfirmasi dari snippet pengguna.
+- [x] Pilihan model per kemampuan ditetapkan sebagai rancangan awal.
+- [x] Snippet GPT OSS 20B untuk tugas reasoning dicatat.
 - [ ] ID API dan endpoint kemampuan lainnya diverifikasi dari Groq.
 - [ ] Backend Vercel dibuat/diadaptasi.
 - [ ] Setiap kemampuan diuji menggunakan API key baru.
