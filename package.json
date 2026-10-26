@@ -4,5 +4,8 @@
   "type": "module",
   "engines": {
     "node": ">=20"
+  },
+  "scripts": {
+    "check:syntax": "node --check api/tanya-ai.js && node --check api/memory.js && node --check api/supabase-config.js && node --check api/payment-webhook.js && node --check api/_lib/netlify-adapter.js && node --check netlify/functions/tanya-ai.js && node --check netlify/functions/memory.js && node --check netlify/functions/supabase-config.js && node --check netlify/functions/payment-webhook.js"
   }
 }
