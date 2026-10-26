@@ -1,8 +1,0 @@
-{
-  "name": "choco-ai-platform",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=20"
-  }
-}
