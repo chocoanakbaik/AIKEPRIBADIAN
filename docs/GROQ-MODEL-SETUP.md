@@ -4,16 +4,27 @@ Dokumen ini menjadi daftar konfigurasi model untuk migrasi Choco AI ke Vercel. J
 
 ## Model yang dipilih
 
-| Kemampuan | Pilihan | Kegunaan |
-|---|---|---|
-| Reasoning | GPT OSS 120B | Tugas penalaran kompleks |
-| Function calling / tool use | GPT OSS 20B | Pemanggilan fungsi dan tools |
-| Text-to-speech | Orpheus English | Keluaran suara berbahasa Inggris |
-| Speech-to-text | Whisper Large v3 Turbo | Transkripsi audio |
-| Text-to-text | GPT OSS 20B | Model chat default |
-| Vision | Qwen 3.8 27B | Analisis gambar |
-| Multilingual | GPT OSS 120B | Percakapan multibahasa |
-| Safety / moderation | Safety GPT OSS 20B | Pemeriksaan keamanan konten |
+| Kemampuan | Pilihan | Kegunaan | Status ID |
+|---|---|---|---|
+| Reasoning | GPT OSS 120B | Tugas penalaran kompleks | Menunggu snippet |
+| Function calling / tool use | GPT OSS 20B | Pemanggilan fungsi dan tools | Menunggu snippet tool-use |
+| Text-to-speech | Orpheus English | Keluaran suara berbahasa Inggris | Menunggu snippet |
+| Speech-to-text | Whisper Large v3 Turbo | Transkripsi audio | Menunggu snippet |
+| Text-to-text | GPT OSS 20B | Model chat default | ID dikonfirmasi: `openai/gpt-oss-20b` |
+| Vision | Qwen 3.8 27B | Analisis gambar | Menunggu snippet |
+| Multilingual | GPT OSS 120B | Percakapan multibahasa | Menunggu snippet |
+| Safety / moderation | Safety GPT OSS 20B | Pemeriksaan keamanan konten | Menunggu snippet |
+
+## Snippet yang sudah diterima
+
+### Text-to-text — GPT OSS 20B
+
+- Model ID: `openai/gpt-oss-20b`
+- SDK pada contoh pengguna: Python `groq`
+- Endpoint: chat completions
+- Parameter yang ditunjukkan: `reasoning_effort="medium"`, streaming aktif, `max_completion_tokens=2048`.
+
+Contoh yang dikirim pengguna menggunakan Python. Implementasi Vercel akan memakai JavaScript/TypeScript di backend jika proyek Vercel menggunakan runtime Node.js; jangan menempelkan contoh Python langsung ke frontend atau fungsi JavaScript.
 
 ## Sebelum integrasi
 
@@ -26,7 +37,7 @@ Beberapa kemampuan menggunakan endpoint berbeda. Chat/text, vision, audio transc
 Tambahkan API key di Vercel Project → Settings → Environment Variables:
 
 - `GROQ_API_KEY` = API key baru dari Groq
-- `GROQ_MODEL_TEXT` = ID resmi model text-to-text GPT OSS 20B
+- `GROQ_MODEL_TEXT` = `openai/gpt-oss-20b`
 - `GROQ_MODEL_REASONING` = ID resmi model reasoning GPT OSS 120B
 - `GROQ_MODEL_TOOLS` = ID resmi model function calling GPT OSS 20B
 - `GROQ_MODEL_VISION` = ID resmi model vision Qwen 3.8 27B
@@ -39,22 +50,23 @@ Gunakan nama variabel ini sebagai rancangan konfigurasi. Backend harus membaca v
 
 ## Yang perlu disalin dari Groq
 
-Salin kode contoh untuk masing-masing model berikut dari Groq Console / dokumentasi model:
+Kirim snippet kode atau setidaknya ID model dan endpoint dari Groq untuk:
 1. GPT OSS 120B (reasoning)
-2. GPT OSS 20B (function calling/tool use)
+2. GPT OSS 20B (function calling/tool use, pastikan contoh menunjukkan tools/function calling)
 3. Orpheus English (text-to-speech)
 4. Whisper Large v3 Turbo (speech-to-text)
-5. GPT OSS 20B (text-to-text)
-6. Qwen 3.8 27B (vision)
-7. GPT OSS 120B (multilingual)
-8. Safety GPT OSS 20B (safety/moderation)
+5. Qwen 3.8 27B (vision)
+6. Safety GPT OSS 20B (safety/moderation)
 
-Kirim snippet kode atau setidaknya ID model dan endpoint yang diberikan Groq. Hapus API key dari snippet sebelum membagikannya. Setelah ID/endpoint diverifikasi, konfigurasi ini dapat dihubungkan ke backend Vercel.
+GPT OSS 20B untuk text-to-text sudah diterima. GPT OSS 20B untuk tool-use tetap perlu contoh yang memperlihatkan dukungan tools, meskipun ID modelnya sama.
+
+Hapus API key rahasia dari snippet sebelum membagikannya. Setelah ID/endpoint diverifikasi, konfigurasi ini dapat dihubungkan ke backend Vercel.
 
 ## Status
 
 - [x] Pilihan model per kemampuan ditetapkan.
-- [ ] ID API dan endpoint resmi diverifikasi dari Groq.
+- [x] ID GPT OSS 20B untuk text-to-text dikonfirmasi dari snippet pengguna.
+- [ ] ID API dan endpoint kemampuan lainnya diverifikasi dari Groq.
 - [ ] Backend Vercel dibuat/diadaptasi.
 - [ ] Setiap kemampuan diuji menggunakan API key baru.
 - [ ] Deployment Vercel diverifikasi sebelum Netlify dipensiunkan.
