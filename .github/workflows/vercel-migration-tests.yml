@@ -1,0 +1,22 @@
+name: Vercel migration smoke tests
+
+on:
+  push:
+    branches:
+      - feat/vercel-migration-choco-ai
+
+permissions:
+  contents: read
+
+jobs:
+  endpoint-smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run endpoint smoke tests
+        run: node --test tests/vercel-api.test.mjs
