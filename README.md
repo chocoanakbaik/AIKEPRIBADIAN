@@ -1800,3 +1800,18 @@ Pipeline jangka panjang:
 Historical Conversations → Extract → Classify → Validate → Structure → Store → Train / Retrieve / Apply → Generate Response → Compare With Choco → Correction → Dataset Update → Evaluation → Improved Representation
 
 Pipeline ini merupakan salah satu mekanisme utama untuk mengembangkan AIKEPRIBADIAN dari chatbot personal menjadi representasi digital Choco yang semakin komprehensif.
+
+---
+
+# 57. Web Migration, Product Knowledge, and Ads
+
+The Vercel migration work is maintained on branch `feat/vercel-migration-choco-ai`. The branch is a review target; it is not proof of a successful production migration.
+
+- **Deployment:** See [docs/deployment-vercel.md](docs/deployment-vercel.md) for the Vercel route, required environment variables, preview deployment steps, and current constraints.
+- **TCS product knowledge:** See [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md). The chat endpoint retrieves curated, customer-safe product summaries from `data/knowledge/tcs-products.mjs`; private READMEGPT files are not copied into the model context.
+- **Ad configuration:** See [docs/ad-rotation.md](docs/ad-rotation.md). The native banner loader is retained, empty banner placeholders are hidden, and the old smartlink/social-bar/popunder activation path is disabled. Monetizer and four additional provider slots remain inactive until their real integration details are available.
+- **Smoke tests:** Run `node --test tests/vercel-api.test.mjs` with Node.js 20 or newer. The GitHub Actions workflow on the migration branch runs the same command.
+
+Current backend environment variables include `GROQ_API_KEY`, optional model overrides (`GROQ_MODEL`, `GROQ_MODEL_TEXT`, `GROQ_MODEL_REASONING`, `GROQ_MODEL_VISION`), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and optional `CHOCO_ALLOWED_ORIGIN`. Configure secret values in the hosting dashboard, never in source code.
+
+Do not mark production migration complete until the Vercel Preview is tested against real configuration, including login, chat, persistent history, subscription expiry, provider failures, mobile UI, and the ad-consent flow.
