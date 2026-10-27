@@ -1,29 +1,25 @@
-# Konfigurasi Rotasi Iklan Choco AI
+# Konfigurasi Iklan Choco AI
 
-## Kondisi yang ditemukan
+## Tujuan
 
-- Slot native banner yang diberi label Adsterra sudah ada di `public/index.html`. Script-nya memakai URL host pihak ketiga `bauval.org`; kepemilikan/provider-nya belum diverifikasi secara independen.
-- Tidak ditemukan integrasi Monetizer yang dapat diaktifkan secara nyata pada snapshot source yang diperiksa.
-- Slot responsive banner sebelumnya menampilkan placeholder meskipun belum ada kode unit. Sekarang slot itu disembunyikan sampai ada integrasi yang benar-benar tersedia.
-- Smartlink dan social-bar/popunder lama tidak lagi diaktifkan oleh alur persetujuan iklan pada branch ini, karena tidak tersedia konfigurasi provider yang tervalidasi dan format tersebut dapat mengganggu chat.
-- Persetujuan iklan pengguna tetap menjadi prasyarat pemuatan iklan.
+Choco AI direncanakan sebagai layanan gratis tanpa akun dan tanpa paket berbayar. Iklan menjadi model pendanaan, bukan pembelian Premium atau pembayaran pengguna.
 
-## Konfigurasi terpusat
+## Kondisi kode saat ini
 
-Daftar provider dan durasi berada di `public/ad-rotation.js`.
+- Slot native banner yang diberi label Adsterra tersedia di `public/index.html`; script memakai host pihak ketiga `bauval.org`. Kepemilikan publisher, kelayakan akun, dan tayangan nyata belum diverifikasi secara independen.
+- Provider Adsterra adalah satu-satunya adapter yang saat ini diaktifkan pada rotasi.
+- Monetizer dan slot provider tambahan tetap nonaktif sampai integrasi resmi yang valid tersedia.
+- Smartlink/social-bar/popunder tidak diaktifkan oleh rotasi iklan. Iklan tidak boleh mengirim pesan chat, riwayat, atau preferensi percakapan ke provider.
+- Pemuatan iklan tunduk pada pilihan persetujuan yang tersimpan di browser. Jika pengguna tidak menyetujui, loader iklan tidak dijalankan.
+- Slot kosong tetap tersembunyi; kegagalan iklan tidak boleh memblokir chat.
 
-- Adsterra: aktif menggunakan loader native-banner yang sudah ada.
-- Monetizer: nonaktif sampai kode integrasi resmi/URL unit yang benar tersedia.
-- Provider slot 3–6: nonaktif sampai provider dipilih dan integrasinya tersedia.
-- Durasi rotasi: 15 detik.
-- Timer dibuat hanya ketika setidaknya dua provider aktif dengan slot dan adapter yang valid. Saat ini hanya satu provider yang dapat dipakai, sehingga tidak ada pergantian palsu atau timer berulang yang tidak berguna.
-- Loader provider hanya dipanggil sekali per siklus objek provider; skrip native lama juga memiliki guard `data-requested` agar tidak dimuat berulang.
-- Slot kosong tetap tersembunyi. Kegagalan pemuatan tidak menghalangi fungsi chat.
+## Sebelum pendaftaran iklan
 
-## Aktivasi Monetizer atau provider tambahan
-
-Sebelum mengaktifkan provider, masukkan integrasi resmi yang memang diberikan oleh provider ke adapter yang sesuai, verifikasi domain/script, tambahkan slot yang cocok, dan uji consent, error, tab tersembunyi, pergantian provider, serta cleanup timer. Jangan memasukkan URL contoh atau URL yang ditebak. Jangan kirim pesan chat, token, atau data pengguna ke provider iklan.
+1. Verifikasi akun publisher dan domain yang akan didaftarkan langsung pada dashboard penyedia.
+2. Pastikan URL publik stabil, kebijakan privasi dan pengungkapan iklan sesuai, serta pengalaman pengguna tidak dipenuhi pop-up yang mengganggu.
+3. Uji alur persetujuan iklan dan pastikan pilihan pengguna dihormati.
+4. Jangan mengklaim tayangan atau pendapatan sebelum provider dashboard mengonfirmasinya.
 
 ## Batasan verifikasi
 
-Kode rotasi dan smoke tests tersedia di branch migrasi, tetapi tayangan iklan nyata, validitas akun publisher, persetujuan provider, dan pendapatan iklan tidak dapat diverifikasi hanya dari source code. Karena Monetizer belum memiliki kode integrasi yang terverifikasi, urutan Adsterra → Monetizer belum dapat diuji sebagai dua provider aktif.
+Kode dan smoke test hanya membuktikan perilaku yang diuji pada source. Kode tidak membuktikan persetujuan provider, validitas akun publisher, impresi, atau pendapatan. Monetizer belum memiliki integrasi yang dapat diuji.
