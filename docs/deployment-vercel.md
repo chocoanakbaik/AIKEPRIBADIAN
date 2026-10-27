@@ -9,7 +9,7 @@ Dokumen ini menjelaskan target konfigurasi pada branch migrasi. **Dokumen ini bu
 - Endpoint serverless berada di `api/tanya-ai.mjs`.
 - Endpoint memanggil Groq dari server, bukan browser.
 - Endpoint saat ini menggunakan Supabase untuk memverifikasi sesi pengguna, membaca status langganan, dan menyimpan riwayat chat.
-- File Netlify lama dipertahankan untuk perbandingan selama transisi; endpoint frontend Vercel tidak lagi diarahkan melalui rewrite Netlify.
+- File fungsi lama di `netlify/functions/` dipertahankan untuk perbandingan selama transisi; endpoint frontend Vercel tidak lagi diarahkan melalui rewrite Netlify. File konfigurasi deployment `netlify.toml` dihapus dari branch migrasi agar konfigurasi target tidak lagi mengarahkan build ke Netlify. Ini tidak menghapus situs atau deployment Netlify lama.
 
 ## Environment variables
 
