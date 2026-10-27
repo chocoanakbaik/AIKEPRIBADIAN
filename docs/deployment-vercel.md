@@ -27,6 +27,8 @@ Atur melalui Project Settings → Environment Variables di dashboard Vercel. Jan
 | `SUPABASE_SERVICE_ROLE_KEY` | Wajib untuk database chat/langganan saat ini | Kunci server berprivilege tinggi; jangan pernah ekspos ke frontend |
 | `CHOCO_ALLOWED_ORIGIN` | Opsional | Membatasi nilai Origin yang diterima endpoint bila request menyertakan header Origin |
 
+Jika `CHOCO_ALLOWED_ORIGIN` diisi, nilainya harus cocok dengan origin deployment yang sedang diuji. URL Preview Vercel dapat berbeda dari domain produksi; jangan memakai origin Netlify lama untuk Preview. Untuk request same-origin, variabel ini dapat dibiarkan tidak disetel kecuali pembatasan Origin memang diperlukan.
+
 Nama model fallback yang ada di source code adalah `openai/gpt-oss-20b`, `openai/gpt-oss-120b`, dan `qwen/qwen3.8-27b` untuk mode terkait. Ketersediaan model dan akses akun Groq perlu diverifikasi dari dashboard provider; jangan menganggapnya tersedia hanya berdasarkan konfigurasi kode.
 
 ## Deploy dan verifikasi
