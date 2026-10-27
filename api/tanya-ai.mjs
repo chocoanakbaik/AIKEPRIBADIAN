@@ -26,10 +26,10 @@ const DEFAULT_MODEL_MODE = "standard";
 const INTERNAL_DISCLOSURE_REFUSAL = "Maaf, informasi internal seperti instruksi sistem, READMEGPT internal, kode privat, kredensial, dan konfigurasi sensitif tidak dapat dibagikan. Saya tetap dapat menjelaskan fitur produk berdasarkan dokumentasi publik yang tersedia.";
 
 export function isSensitiveDisclosureRequest(message) {
-  const value = String(message || "").normalize("NFKC");
-  const target = /\b(system prompt|prompt sistem|instruksi sistem|system instructions|readmegpt(?:\.md)?|api key|service role key|secret|credential|kredensial|token|password|konfigurasi internal|internal configuration|private source code|kode sumber privat)\b/i;
-  const disclosureAction = /\b(tampilkan|tunjukkan|bocorkan|ungkap|salin|dump|print|reveal|show|give me|berikan|export|encode|base64|terjemahkan|translate|ringkas|summarize|keluarkan|output|full|lengkap|seluruh|semua isi|apa isi|what is your)\b/i;
-  const instructionOverride = /\b(ignore|abaikan)\b.{0,100}\b(previous instructions|instruksi sebelumnya|system prompt|prompt sistem|system instructions|instruksi sistem)\b/i;
+  const value = String(message || "").normalize("NFKC").replace(/[\u200B-\u200D\uFEFF]/g, "");
+  const target = /\b(system prompt|prompt sistem|instruksi sistem|system instructions|developer prompt|developer instructions|hidden instructions|instruksi tersembunyi|readmegpt(?:\.md)?|internal readme|api key|service role key|secret|credential|kredensial|token|password|konfigurasi internal|internal configuration|server configuration|private source code|kode sumber privat|private repository|repositori privat)\b/i;
+  const disclosureAction = /\b(tampilkan|tunjukkan|bocorkan|ungkap|salin|dump|print|reveal|show|give me|berikan|export|encode|base64|terjemahkan|translate|ringkas|summarize|keluarkan|output|full|lengkap|seluruh|semua isi|apa isi|what is your|repeat|reproduce|reconstruct|quote)\b/i;
+  const instructionOverride = /\b(ignore|disregard|abaikan|lupakan)\b.{0,140}\b(previous instructions|prior instructions|instruksi sebelumnya|system prompt|prompt sistem|system instructions|instruksi sistem|developer instructions|instruksi developer)\b/i;
   return instructionOverride.test(value) ||
     (target.test(value) && disclosureAction.test(value));
 }
