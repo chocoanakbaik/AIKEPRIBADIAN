@@ -187,7 +187,7 @@ export default async (request) => {
       modelMode
     });
   } catch (error) {
-    console.error("tanya-ai error:", error.message);
+    console.error("tanya-ai request failed.");
     return respond(500, { error: "Terjadi kesalahan server. Periksa konfigurasi Vercel dan Supabase." });
   }
 };
