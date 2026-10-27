@@ -118,9 +118,10 @@ export function buildProductContext(message) {
     const score = terms.reduce((total, term) => total + (query.includes(term.toLowerCase()) ? Math.max(2, term.length / 8) : 0), 0);
     return { product, score };
   }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
-  const selected = broadQuestion && scored.length === 0
+  const hasSpecificProductMatch = scored.length > 0;
+  const selected = broadQuestion && !hasSpecificProductMatch
     ? TCS_PRODUCTS
-    : scored.slice(0, broadQuestion ? 10 : 3).map((item) => item.product);
+    : scored.slice(0, 3).map((item) => item.product);
   if (!selected.length) return "";
   return [
     "KONTEKS PRODUK TCS YANG AMAN UNTUK PELANGGAN",
