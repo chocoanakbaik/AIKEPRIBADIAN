@@ -8,17 +8,13 @@ import {
 const requiredFiles = [
   "vercel.json",
   "public/index.html",
-  "public/auth.js",
   "public/ad-rotation.js",
   "api/tanya-ai.mjs",
-  "api/supabase-config.mjs",
-  "api/memory.mjs",
   "data/knowledge/tcs-products.mjs",
   "netlify/functions/core/retrieval.mjs",
   "supabase/config.toml",
   "supabase/migrations/20261019010000_account_sync.sql",
-  "supabase/migrations/20261021010000_knowledge_rag.sql",
-  "supabase/migrations/20261022010000_chat_history_subscriptions.sql"
+  "supabase/migrations/20261021010000_knowledge_rag.sql"
 ];
 
 for (const file of requiredFiles) {
