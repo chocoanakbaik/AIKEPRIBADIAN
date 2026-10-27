@@ -888,28 +888,11 @@ AI model digunakan untuk generation/reasoning.
 ---
 # 26. Proposed Technology Direction
 
-Teknologi harus mengikuti implementasi yang benar-benar ada. Untuk tahap migrasi yang ditinjau pada branch `feat/vercel-migration-choco-ai`, target hosting aplikasi web adalah Vercel. Branch ini belum membuktikan bahwa deployment produksi telah dilakukan.
+Versi web yang sedang disiapkan menggunakan Vercel untuk frontend dan endpoint serverless, dengan Groq sebagai provider inference.
 
-```text
-Source Code + Development:
-GitHub
+**Keputusan produk saat ini:** Choco AI gratis untuk pengunjung, tanpa akun, tanpa paket berbayar, dan tanpa database percakapan server. Pendanaan direncanakan melalui iklan. Riwayat hanya tersedia dalam sesi halaman dan dikirim dari browser sebagai konteks chat. Ini bukan memori persisten atau sinkronisasi lintas perangkat.
 
-Static Frontend:
-public/ served by Vercel
-
-Serverless Chat Endpoint:
-api/tanya-ai.mjs
-
-AI Inference:
-Groq API
-
-Authentication + Chat History + Subscription:
-Supabase, as required by the current tanya-ai endpoint
-```
-
-Catatan penting: dokumentasi lama yang menyebut Hugging Face Spaces menggambarkan arah deployment sebelumnya. Implementasi web saat ini memiliki endpoint Node.js yang memerlukan Vercel-compatible runtime. Backend chat yang ada juga bergantung pada Supabase; jangan mengklaim Supabase tidak digunakan tanpa mengganti dan menguji autentikasi, riwayat, serta langganan terlebih dahulu.
-
-Jangan menambahkan Render atau database/provider lain tanpa kebutuhan teknis dan keputusan yang jelas.
+Environment variable yang diperlukan untuk balasan AI adalah `GROQ_API_KEY`. Jangan commit nilainya ke repository. Konfigurasi domain, kunci provider, dan deployment harus diverifikasi dari dashboard; source code saja bukan bukti bahwa aplikasi publik sudah berfungsi.
 
 # 27. Zero-Cost Goal
 
@@ -1670,34 +1653,18 @@ And continuously improves its representation of Choco
 ---
 # 51. Current Deployment Reference for Other AI Agents
 
-Bagian ini mencatat target migrasi web yang sedang ditinjau. Ini bukan pernyataan bahwa produksi sudah dipindahkan.
-
 ```text
-Source Code:
-GitHub
-
-Web Hosting Target:
-Vercel
-
-Static Frontend:
-public/
-
-Serverless Chat Endpoint:
-api/tanya-ai.mjs
-
-AI Provider:
-Groq
-
-Authentication / Subscription / Chat History:
-Supabase (required by current backend implementation)
-
-Secrets:
-Environment variables on the hosting platform; never commit secrets.
+Source Code: GitHub
+Web Hosting: Vercel
+Static Frontend: public/
+Chat Endpoint: api/tanya-ai.mjs
+AI Inference: Groq API
+User Access: Anonymous visitor mode; no login
+Funding: Advertising; no paid subscription
+Conversation History: Current browser session only; no server persistence
 ```
 
-Route frontend menggunakan `/api/tanya-ai`. Konfigurasi `vercel.json` menetapkan direktori output statis dan header keamanan dasar. File `netlify/functions/tanya-ai.js` dipertahankan sebagai implementasi sumber/historis untuk perbandingan; endpoint aktif pada target Vercel adalah `api/tanya-ai.mjs`.
-
-Status deployment produksi, domain custom, serta nilai environment variables harus diverifikasi melalui dashboard platform dan tidak boleh diasumsikan dari repository.
+Jangan menganggap kode iklan sebagai bukti adanya tayangan atau pendapatan. Domain, environment variables, model availability, dan deployment production perlu diverifikasi secara langsung. File backend Netlify dan migrasi Supabase yang tersisa di repository adalah artefak historis/komponen proyek lain, bukan prasyarat endpoint chat Vercel yang aktif.
 
 # 52. Infrastructure Change Policy
 
@@ -1819,14 +1786,14 @@ Do not mark production migration complete until the Vercel Preview is tested aga
 
 ---
 
-## Web deployment and migration status
+## Web deployment and current product status
 
-Choco AI's browser application can be reviewed on Vercel using the serverless routes in `api/`. The legacy `netlify/functions/` sources remain in this repository for comparison during migration; their presence does not mean Vercel's core chat route depends on Netlify.
+Choco AI is being prepared as a free, anonymous chat service. The Vercel chat endpoint does not require Supabase, user accounts, subscription status, or a payment webhook.
 
-- Deployment and environment-variable instructions: [docs/deployment-vercel.md](docs/deployment-vercel.md)
-- Ad provider activation and consent behavior: [docs/ad-rotation.md](docs/ad-rotation.md)
-- Curated TCS product knowledge and verification boundaries: [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md)
+- Deployment instructions: [docs/deployment-vercel.md](docs/deployment-vercel.md)
+- Advertising behavior and consent: [docs/ad-rotation.md](docs/ad-rotation.md)
+- Curated product knowledge: [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md)
 
-**Deployment status:** repository configuration and branch-level automated checks are available, but production deployment, Vercel dashboard variables, custom-domain ownership, live Groq model availability, real ad impressions, and the status of the old Netlify site must be verified independently. Do not treat a passing source-code test as proof of a successful production deployment.
+The browser sends the current chat history with each request. The server does not persist conversation history or long-term memory in this version. Refreshing or ending the page session loses the in-page conversation. The required server-side secret is `GROQ_API_KEY`; never expose it in browser code or commit it.
 
-**Environment variables:** copy the variable names from [`.env.example`](.env.example) and set values only in the Vercel project settings. Never commit real credentials. `SUPABASE_ANON_KEY` is intended for browser authentication configuration; `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, and payment credentials must remain server-side.
+The advertising integration is not yet proof of a verified publisher account, live impressions, or revenue. Verify the public deployment and test chat, mobile layout, consent choices, provider failures, and basic abuse controls before registering the production URL with ad providers.
