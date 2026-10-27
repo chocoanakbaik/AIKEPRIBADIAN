@@ -1807,7 +1807,7 @@ Pipeline ini merupakan salah satu mekanisme utama untuk mengembangkan AIKEPRIBAD
 
 The Vercel migration work is maintained on branch `feat/vercel-migration-choco-ai`. The branch is a review target; it is not proof of a successful production migration.
 
-- **Deployment:** See [docs/deployment-vercel.md](docs/deployment-vercel.md) for the Vercel route, required environment variables, preview deployment steps, and current constraints.
+- **Deployment:** See [docs/deployment-vercel.md](docs/deployment-vercel.md) for the Vercel routes (`/api/tanya-ai`, `/api/supabase-config`, and `/api/memory`), required environment variables, preview deployment steps, and current constraints.
 - **TCS product knowledge:** See [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md). The chat endpoint retrieves curated, customer-safe product summaries from `data/knowledge/tcs-products.mjs`; private READMEGPT files are not copied into the model context.
 - **Ad configuration:** See [docs/ad-rotation.md](docs/ad-rotation.md). The native banner loader is retained, empty banner placeholders are hidden, and the old smartlink/social-bar/popunder activation path is disabled. Monetizer and four additional provider slots remain inactive until their real integration details are available.
 - **Smoke tests:** Run `node --test tests/vercel-api.test.mjs` with Node.js 20 or newer. The GitHub Actions workflow on the migration branch runs the same command.
