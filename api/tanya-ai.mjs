@@ -134,7 +134,9 @@ export default async (request) => {
     const groqKey = process.env.GROQ_API_KEY;
     if (!groqKey) return respond(503, { error: "GROQ_API_KEY belum dikonfigurasi di Vercel." });
     const productContext = buildProductContext(message);
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    let groqResponse;
+    try {
+      groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: "Bearer " + groqKey, "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -163,11 +165,16 @@ export default async (request) => {
         ],
         temperature: 0.7,
         max_tokens: 1200
-      })
-    });
+      }),
+      signal: AbortSignal.timeout(25000)
+      });
+    } catch {
+      console.error("Groq request failed or timed out.");
+      return respond(502, { error: "Layanan AI sedang tidak tersedia. Coba lagi nanti." });
+    }
     const groqData = await groqResponse.json().catch(() => ({}));
     if (!groqResponse.ok) {
-      console.error("Groq API error:", groqResponse.status, groqData?.error?.message || "provider error");
+      console.error("Groq API returned non-success status:", groqResponse.status);
       return respond(502, { error: "Layanan AI sedang tidak tersedia. Coba lagi nanti." });
     }
     const reply = groqData.choices?.[0]?.message?.content?.trim();
