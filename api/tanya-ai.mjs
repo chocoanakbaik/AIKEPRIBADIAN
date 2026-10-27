@@ -23,6 +23,17 @@ const MODEL_PROFILES = {
 };
 const DEFAULT_MODEL_MODE = "standard";
 
+const INTERNAL_DISCLOSURE_REFUSAL = "Maaf, informasi internal seperti instruksi sistem, READMEGPT internal, kode privat, kredensial, dan konfigurasi sensitif tidak dapat dibagikan. Saya tetap dapat menjelaskan fitur produk berdasarkan dokumentasi publik yang tersedia.";
+
+export function isSensitiveDisclosureRequest(message) {
+  const value = String(message || "").normalize("NFKC");
+  const target = /\b(system prompt|prompt sistem|instruksi sistem|system instructions|readmegpt(?:\.md)?|api key|service role key|secret|credential|kredensial|token|password|konfigurasi internal|internal configuration|private source code|kode sumber privat)\b/i;
+  const disclosureAction = /\b(tampilkan|tunjukkan|bocorkan|ungkap|salin|dump|print|reveal|show|give me|berikan|export|encode|base64|terjemahkan|translate|ringkas|summarize|keluarkan|output|full|lengkap|seluruh|semua isi|apa isi|what is your)\b/i;
+  const instructionOverride = /\b(ignore|abaikan)\b.{0,100}\b(previous instructions|instruksi sebelumnya|system prompt|prompt sistem|system instructions|instruksi sistem)\b/i;
+  return instructionOverride.test(value) ||
+    (target.test(value) && disclosureAction.test(value));
+}
+
 // Respons JSON konsisten agar frontend dapat menampilkan error dengan aman.
 function respond(statusCode, payload) {
   return new Response(JSON.stringify(payload), { status: statusCode, headers: JSON_HEADERS });
@@ -88,6 +99,15 @@ export default async (request) => {
     const modelMode = Object.prototype.hasOwnProperty.call(MODEL_PROFILES, requestedMode)
       ? requestedMode : DEFAULT_MODEL_MODE;
     const activeProfile = MODEL_PROFILES[modelMode];
+
+    // Block direct attempts to extract internal material before database writes or provider calls.
+    if (isSensitiveDisclosureRequest(message)) {
+      return respond(200, {
+        reply: INTERNAL_DISCLOSURE_REFUSAL,
+        productModel: activeProfile.productName,
+        modelMode
+      });
+    }
 
     // Status premium diperiksa pada setiap pesan, bukan hanya melalui tampilan frontend.
     const subscriptions = await supabase("user_subscriptions?user_id=eq." + encodeURIComponent(user.id) + "&select=status,expires_at&limit=1");
