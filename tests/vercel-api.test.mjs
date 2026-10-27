@@ -12,7 +12,8 @@ test("chat frontend and endpoint do not require login or Supabase", () => {
   assert.doesNotMatch(source, /user_subscriptions|chat_history/);
   assert.equal(existsSync(new URL("../public/auth.js", import.meta.url)), false);
   const html = readFileSync(fileURLToPath(new URL("../public/index.html", import.meta.url)), "utf8");
-  assert.doesNotMatch(html, /supabase-js@|src="\/auth\.js"|accountLoginButton|chocoGetAccessToken|chocoSupabaseReady/);
+  assert.doesNotMatch(html, /supabase-js@|src="\/auth\.js"|accountLoginButton|chocoGetAccessToken|chocoSupabaseReady|chocoGetMemories/);
+  assert.equal(existsSync(new URL("../api/payment-webhook.js", import.meta.url)), false);
 });
 
 test("chat endpoint rejects methods other than POST", async () => {
