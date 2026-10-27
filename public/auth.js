@@ -33,7 +33,7 @@
 
   async function init() {
     try {
-      const response = await fetch("/.netlify/functions/supabase-config", { cache: "no-store" });
+      const response = await fetch("/api/supabase-config", { cache: "no-store" });
       const config = await response.json();
       if (!response.ok) throw new Error(config.error || "Konfigurasi Supabase gagal dimuat.");
       if (!window.supabase?.createClient) throw new Error("Library Supabase gagal dimuat.");
@@ -193,7 +193,7 @@
     try {
       const { data, error } = await db.auth.getSession();
       if (error || !data.session?.access_token || currentUser?.id !== userId) return;
-      const response = await fetch("/.netlify/functions/memory", {
+      const response = await fetch("/api/memory", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + data.session.access_token },
         body: JSON.stringify({ userMessage, assistantMessage })
