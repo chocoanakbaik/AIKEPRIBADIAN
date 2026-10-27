@@ -888,36 +888,28 @@ AI model digunakan untuk generation/reasoning.
 ---
 # 26. Proposed Technology Direction
 
-Teknologi dapat berubah selama pengembangan, tetapi infrastruktur aktif saat ini mengikuti pilihan Choco.
-
-Target saat ini:
+Teknologi harus mengikuti implementasi yang benar-benar ada. Untuk tahap migrasi yang ditinjau pada branch `feat/vercel-migration-choco-ai`, target hosting aplikasi web adalah Vercel. Branch ini belum membuktikan bahwa deployment produksi telah dilakukan.
 
 ```text
-Source Code + AI Development Collaboration:
+Source Code + Development:
 GitHub
 
-Application Hosting / Runtime:
-Hugging Face Spaces
+Static Frontend:
+public/ served by Vercel
 
-Frontend:
-Admin Panel + Chat Interface, sesuai implementasi aktual
+Serverless Chat Endpoint:
+api/tanya-ai.mjs
 
-Backend:
-Python / compatible backend, sesuai implementasi aktual
+AI Inference:
+Groq API
 
-AI:
-Replaceable model adapter; gunakan model yang benar-benar tersedia dan dikonfigurasi
-
-Database / Persistent Storage:
-Belum menetapkan provider database eksternal. Pilihan penyimpanan harus mengikuti kode aktual dan batas persistence Hugging Face Spaces.
-
-Authentication:
-Secure admin authentication
+Authentication + Chat History + Subscription:
+Supabase, as required by the current tanya-ai endpoint
 ```
 
-Render dan Supabase bukan bagian dari infrastruktur aktif saat ini. Jangan menambahkan layanan tersebut kembali tanpa keputusan baru dari Choco.
+Catatan penting: dokumentasi lama yang menyebut Hugging Face Spaces menggambarkan arah deployment sebelumnya. Implementasi web saat ini memiliki endpoint Node.js yang memerlukan Vercel-compatible runtime. Backend chat yang ada juga bergantung pada Supabase; jangan mengklaim Supabase tidak digunakan tanpa mengganti dan menguji autentikasi, riwayat, serta langganan terlebih dahulu.
 
-Pemilihan teknologi harus mempertimbangkan biaya, resource requirements, performance, privacy, maintainability, deployment compatibility, persistence, dan keberlanjutan jangka panjang.
+Jangan menambahkan Render atau database/provider lain tanpa kebutuhan teknis dan keputusan yang jelas.
 
 # 27. Zero-Cost Goal
 
@@ -1678,83 +1670,48 @@ And continuously improves its representation of Choco
 ---
 # 51. Current Deployment Reference for Other AI Agents
 
-Bagian ini adalah acuan deployment untuk AI lain yang ikut mengembangkan AIKEPRIBADIAN. Gunakan kondisi aktual berikut sebagai dasar kerja.
+Bagian ini mencatat target migrasi web yang sedang ditinjau. Ini bukan pernyataan bahwa produksi sudah dipindahkan.
 
 ```text
-Source Code + AI Development Collaboration:
+Source Code:
 GitHub
 
-Application / Server Hosting:
-Hugging Face Spaces
+Web Hosting Target:
+Vercel
 
-Database Provider:
-Belum ditetapkan sebagai layanan eksternal
+Static Frontend:
+public/
 
-Frontend / Backend:
-Ikuti struktur dan implementasi aktual dalam repository dan Space
+Serverless Chat Endpoint:
+api/tanya-ai.mjs
+
+AI Provider:
+Groq
+
+Authentication / Subscription / Chat History:
+Supabase (required by current backend implementation)
 
 Secrets:
-Jangan commit token, password, atau secret ke repository. Gunakan mekanisme secrets platform bila diperlukan.
+Environment variables on the hosting platform; never commit secrets.
 ```
 
-Pembagian tanggung jawab:
+Route frontend menggunakan `/api/tanya-ai`. Konfigurasi `vercel.json` menetapkan direktori output statis dan header keamanan dasar. File `netlify/functions/tanya-ai.js` dipertahankan sebagai implementasi sumber/historis untuk perbandingan; endpoint aktif pada target Vercel adalah `api/tanya-ai.mjs`.
 
-```text
-GitHub
-→ Source code, version control, dan kolaborasi AI development
+Status deployment produksi, domain custom, serta nilai environment variables harus diverifikasi melalui dashboard platform dan tidak boleh diasumsikan dari repository.
 
-Hugging Face Spaces
-→ Application / server runtime yang dipilih saat ini
-
-AI Model
-→ Generation + reasoning, sesuai model yang benar-benar dikonfigurasi
-
-AIKEPRIBADIAN application
-→ Identity + Personality + Memory + Behavior +
-  Knowledge + Relationships + Context + Corrections
-```
-
-**Render dan Supabase tidak digunakan untuk deployment saat ini.** Jangan menambahkan kembali Render, Supabase, atau layanan eksternal lain tanpa keputusan baru dari Choco.
-
-Jangan mengasumsikan bahwa penyimpanan runtime Hugging Face otomatis persisten. Verifikasi konfigurasi Space dan kode aktual sebelum menyatakan memory atau database tersimpan permanen.
-
-Data personal tidak boleh dikirim ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, jelaskan kebutuhan, data yang dikirim, alasan, dampak keamanan dan privasi, biaya, serta alternatifnya terlebih dahulu.
 # 52. Infrastructure Change Policy
 
-Infrastruktur merupakan bagian dari arsitektur proyek dan tidak boleh berubah secara diam-diam.
+Infrastruktur tidak boleh berubah diam-diam. Migrasi hosting web ke Vercel sedang dipersiapkan dan ditinjau pada branch terpisah; branch ini tidak sama dengan deployment produksi.
 
-Infrastruktur aktif saat ini:
+- GitHub: source code dan version control.
+- Vercel: target hosting web dan serverless endpoint pada migrasi ini.
+- Groq: inference provider sesuai konfigurasi backend.
+- Supabase: masih diperlukan oleh endpoint chat saat ini untuk autentikasi, data langganan, dan riwayat percakapan.
+- Netlify: fungsi lama dipertahankan sebagai referensi selama migrasi; jangan menganggap situs lama telah dihapus atau tidak aktif.
 
-* GitHub untuk source code dan kolaborasi pengembangan AI
-* Hugging Face Spaces untuk aplikasi/server yang dipublikasikan
+Setiap perubahan pada hosting, database, AI provider, autentikasi, storage, atau deployment architecture harus dicatat, diuji, dan dibedakan antara target konfigurasi dan kondisi produksi yang sudah diverifikasi.
 
-Render dan Supabase saat ini tidak digunakan. Perubahan terhadap platform hosting, database, AI provider, authentication, storage, atau deployment architecture harus mendapat keputusan Choco dan dicatat di dokumentasi.
-
-Urutan perubahan:
-
-```text
-Identify Need
-      ↓
-Document Reason
-      ↓
-Analyze Impact
-      ↓
-Check Cost
-      ↓
-Check Privacy
-      ↓
-Check Security
-      ↓
-Check Compatibility
-      ↓
-Implement
-      ↓
-Test
-      ↓
-Document
-```
-
-Jangan menyamakan layanan gratis dengan resource tanpa batas. Verifikasi batas penggunaan, persistence, dan ketentuan platform ketika deployment dilakukan.
+Jangan menyamakan layanan gratis dengan resource tanpa batas. Verifikasi persistence, limits, environment variables, dan status deployment sebelum menyatakan migrasi selesai.
 
 # 53. Historical Conversation Corpus and Choco Modeling
 
