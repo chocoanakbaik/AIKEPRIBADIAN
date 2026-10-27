@@ -1189,17 +1189,16 @@
       <div class="sidebar-bottom">
         <div class="account-menu-wrap">
           <button class="profile account-trigger" id="accountMenuButton" type="button" aria-expanded="false" aria-controls="accountMenu">
-            <span class="profile-avatar" id="profileAvatar">?</span>
+            <span class="profile-avatar" id="profileAvatar">G</span>
             <span class="profile-copy">
-              <span class="profile-name" id="profileName">Belum login</span>
-              <span class="profile-sub" id="profileSub">Akun pengguna</span>
+              <span class="profile-name" id="profileName">Pengunjung</span>
+              <span class="profile-sub" id="profileSub">Mode gratis · didukung iklan</span>
             </span>
             <span class="account-chevron" aria-hidden="true">⌃</span>
           </button>
           <div class="account-menu" id="accountMenu" hidden>
             <button type="button" class="account-menu-item" id="accountSettingsButton"><span>⚙</span> Pengaturan</button>
             <button type="button" class="account-menu-item" id="accountPersonalityButton"><span>✦</span> Personalisasi</button>
-            <button type="button" class="account-menu-item" id="accountLoginButton"><span>↗</span> Login / akun</button>
           </div>
         </div>
       </div>
@@ -1396,8 +1395,6 @@
   <div class="toast" id="toast" role="status"></div>
   <div class="login-notice" id="loginNotice" role="status" aria-live="polite"><strong>✦ Choco AI masih berkembang</strong>Identitas, pengetahuan, dan kemampuan Choco AI akan terus dikembangkan. Jawaban yang belum diketahui sebaiknya tidak ditebak.</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/auth.js" defer></script>
   <script>
     const form = document.getElementById("form");
     const input = document.getElementById("message");
@@ -1438,7 +1435,6 @@
     document.addEventListener("click", event => { if (!event.target.closest(".account-menu-wrap")) { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); } });
     document.getElementById("accountSettingsButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("settings"); });
     document.getElementById("accountPersonalityButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("personality"); });
-    document.getElementById("accountLoginButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); document.getElementById("authLogin")?.click(); });
     document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => button.closest(".modal-backdrop").hidden = true));
     document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", event => { if (event.target === backdrop) backdrop.hidden = true; }));
     document.getElementById("saveSettings").addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; });
@@ -1689,17 +1685,9 @@
       const waiting = addMessage("", "assistant", { typing: true });
 
       try {
-        // Tunggu pemulihan sesi dan pemuatan memori agar pesan pertama setelah refresh
-        // tidak terkirim sebelum akun siap dan kehilangan konteks tersimpan.
-        if (window.chocoSupabaseReady) await window.chocoSupabaseReady;
-        const accessToken = typeof window.chocoGetAccessToken === "function"
-          ? await window.chocoGetAccessToken()
-          : null;
-        const requestHeaders = { "Content-Type": "application/json" };
-        if (accessToken) requestHeaders.Authorization = "Bearer " + accessToken;
         const response = await fetch("/api/tanya-ai", {
           method: "POST",
-          headers: requestHeaders,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message,
             history,
@@ -1728,13 +1716,6 @@
           return;
         }
 
-        // Notifikasi langganan kedaluwarsa berasal dari hasil validasi backend.
-        if (data.subscriptionExpired === true) {
-          const expiryNotice = "Masa aktif Choco AI Premium lu sudah habis. Akun otomatis kembali ke paket Free.";
-          if (typeof window.showToast === "function") window.showToast(expiryNotice);
-          else window.alert(expiryNotice);
-        }
-
         const reply = typeof data.reply === "string"
           ? data.reply
           : "";
@@ -1755,13 +1736,7 @@
           { role: "assistant", content: reply }
         );
 
-        const savedPair = { userMessage: message, assistantMessage: reply, title: conversationTitle || message };
-        if (window.chocoIsAuthenticated?.() && typeof window.chocoSaveMessagePair === "function") {
-          await window.chocoSaveMessagePair(savedPair);
-        } else {
-          window.dispatchEvent(new CustomEvent("choco:save-message-pair", { detail: savedPair }));
-        }
-
+        // Riwayat percakapan hanya berada di memori halaman ini.
         // Batasi riwayat di browser agar request tidak membengkak.
         if (history.length > 40) {
           history.splice(0, history.length - 40);
@@ -1783,91 +1758,20 @@
       }
     });
 
-    // ===== Riwayat obrolan dari akun (Supabase) =====
-    let chocoUser = null;
-
+    // Mode pengunjung: tidak ada akun, database, atau riwayat lintas sesi.
+    document.getElementById("profileName").textContent = "Pengunjung";
+    document.getElementById("profileSub").textContent = "Mode gratis · didukung iklan";
+    document.getElementById("profileAvatar").textContent = "G";
     function showEmptyRecent() {
       recentList.replaceChildren();
       const empty = document.createElement("div");
       empty.className = "recent-item";
       empty.style.color = "#737f99";
-      empty.textContent = "Belum ada obrolan";
+      empty.textContent = "Riwayat hanya selama sesi ini";
       recentList.appendChild(empty);
     }
+    showEmptyRecent();
 
-    async function refreshConversationList() {
-      if (!chocoUser || typeof window.chocoListConversations !== "function") return;
-      const items = await window.chocoListConversations();
-      if (!chocoUser) return;
-      if (items === null) { showEmptyRecent(); return null; }
-      if (!items.length) { showEmptyRecent(); return []; }
-      recentList.replaceChildren();
-      for (const conversation of items) {
-        const item = document.createElement("div");
-        item.className = "recent-item";
-        item.textContent = conversation.title || "Percakapan baru";
-        item.title = item.textContent;
-        item.addEventListener("click", () => openSavedConversation(conversation.id, conversation.title));
-        recentList.appendChild(item);
-      }
-      return items;
-    }
-
-    async function openSavedConversation(id, title) {
-      if (busy) { showToast("Tunggu sampai jawaban selesai dulu."); return; }
-      if (typeof window.chocoOpenConversation !== "function") return;
-      const rows = await window.chocoOpenConversation(id);
-      if (!rows) { showToast("Percakapan gagal dibuka."); return; }
-      history = rows.map(row => ({ role: row.role, content: row.content })).slice(-40);
-      conversationTitle = String(title || "").slice(0, 36);
-      conversationStarted = true;
-      messages.replaceChildren();
-      welcome.style.display = "none";
-      rows.forEach(row => addMessage(row.content, row.role));
-      closeSidebar();
-      scrollToBottom();
-    }
-
-    let loginNoticeTimer = null;
-    let restoredUserId = null;
-    window.addEventListener("choco:auth-changed", async event => {
-      const detail = event.detail || {};
-      chocoUser = detail.user || null;
-      if (!chocoUser) restoredUserId = null;
-      const profileName = document.getElementById("profileName");
-      const profileSub = document.getElementById("profileSub");
-      const profileAvatar = document.getElementById("profileAvatar");
-      if (chocoUser) {
-        const metadata = chocoUser.user_metadata || {};
-        const displayName = metadata.full_name || metadata.name || (chocoUser.email ? chocoUser.email.split("@")[0] : "Pengguna");
-        profileName.textContent = displayName;
-        profileName.title = displayName;
-        profileSub.textContent = chocoUser.email || "Akun tersinkron";
-        profileSub.title = profileSub.textContent;
-        profileAvatar.textContent = Array.from(displayName.trim())[0]?.toUpperCase() || "U";
-        if (detail.eventType === "SIGNED_IN") {
-          const notice = document.getElementById("loginNotice");
-          notice.classList.add("show");
-          clearTimeout(loginNoticeTimer);
-          loginNoticeTimer = setTimeout(() => notice.classList.remove("show"), 10000);
-        }
-        const userId = chocoUser.id;
-        const conversations = await refreshConversationList();
-        if (conversations?.length && restoredUserId !== userId && chocoUser?.id === userId) {
-          restoredUserId = userId;
-          await openSavedConversation(conversations[0].id, conversations[0].title);
-        }
-      } else {
-        profileName.textContent = "Belum login";
-        profileName.title = "";
-        profileSub.textContent = "Akun pengguna";
-        profileSub.title = "";
-        profileAvatar.textContent = "?";
-        showEmptyRecent();
-      }
-    });
-    window.addEventListener("choco:conversations-changed", refreshConversationList);
-    window.addEventListener("choco:new-chat", () => setTimeout(refreshConversationList, 0));
   </script>
 
   <!-- Popunder tidak memiliki slot visual: skripnya membuka tab/jendela terpisah. -->
