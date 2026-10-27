@@ -1348,13 +1348,17 @@
               adScript.onerror = function () { nativeAdSlot.hidden = true; };
               nativeAdContainer.before(adScript);
               const observer = new MutationObserver(() => {
-                if (nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim()) nativeAdSlot.hidden = false;
+                const hasAdContent = nativeAdContainer.childNodes.length > 0 || nativeAdContainer.textContent.trim();
+                if (hasAdContent) {
+                  nativeAdSlot.dataset.chocoAdReady = "true";
+                  if (window.chocoActiveAdProvider === "adsterra") nativeAdSlot.hidden = false;
+                }
               });
               observer.observe(nativeAdContainer, { childList: true, subtree: true, characterData: true });
             };
           </script>
         </div>
-        <div class="all-sizes-ad-slot ad-placement" id="allSizesAdPlacement">
+        <div class="all-sizes-ad-slot ad-placement" id="allSizesAdPlacement" hidden>
           <div class="native-ad-label">IKLAN · BANNER RESPONSIF</div>
           <div class="all-sizes-ad-placeholder">Ruang banner responsif<br><span>Menunggu kode unit iklan</span></div>
         </div>
@@ -1894,6 +1898,7 @@
       </div>
     </div>
   </section>
+  <script src="/ad-rotation.js"></script>
   <script>
     (function () {
       const key = "choco_site_preferences_v1";
@@ -1909,40 +1914,10 @@
       let adsAllowed = false;
       let socialBarTimer = null;
 
-      function loadSocialBarOnce() {
-        if (!adsAllowed || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) return;
-        try {
-          if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
-        } catch (error) {}
-        if (socialBarTimer) clearTimeout(socialBarTimer);
-        // Delay the floating format so it does not compete with the initial page load.
-        socialBarTimer = setTimeout(() => {
-          if (!adsAllowed || document.visibilityState === "hidden" || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) {
-            socialBarTimer = null;
-            return;
-          }
-          let alreadyLoaded = false;
-          try {
-            alreadyLoaded = sessionStorage.getItem("choco_socialbar_loaded_session") === "true";
-          } catch (error) {}
-          if (alreadyLoaded) return;
-          const script = document.createElement("script");
-          script.dataset.cfasync = "false";
-          script.async = true;
-          script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
-          script.onerror = () => script.remove();
-          document.head.appendChild(script);
-          if (socialAdPlacement) socialAdPlacement.hidden = false;
-          try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
-        }, 15000);
-      }
-
       function loadAds() {
         adsAllowed = true;
-        if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
-        if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
-        if (typeof window.loadChocoPopunder === "function") window.loadChocoPopunder();
-        loadSocialBarOnce();
+        if (typeof window.startChocoAdRotation === "function") window.startChocoAdRotation();
+        else if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
       }
 
       function saveChoice(allowed) {
