@@ -1691,7 +1691,6 @@
           body: JSON.stringify({
             message,
             history,
-            memories: typeof window.chocoGetMemories === "function" ? window.chocoGetMemories() : [],
             preferences,
             modelMode
           })
