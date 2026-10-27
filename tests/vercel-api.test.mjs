@@ -39,5 +39,6 @@ test("product retrieval distinguishes unverified concepts from confirmed artifac
   const context = buildProductContext("TCS Business Document Kit");
   assert.match(context, /belum terverifikasi/i);
   assert.match(context, /Sumber publik:/);
+  assert.equal((context.match(/PRODUK:/g) || []).length, 1);
   assert.doesNotMatch(context, /INTERNAL GPT KNOWLEDGE FILE/);
 });
