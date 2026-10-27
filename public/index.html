@@ -1693,7 +1693,7 @@
           : null;
         const requestHeaders = { "Content-Type": "application/json" };
         if (accessToken) requestHeaders.Authorization = "Bearer " + accessToken;
-        const response = await fetch("/.netlify/functions/tanya-ai", {
+        const response = await fetch("/api/tanya-ai", {
           method: "POST",
           headers: requestHeaders,
           body: JSON.stringify({
