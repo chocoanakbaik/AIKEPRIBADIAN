@@ -1815,3 +1815,18 @@ The Vercel migration work is maintained on branch `feat/vercel-migration-choco-a
 Current backend environment variables include `GROQ_API_KEY`, optional model overrides (`GROQ_MODEL`, `GROQ_MODEL_TEXT`, `GROQ_MODEL_REASONING`, `GROQ_MODEL_VISION`), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and optional `CHOCO_ALLOWED_ORIGIN`. Configure secret values in the hosting dashboard, never in source code.
 
 Do not mark production migration complete until the Vercel Preview is tested against real configuration, including login, chat, persistent history, subscription expiry, provider failures, mobile UI, and the ad-consent flow.
+
+
+---
+
+## Web deployment and migration status
+
+Choco AI's browser application can be reviewed on Vercel using the serverless routes in `api/`. The legacy `netlify/functions/` sources remain in this repository for comparison during migration; their presence does not mean Vercel's core chat route depends on Netlify.
+
+- Deployment and environment-variable instructions: [docs/deployment-vercel.md](docs/deployment-vercel.md)
+- Ad provider activation and consent behavior: [docs/ad-rotation.md](docs/ad-rotation.md)
+- Curated TCS product knowledge and verification boundaries: [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md)
+
+**Deployment status:** repository configuration and branch-level automated checks are available, but production deployment, Vercel dashboard variables, custom-domain ownership, live Groq model availability, real ad impressions, and the status of the old Netlify site must be verified independently. Do not treat a passing source-code test as proof of a successful production deployment.
+
+**Environment variables:** copy the variable names from [`.env.example`](.env.example) and set values only in the Vercel project settings. Never commit real credentials. `SUPABASE_ANON_KEY` is intended for browser authentication configuration; `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, and payment credentials must remain server-side.
