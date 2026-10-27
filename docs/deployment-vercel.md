@@ -8,7 +8,8 @@ Dokumen ini menjelaskan target konfigurasi pada branch migrasi. **Dokumen ini bu
 - Frontend mengirim chat ke `POST /api/tanya-ai`.
 - Frontend memuat konfigurasi publik Supabase melalui `GET /api/supabase-config`.
 - Pengambilan kandidat memori dilakukan melalui `POST /api/memory`.
-- Endpoint serverless berada di `api/tanya-ai.mjs`, `api/supabase-config.mjs`, dan `api/memory.mjs`.
+- Endpoint serverless berada di `api/tanya-ai.mjs`, `api/supabase-config.mjs`, dan `api/memory.mjs`; wrapper `.js` lama untuk tiga path tersebut dihapus agar tidak ada dua handler yang bersaing pada URL yang sama.
+- Webhook pembayaran tetap berada di `api/payment-webhook.js`.
 - Endpoint memanggil Groq dari server, bukan browser.
 - Endpoint saat ini menggunakan Supabase untuk memverifikasi sesi pengguna, membaca status langganan, dan menyimpan riwayat chat.
 - File fungsi lama di `netlify/functions/` dipertahankan untuk perbandingan selama transisi; endpoint frontend Vercel tidak lagi diarahkan melalui rewrite Netlify. File konfigurasi deployment `netlify.toml` dihapus dari branch migrasi agar konfigurasi target tidak lagi mengarahkan build ke Netlify. Ini tidak menghapus situs atau deployment Netlify lama.
@@ -38,11 +39,12 @@ Nama model fallback yang ada di source code adalah `openai/gpt-oss-20b`, `openai
 1. Impor repository `chocoanakbaik/AIKEPRIBADIAN` ke Vercel dan pilih branch yang akan ditinjau.
 2. Pastikan Root Directory mengarah ke root repository, bukan subfolder.
 3. Pastikan output statis menggunakan `public/`; Vercel mendeteksi fungsi di `api/`.
-4. Tambahkan environment variables yang diperlukan pada environment Preview terlebih dahulu.
-5. Deploy Preview dari branch ini, bukan mengganti produksi secara manual.
-6. Uji halaman utama, login, chat, riwayat, status langganan, error provider, dan tampilan mobile.
-7. Periksa log function untuk error tanpa mencetak token atau isi percakapan.
-8. Jangan menganggap migrasi selesai sampai Preview benar-benar diuji dan konfigurasi production diverifikasi.
+4. Pastikan migration `20261022010000_chat_history_subscriptions.sql` sudah diterapkan ke proyek Supabase target. Migration tersebut menambahkan `chat_history`, `user_subscriptions`, `payment_events`, trigger paket Free, dan RPC aktivasi Premium yang dibutuhkan backend.
+5. Tambahkan environment variables yang diperlukan pada environment Preview terlebih dahulu.
+6. Deploy Preview dari branch ini, bukan mengganti produksi secara manual.
+7. Uji halaman utama, login email/OTP, chat, riwayat lintas sesi, memori, status langganan, webhook pembayaran (gunakan sandbox), error provider, dan tampilan mobile.
+8. Periksa log function untuk error tanpa mencetak token atau isi percakapan.
+9. Jangan menganggap migrasi selesai sampai Preview benar-benar diuji dan konfigurasi production diverifikasi.
 
 ## Batasan yang diketahui
 
@@ -50,4 +52,5 @@ Nama model fallback yang ada di source code adalah `openai/gpt-oss-20b`, `openai
 - Endpoint masih menyimpan pesan pengguna sebelum inference. Jika Groq gagal, pesan pengguna dapat tersimpan tanpa balasan assistant.
 - Rate limit berbasis memori proses serverless tidak digunakan sebagai kontrol lintas-instance; jika rate limiting dibutuhkan, gunakan mekanisme terpusat yang sesuai dan diuji.
 - File `netlify/functions/tanya-ai.js` masih ada sebagai sumber historis. Jangan menghapusnya sampai perilaku endpoint Vercel telah dibandingkan dan disetujui.
+- Migration file baru berada di branch ini dan belum otomatis membuktikan bahwa skema telah diterapkan pada proyek Supabase yang sebenarnya. Workflow deployment database pada repository hanya berjalan otomatis untuk perubahan yang masuk ke `main` ketika secrets deployment tersedia.
 - Domain custom, environment variables dashboard, deployment production, dan status domain Netlify lama belum diverifikasi dari repository saja.
