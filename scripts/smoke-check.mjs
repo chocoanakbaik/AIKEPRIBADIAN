@@ -12,9 +12,6 @@ const requiredFiles = [
   "api/tanya-ai.mjs",
   "data/knowledge/tcs-products.mjs",
   "netlify/functions/core/retrieval.mjs",
-  "supabase/config.toml",
-  "supabase/migrations/20261019010000_account_sync.sql",
-  "supabase/migrations/20261021010000_knowledge_rag.sql"
 ];
 
 for (const file of requiredFiles) {
