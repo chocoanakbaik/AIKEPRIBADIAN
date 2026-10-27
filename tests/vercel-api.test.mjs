@@ -4,52 +4,51 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import handler, { isSensitiveDisclosureRequest } from "../api/tanya-ai.mjs";
-import supabaseConfigHandler from "../api/supabase-config.mjs";
-import memoryHandler from "../api/memory.mjs";
 import { buildProductContext } from "../data/knowledge/tcs-products.mjs";
 
-test("Vercel API paths do not have duplicate .js and .mjs handlers", () => {
-  for (const path of ["api/tanya-ai.js", "api/memory.js", "api/supabase-config.js"]) {
-    assert.equal(existsSync(new URL("../" + path, import.meta.url)), false, path + " conflicts with the native .mjs route");
-  }
-  for (const path of ["api/tanya-ai.mjs", "api/memory.mjs", "api/supabase-config.mjs", "api/payment-webhook.js"]) {
-    assert.equal(existsSync(new URL("../" + path, import.meta.url)), true, path + " must remain deployed");
-  }
-});
-
-test("Supabase migration includes all tables and RPC required by current chat/payment endpoints", () => {
-  const migration = readFileSync(fileURLToPath(new URL("../supabase/migrations/20261022010000_chat_history_subscriptions.sql", import.meta.url)), "utf8");
-  assert.match(migration, /create table if not exists public\.chat_history/i);
-  assert.match(migration, /create table if not exists public\.user_subscriptions/i);
-  assert.match(migration, /create table if not exists public\.payment_events/i);
-  assert.match(migration, /create or replace function public\.choco_activate_premium_payment/i);
-  assert.match(migration, /enable row level security/i);
-  assert.match(migration, /grant execute on function public\.choco_activate_premium_payment[\s\S]*to service_role/i);
+test("chat frontend and endpoint do not require login or Supabase", () => {
+  const source = readFileSync(fileURLToPath(new URL("../api/tanya-ai.mjs", import.meta.url)), "utf8");
+  assert.doesNotMatch(source, /SUPABASE_URL|SUPABASE_ANON_KEY|SUPABASE_SERVICE_ROLE_KEY|authenticate\(/);
+  assert.doesNotMatch(source, /user_subscriptions|chat_history/);
+  assert.equal(existsSync(new URL("../public/auth.js", import.meta.url)), false);
+  const html = readFileSync(fileURLToPath(new URL("../public/index.html", import.meta.url)), "utf8");
+  assert.doesNotMatch(html, /supabase-js@|src="\/auth\.js"|accountLoginButton|chocoGetAccessToken|chocoSupabaseReady/);
 });
 
 test("chat endpoint rejects methods other than POST", async () => {
-  const response = await handler(new Request("https://example.test/api/tanya-ai", {
-    method: "GET"
-  }));
+  const response = await handler(new Request("https://example.test/api/tanya-ai", { method: "GET" }));
   assert.equal(response.status, 405);
-  assert.match((await response.json()).error, /Metode tidak diizinkan/i);
 });
 
 test("chat endpoint handles preflight without requiring credentials", async () => {
-  const response = await handler(new Request("https://example.test/api/tanya-ai", {
-    method: "OPTIONS"
-  }));
+  const response = await handler(new Request("https://example.test/api/tanya-ai", { method: "OPTIONS" }));
   assert.equal(response.status, 204);
 });
 
-test("chat endpoint does not accept unauthenticated requests", async () => {
+test("chat endpoint does not require login or Supabase configuration", async () => {
+  const names = ["GROQ_API_KEY", "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"];
+  const old = Object.fromEntries(names.map(name => [name, process.env[name]]));
+  try {
+    for (const name of names) delete process.env[name];
+    const response = await handler(new Request("https://example.test/api/tanya-ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-forwarded-for": "192.0.2.20" },
+      body: JSON.stringify({ message: "Hai" })
+    }));
+    assert.equal(response.status, 503);
+    assert.doesNotMatch((await response.json()).error, /login|supabase/i);
+  } finally {
+    for (const name of names) old[name] === undefined ? delete process.env[name] : process.env[name] = old[name];
+  }
+});
+
+test("chat endpoint validates message payload before calling the AI provider", async () => {
   const response = await handler(new Request("https://example.test/api/tanya-ai", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: "test" })
+    headers: { "Content-Type": "application/json", "x-forwarded-for": "192.0.2.21" },
+    body: JSON.stringify({ message: "" })
   }));
-  assert.equal(response.status, 401);
-  assert.match((await response.json()).error, /Login dulu/i);
+  assert.equal(response.status, 400);
 });
 
 test("product retrieval returns all ten products for a broad TCS query", () => {
@@ -70,22 +69,9 @@ test("product retrieval distinguishes unverified concepts from confirmed artifac
 test("ad rotation waits for consent and does not expose an empty slot", () => {
   const slot = { hidden: true, dataset: {} };
   let loadCount = 0;
-  const fakeWindow = {
-    loadChocoNativeAd() { loadCount += 1; }
-  };
-  const fakeDocument = {
-    visibilityState: "visible",
-    addEventListener() {},
-    getElementById(id) { return id === "nativeAdPlacement" ? slot : null; }
-  };
-  const context = {
-    window: fakeWindow,
-    document: fakeDocument,
-    localStorage: { getItem() { return JSON.stringify({ adsAllowed: true }); } },
-    setTimeout() { throw new Error("A single active provider should not create a rotation timer"); },
-    clearTimeout() {},
-    JSON
-  };
+  const fakeWindow = { loadChocoNativeAd() { loadCount += 1; } };
+  const fakeDocument = { visibilityState: "visible", addEventListener() {}, getElementById(id) { return id === "nativeAdPlacement" ? slot : null; } };
+  const context = { window: fakeWindow, document: fakeDocument, localStorage: { getItem() { return JSON.stringify({ adsAllowed: true }); } }, setTimeout() { throw new Error("A single active provider should not create a rotation timer"); }, clearTimeout() {}, JSON };
   const script = readFileSync(fileURLToPath(new URL("../public/ad-rotation.js", import.meta.url)), "utf8");
   vm.runInNewContext(script, context);
   assert.equal(fakeWindow.chocoActiveAdProvider, "adsterra");
@@ -95,14 +81,7 @@ test("ad rotation waits for consent and does not expose an empty slot", () => {
 
 test("ad rotation does not load ads without consent", () => {
   let loadCount = 0;
-  const context = {
-    window: { loadChocoNativeAd() { loadCount += 1; } },
-    document: { visibilityState: "visible", addEventListener() {}, getElementById() { return { hidden: true, dataset: {} }; } },
-    localStorage: { getItem() { return JSON.stringify({ adsAllowed: false }); } },
-    setTimeout() { throw new Error("No timer should start without consent"); },
-    clearTimeout() {},
-    JSON
-  };
+  const context = { window: { loadChocoNativeAd() { loadCount += 1; } }, document: { visibilityState: "visible", addEventListener() {}, getElementById() { return { hidden: true, dataset: {} }; } }, localStorage: { getItem() { return JSON.stringify({ adsAllowed: false }); } }, setTimeout() { throw new Error("No timer should start without consent"); }, clearTimeout() {}, JSON };
   const script = readFileSync(fileURLToPath(new URL("../public/ad-rotation.js", import.meta.url)), "utf8");
   vm.runInNewContext(script, context);
   assert.equal(loadCount, 0);
@@ -117,18 +96,4 @@ test("server-side disclosure guard blocks common extraction attempts without blo
   assert.equal(isSensitiveDisclosureRequest("Bagaimana cara melindungi API key dari frontend?"), false);
   assert.equal(isSensitiveDisclosureRequest("Apa itu API key?"), false);
   assert.equal(isSensitiveDisclosureRequest("Jelaskan apa itu prompt injection"), false);
-});
-
-test("Supabase config endpoint rejects methods other than GET", async () => {
-  const response = await supabaseConfigHandler(new Request("https://example.test/api/supabase-config", {
-    method: "POST"
-  }));
-  assert.equal(response.status, 405);
-});
-
-test("memory endpoint rejects methods other than POST", async () => {
-  const response = await memoryHandler(new Request("https://example.test/api/memory", {
-    method: "GET"
-  }));
-  assert.equal(response.status, 405);
 });
