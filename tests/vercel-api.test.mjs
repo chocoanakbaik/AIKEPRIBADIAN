@@ -1,12 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import handler, { isSensitiveDisclosureRequest } from "../api/tanya-ai.mjs";
 import supabaseConfigHandler from "../api/supabase-config.mjs";
 import memoryHandler from "../api/memory.mjs";
 import { buildProductContext } from "../data/knowledge/tcs-products.mjs";
+
+test("Vercel API paths do not have duplicate .js and .mjs handlers", () => {
+  for (const path of ["api/tanya-ai.js", "api/memory.js", "api/supabase-config.js"]) {
+    assert.equal(existsSync(new URL("../" + path, import.meta.url)), false, path + " conflicts with the native .mjs route");
+  }
+  for (const path of ["api/tanya-ai.mjs", "api/memory.mjs", "api/supabase-config.mjs", "api/payment-webhook.js"]) {
+    assert.equal(existsSync(new URL("../" + path, import.meta.url)), true, path + " must remain deployed");
+  }
+});
+
+test("Supabase migration includes all tables and RPC required by current chat/payment endpoints", () => {
+  const migration = readFileSync(fileURLToPath(new URL("../supabase/migrations/20261022010000_chat_history_subscriptions.sql", import.meta.url)), "utf8");
+  assert.match(migration, /create table if not exists public\.chat_history/i);
+  assert.match(migration, /create table if not exists public\.user_subscriptions/i);
+  assert.match(migration, /create table if not exists public\.payment_events/i);
+  assert.match(migration, /create or replace function public\.choco_activate_premium_payment/i);
+  assert.match(migration, /enable row level security/i);
+  assert.match(migration, /grant execute on function public\.choco_activate_premium_payment[\s\S]*to service_role/i);
+});
 
 test("chat endpoint rejects methods other than POST", async () => {
   const response = await handler(new Request("https://example.test/api/tanya-ai", {
