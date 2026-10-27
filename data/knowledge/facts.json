@@ -2,15 +2,16 @@
   {
     "id": "project-stack",
     "title": "Arsitektur aplikasi Choco AI",
-    "content": "Frontend aplikasi berada di folder public. Endpoint percakapan berjalan melalui Netlify Functions di netlify/functions. Fungsi chat memanggil Groq API untuk inferensi dan dapat mengambil pengetahuan dari file JSON lokal serta Supabase.",
+    "content": "Frontend aplikasi web berada di folder public. Endpoint serverless berjalan melalui Vercel Functions di api/: tanya-ai.mjs untuk chat, supabase-config.mjs untuk konfigurasi publik Supabase, dan memory.mjs untuk ekstraksi memori. Chat memakai Groq API untuk inferensi. Supabase tetap digunakan untuk autentikasi, langganan, riwayat, dan data akun.",
     "category": "architecture",
     "source": "repository",
     "tags": [
-      "Netlify",
+      "Vercel",
       "Groq",
       "Supabase",
       "backend",
-      "frontend"
+      "frontend",
+      "serverless"
     ]
   },
   {
@@ -44,14 +45,15 @@
   {
     "id": "model-provider",
     "title": "Model dan penyedia inferensi",
-    "content": "Choco AI menggunakan Groq API untuk inferensi. Nama model dapat ditentukan melalui variabel lingkungan GROQ_MODEL; nilai fallback dalam fungsi chat saat ini adalah openai/gpt-oss-20b. Mengganti model API tidak sama dengan melatih model fondasi sendiri.",
+    "content": "Chat web Choco AI menggunakan Groq API untuk inferensi. Mode standard memakai GROQ_MODEL_TEXT lalu GROQ_MODEL sebagai override, dengan fallback kode openai/gpt-oss-20b; mode reasoning memakai GROQ_MODEL_REASONING dengan fallback kode openai/gpt-oss-120b; mode vision memakai GROQ_MODEL_VISION dengan fallback kode qwen/qwen3.8-27b. Ketersediaan model perlu diverifikasi pada provider. Mengganti model API tidak sama dengan melatih model fondasi sendiri.",
     "category": "model",
-    "source": "netlify/functions/chat.js",
+    "source": "api/tanya-ai.mjs",
     "tags": [
       "Groq",
       "model",
       "inference",
-      "GROQ_MODEL"
+      "GROQ_MODEL",
+      "Vercel"
     ]
   },
   {

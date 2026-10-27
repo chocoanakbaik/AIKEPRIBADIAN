@@ -888,36 +888,11 @@ AI model digunakan untuk generation/reasoning.
 ---
 # 26. Proposed Technology Direction
 
-Teknologi dapat berubah selama pengembangan, tetapi infrastruktur aktif saat ini mengikuti pilihan Choco.
+Versi web yang sedang disiapkan menggunakan Vercel untuk frontend dan endpoint serverless, dengan Groq sebagai provider inference.
 
-Target saat ini:
+**Keputusan produk saat ini:** Choco AI gratis untuk pengunjung, tanpa akun, tanpa paket berbayar, dan tanpa database percakapan server. Pendanaan direncanakan melalui iklan. Riwayat hanya tersedia dalam sesi halaman dan dikirim dari browser sebagai konteks chat. Ini bukan memori persisten atau sinkronisasi lintas perangkat.
 
-```text
-Source Code + AI Development Collaboration:
-GitHub
-
-Application Hosting / Runtime:
-Hugging Face Spaces
-
-Frontend:
-Admin Panel + Chat Interface, sesuai implementasi aktual
-
-Backend:
-Python / compatible backend, sesuai implementasi aktual
-
-AI:
-Replaceable model adapter; gunakan model yang benar-benar tersedia dan dikonfigurasi
-
-Database / Persistent Storage:
-Belum menetapkan provider database eksternal. Pilihan penyimpanan harus mengikuti kode aktual dan batas persistence Hugging Face Spaces.
-
-Authentication:
-Secure admin authentication
-```
-
-Render dan Supabase bukan bagian dari infrastruktur aktif saat ini. Jangan menambahkan layanan tersebut kembali tanpa keputusan baru dari Choco.
-
-Pemilihan teknologi harus mempertimbangkan biaya, resource requirements, performance, privacy, maintainability, deployment compatibility, persistence, dan keberlanjutan jangka panjang.
+Environment variable yang diperlukan untuk balasan AI adalah `GROQ_API_KEY`. Jangan commit nilainya ke repository. Konfigurasi domain, kunci provider, dan deployment harus diverifikasi dari dashboard; source code saja bukan bukti bahwa aplikasi publik sudah berfungsi.
 
 # 27. Zero-Cost Goal
 
@@ -1678,83 +1653,32 @@ And continuously improves its representation of Choco
 ---
 # 51. Current Deployment Reference for Other AI Agents
 
-Bagian ini adalah acuan deployment untuk AI lain yang ikut mengembangkan AIKEPRIBADIAN. Gunakan kondisi aktual berikut sebagai dasar kerja.
-
 ```text
-Source Code + AI Development Collaboration:
-GitHub
-
-Application / Server Hosting:
-Hugging Face Spaces
-
-Database Provider:
-Belum ditetapkan sebagai layanan eksternal
-
-Frontend / Backend:
-Ikuti struktur dan implementasi aktual dalam repository dan Space
-
-Secrets:
-Jangan commit token, password, atau secret ke repository. Gunakan mekanisme secrets platform bila diperlukan.
+Source Code: GitHub
+Web Hosting: Vercel
+Static Frontend: public/
+Chat Endpoint: api/tanya-ai.mjs
+AI Inference: Groq API
+User Access: Anonymous visitor mode; no login
+Funding: Advertising; no paid subscription
+Conversation History: Current browser session only; no server persistence
 ```
 
-Pembagian tanggung jawab:
+Jangan menganggap kode iklan sebagai bukti adanya tayangan atau pendapatan. Domain, environment variables, model availability, dan deployment production perlu diverifikasi secara langsung. File backend Netlify dan migrasi Supabase yang tersisa di repository adalah artefak historis/komponen proyek lain, bukan prasyarat endpoint chat Vercel yang aktif.
 
-```text
-GitHub
-→ Source code, version control, dan kolaborasi AI development
-
-Hugging Face Spaces
-→ Application / server runtime yang dipilih saat ini
-
-AI Model
-→ Generation + reasoning, sesuai model yang benar-benar dikonfigurasi
-
-AIKEPRIBADIAN application
-→ Identity + Personality + Memory + Behavior +
-  Knowledge + Relationships + Context + Corrections
-```
-
-**Render dan Supabase tidak digunakan untuk deployment saat ini.** Jangan menambahkan kembali Render, Supabase, atau layanan eksternal lain tanpa keputusan baru dari Choco.
-
-Jangan mengasumsikan bahwa penyimpanan runtime Hugging Face otomatis persisten. Verifikasi konfigurasi Space dan kode aktual sebelum menyatakan memory atau database tersimpan permanen.
-
-Data personal tidak boleh dikirim ke layanan tambahan hanya karena layanan tersebut tersedia. Jika layanan baru diperlukan, jelaskan kebutuhan, data yang dikirim, alasan, dampak keamanan dan privasi, biaya, serta alternatifnya terlebih dahulu.
 # 52. Infrastructure Change Policy
 
-Infrastruktur merupakan bagian dari arsitektur proyek dan tidak boleh berubah secara diam-diam.
+Infrastruktur tidak boleh berubah diam-diam. Migrasi hosting web ke Vercel sedang dipersiapkan dan ditinjau pada branch terpisah; branch ini tidak sama dengan deployment produksi.
 
-Infrastruktur aktif saat ini:
+- GitHub: source code dan version control.
+- Vercel: target hosting web dan serverless endpoint pada migrasi ini.
+- Groq: inference provider sesuai konfigurasi backend.
+- Supabase: masih diperlukan oleh endpoint chat saat ini untuk autentikasi, data langganan, dan riwayat percakapan.
+- Netlify: fungsi lama dipertahankan sebagai referensi selama migrasi; jangan menganggap situs lama telah dihapus atau tidak aktif.
 
-* GitHub untuk source code dan kolaborasi pengembangan AI
-* Hugging Face Spaces untuk aplikasi/server yang dipublikasikan
+Setiap perubahan pada hosting, database, AI provider, autentikasi, storage, atau deployment architecture harus dicatat, diuji, dan dibedakan antara target konfigurasi dan kondisi produksi yang sudah diverifikasi.
 
-Render dan Supabase saat ini tidak digunakan. Perubahan terhadap platform hosting, database, AI provider, authentication, storage, atau deployment architecture harus mendapat keputusan Choco dan dicatat di dokumentasi.
-
-Urutan perubahan:
-
-```text
-Identify Need
-      ↓
-Document Reason
-      ↓
-Analyze Impact
-      ↓
-Check Cost
-      ↓
-Check Privacy
-      ↓
-Check Security
-      ↓
-Check Compatibility
-      ↓
-Implement
-      ↓
-Test
-      ↓
-Document
-```
-
-Jangan menyamakan layanan gratis dengan resource tanpa batas. Verifikasi batas penggunaan, persistence, dan ketentuan platform ketika deployment dilakukan.
+Jangan menyamakan layanan gratis dengan resource tanpa batas. Verifikasi persistence, limits, environment variables, dan status deployment sebelum menyatakan migrasi selesai.
 
 # 53. Historical Conversation Corpus and Choco Modeling
 
@@ -1843,3 +1767,33 @@ Pipeline jangka panjang:
 Historical Conversations → Extract → Classify → Validate → Structure → Store → Train / Retrieve / Apply → Generate Response → Compare With Choco → Correction → Dataset Update → Evaluation → Improved Representation
 
 Pipeline ini merupakan salah satu mekanisme utama untuk mengembangkan AIKEPRIBADIAN dari chatbot personal menjadi representasi digital Choco yang semakin komprehensif.
+
+---
+
+# 57. Web Migration, Product Knowledge, and Ads
+
+The Vercel migration work is maintained on branch `feat/vercel-migration-choco-ai`. The branch is a review target; it is not proof of a successful production migration.
+
+- **Deployment:** See [docs/deployment-vercel.md](docs/deployment-vercel.md) for the Vercel routes (`/api/tanya-ai`, `/api/supabase-config`, and `/api/memory`), required environment variables, preview deployment steps, and current constraints.
+- **TCS product knowledge:** See [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md). The chat endpoint retrieves curated, customer-safe product summaries from `data/knowledge/tcs-products.mjs`; private READMEGPT files are not copied into the model context.
+- **Ad configuration:** See [docs/ad-rotation.md](docs/ad-rotation.md). The native banner loader is retained, empty banner placeholders are hidden, and the old smartlink/social-bar/popunder activation path is disabled. Monetizer and four additional provider slots remain inactive until their real integration details are available.
+- **Smoke tests:** Run `node --test tests/vercel-api.test.mjs` with Node.js 20 or newer. The GitHub Actions workflow on the migration branch runs the same command.
+
+Current backend environment variables include `GROQ_API_KEY`, optional model overrides (`GROQ_MODEL`, `GROQ_MODEL_TEXT`, `GROQ_MODEL_REASONING`, `GROQ_MODEL_VISION`), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and optional `CHOCO_ALLOWED_ORIGIN`. Configure secret values in the hosting dashboard, never in source code.
+
+Do not mark production migration complete until the Vercel Preview is tested against real configuration, including login, chat, persistent history, subscription expiry, provider failures, mobile UI, and the ad-consent flow.
+
+
+---
+
+## Web deployment and current product status
+
+Choco AI is being prepared as a free, anonymous chat service. The Vercel chat endpoint does not require Supabase, user accounts, subscription status, or a payment webhook.
+
+- Deployment instructions: [docs/deployment-vercel.md](docs/deployment-vercel.md)
+- Advertising behavior and consent: [docs/ad-rotation.md](docs/ad-rotation.md)
+- Curated product knowledge: [docs/tcs-product-knowledge.md](docs/tcs-product-knowledge.md)
+
+The browser sends the current chat history with each request. The server does not persist conversation history or long-term memory in this version. Refreshing or ending the page session loses the in-page conversation. The required server-side secret is `GROQ_API_KEY`; never expose it in browser code or commit it.
+
+The advertising integration is not yet proof of a verified publisher account, live impressions, or revenue. Verify the public deployment and test chat, mobile layout, consent choices, provider failures, and basic abuse controls before registering the production URL with ad providers.

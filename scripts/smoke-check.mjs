@@ -6,13 +6,12 @@ import {
 } from "../netlify/functions/core/retrieval.mjs";
 
 const requiredFiles = [
-  "netlify.toml",
+  "vercel.json",
   "public/index.html",
-  "netlify/functions/chat.js",
-  "netlify/functions/memory.js",
-  "supabase/config.toml",
-  "supabase/migrations/20261019010000_account_sync.sql",
-  "supabase/migrations/20261021010000_knowledge_rag.sql"
+  "public/ad-rotation.js",
+  "api/tanya-ai.mjs",
+  "data/knowledge/tcs-products.mjs",
+  "netlify/functions/core/retrieval.mjs",
 ];
 
 for (const file of requiredFiles) {
@@ -29,7 +28,7 @@ const documents = normalizeKnowledgeSources([facts, concepts, experiences]);
 assert.ok(documents.length >= 5, "Local knowledge corpus must contain reviewed, useful documents.");
 
 const cases = [
-  { query: "Groq API Netlify frontend backend", expected: "project-stack" },
+  { query: "Groq API Vercel frontend backend", expected: "project-stack" },
   { query: "retrieval augmented generation knowledge documents", expected: "rag-sources" },
   { query: "memory versus conversation history database", expected: "memory-vs-history" },
   { query: "evaluation benchmark before fine tuning", expected: "evaluation-before-training" }
