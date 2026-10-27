@@ -17,7 +17,8 @@ const requiredFiles = [
   "netlify/functions/core/retrieval.mjs",
   "supabase/config.toml",
   "supabase/migrations/20261019010000_account_sync.sql",
-  "supabase/migrations/20261021010000_knowledge_rag.sql"
+  "supabase/migrations/20261021010000_knowledge_rag.sql",
+  "supabase/migrations/20261022010000_chat_history_subscriptions.sql"
 ];
 
 for (const file of requiredFiles) {
