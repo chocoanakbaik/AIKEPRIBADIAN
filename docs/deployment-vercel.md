@@ -1,18 +1,15 @@
 # Panduan Deployment Vercel — Choco AI
 
-Dokumen ini menjelaskan target konfigurasi pada branch migrasi. **Dokumen ini bukan bukti bahwa production sudah ter-deploy.**
+## Model aplikasi saat ini
 
-## Arsitektur yang digunakan
+Choco AI menggunakan **mode pengunjung tanpa akun**, tanpa login, tanpa paket berbayar, dan tanpa database percakapan server. Pendanaan direncanakan melalui iklan yang ditampilkan sesuai pilihan persetujuan pengguna.
 
-- Frontend statis disajikan dari direktori `public/`.
-- Frontend mengirim chat ke `POST /api/tanya-ai`.
-- Frontend memuat konfigurasi publik Supabase melalui `GET /api/supabase-config`.
-- Pengambilan kandidat memori dilakukan melalui `POST /api/memory`.
-- Endpoint serverless berada di `api/tanya-ai.mjs`, `api/supabase-config.mjs`, dan `api/memory.mjs`; wrapper `.js` lama untuk tiga path tersebut dihapus agar tidak ada dua handler yang bersaing pada URL yang sama.
-- Webhook pembayaran tetap berada di `api/payment-webhook.js`.
-- Endpoint memanggil Groq dari server, bukan browser.
-- Endpoint saat ini menggunakan Supabase untuk memverifikasi sesi pengguna, membaca status langganan, dan menyimpan riwayat chat.
-- File fungsi lama di `netlify/functions/` dipertahankan untuk perbandingan selama transisi; endpoint frontend Vercel tidak lagi diarahkan melalui rewrite Netlify. File konfigurasi deployment `netlify.toml` dihapus dari branch migrasi agar konfigurasi target tidak lagi mengarahkan build ke Netlify. Ini tidak menghapus situs atau deployment Netlify lama.
+- Frontend statis: direktori `public/`.
+- Endpoint chat: `POST /api/tanya-ai`.
+- Provider inference: Groq; kunci API hanya berada di environment server.
+- Riwayat percakapan dikirim dari tab browser saat sesi berjalan. Riwayat tidak disimpan di server dan akan hilang saat halaman dimuat ulang atau sesi berakhir.
+- Preferensi antarmuka dapat disimpan di penyimpanan lokal browser. Ini bukan akun atau sinkronisasi lintas perangkat.
+- Iklan menggunakan pengaturan persetujuan pada browser. Slot provider yang belum memiliki integrasi resmi tetap nonaktif.
 
 ## Environment variables
 
@@ -20,37 +17,29 @@ Atur melalui Project Settings → Environment Variables di dashboard Vercel. Jan
 
 | Variable | Kebutuhan | Fungsi |
 |---|---|---|
-| `GROQ_API_KEY` | Wajib untuk balasan AI | Kunci API Groq yang hanya digunakan server |
-| `GROQ_MODEL` | Opsional | Model standar fallback |
-| `GROQ_MODEL_TEXT` | Opsional | Model mode standard |
-| `GROQ_MODEL_REASONING` | Opsional | Model mode reasoning |
-| `GROQ_MODEL_VISION` | Opsional | Model mode vision |
-| `SUPABASE_URL` | Wajib untuk alur login/chat saat ini | URL proyek Supabase |
-| `SUPABASE_ANON_KEY` | Wajib untuk verifikasi token | Kunci anon/public untuk verifikasi Auth di server |
-| `SUPABASE_SERVICE_ROLE_KEY` | Wajib untuk database chat/langganan saat ini | Kunci server berprivilege tinggi; jangan pernah ekspos ke frontend |
-| `CHOCO_ALLOWED_ORIGIN` | Opsional | Membatasi nilai Origin yang diterima endpoint bila request menyertakan header Origin |
+| `GROQ_API_KEY` | Wajib untuk balasan AI | Kunci API Groq, digunakan hanya di server |
+| `GROQ_MODEL` | Opsional | Model fallback |
+| `GROQ_MODEL_TEXT` | Opsional | Model untuk mode standar |
+| `GROQ_MODEL_REASONING` | Opsional | Model untuk mode penalaran |
+| `GROQ_MODEL_VISION` | Opsional | Model untuk mode analisis gambar |
+| `CHOCO_ALLOWED_ORIGIN` | Opsional | Membatasi Origin request jika disetel |
 
-Jika `CHOCO_ALLOWED_ORIGIN` diisi, nilainya harus cocok dengan origin deployment yang sedang diuji. URL Preview Vercel dapat berbeda dari domain produksi; jangan memakai origin Netlify lama untuk Preview. Untuk request same-origin, variabel ini dapat dibiarkan tidak disetel kecuali pembatasan Origin memang diperlukan.
-
-Nama model fallback yang ada di source code adalah `openai/gpt-oss-20b`, `openai/gpt-oss-120b`, dan `qwen/qwen3.8-27b` untuk mode terkait. Ketersediaan model dan akses akun Groq perlu diverifikasi dari dashboard provider; jangan menganggapnya tersedia hanya berdasarkan konfigurasi kode.
+Nama model fallback yang ada di kode adalah `openai/gpt-oss-20b`, `openai/gpt-oss-120b`, dan `qwen/qwen3.8-27b`. Ketersediaan model dan akses akun Groq harus diverifikasi di dashboard provider.
 
 ## Deploy dan verifikasi
 
-1. Impor repository `chocoanakbaik/AIKEPRIBADIAN` ke Vercel dan pilih branch yang akan ditinjau.
-2. Pastikan Root Directory mengarah ke root repository, bukan subfolder.
-3. Pastikan output statis menggunakan `public/`; Vercel mendeteksi fungsi di `api/`.
-4. Pastikan migration `20261022010000_chat_history_subscriptions.sql` sudah diterapkan ke proyek Supabase target. Migration tersebut menambahkan `chat_history`, `user_subscriptions`, `payment_events`, trigger paket Free, dan RPC aktivasi Premium yang dibutuhkan backend.
-5. Tambahkan environment variables yang diperlukan pada environment Preview terlebih dahulu.
-6. Deploy Preview dari branch ini, bukan mengganti produksi secara manual.
-7. Uji halaman utama, login email/OTP, chat, riwayat lintas sesi, memori, status langganan, webhook pembayaran (gunakan sandbox), error provider, dan tampilan mobile.
-8. Periksa log function untuk error tanpa mencetak token atau isi percakapan.
-9. Jangan menganggap migrasi selesai sampai Preview benar-benar diuji dan konfigurasi production diverifikasi.
+1. Pastikan Root Directory mengarah ke root repository.
+2. Pastikan Vercel menyajikan direktori output `public/` dan mendeteksi fungsi dalam `api/`.
+3. Set `GROQ_API_KEY` pada environment Preview.
+4. Deploy Preview dari branch migrasi.
+5. Uji chat tanpa login, semua mode AI, batas panjang pesan, kegagalan provider, pembatasan permintaan, persetujuan iklan, serta tampilan desktop dan mobile.
+6. Periksa log function tanpa mencetak secret atau isi percakapan.
+7. Pastikan domain publik stabil dan fungsi chat benar-benar berhasil sebelum mendaftarkan URL ke penyedia iklan.
 
-## Batasan yang diketahui
+## Batasan dan keamanan
 
-- Endpoint chat bergantung pada Supabase. Menghapus Supabase memerlukan penggantian dan pengujian autentikasi, langganan, serta penyimpanan riwayat; itu bukan bagian dari perubahan routing hosting ini.
-- Endpoint masih menyimpan pesan pengguna sebelum inference. Jika Groq gagal, pesan pengguna dapat tersimpan tanpa balasan assistant.
-- Rate limit berbasis memori proses serverless tidak digunakan sebagai kontrol lintas-instance; jika rate limiting dibutuhkan, gunakan mekanisme terpusat yang sesuai dan diuji.
-- File `netlify/functions/tanya-ai.js` masih ada sebagai sumber historis. Jangan menghapusnya sampai perilaku endpoint Vercel telah dibandingkan dan disetujui.
-- Migration file baru berada di branch ini dan belum otomatis membuktikan bahwa skema telah diterapkan pada proyek Supabase yang sebenarnya. Workflow deployment database pada repository hanya berjalan otomatis untuk perubahan yang masuk ke `main` ketika secrets deployment tersedia.
-- Domain custom, environment variables dashboard, deployment production, dan status domain Netlify lama belum diverifikasi dari repository saja.
+- **Tidak ada akun, paket Premium, pembayaran, atau riwayat percakapan persisten** pada versi ini.
+- Riwayat yang dikirim browser adalah konteks sesi, bukan catatan tepercaya atau memori jangka panjang.
+- Rate limit dalam memori fungsi serverless hanya perlindungan dasar per instance; itu bukan pembatasan global yang kuat. Sebelum promosi besar, pantau penggunaan dan biaya Groq serta siapkan kontrol penyalahgunaan yang sesuai dengan infrastruktur yang benar-benar tersedia.
+- Endpoint memerlukan `GROQ_API_KEY`. Jika belum disetel, endpoint akan mengembalikan error konfigurasi, bukan meminta login.
+- Deployment Preview bukan bukti bahwa deployment produksi, domain custom, atau tayangan iklan nyata telah diverifikasi.
