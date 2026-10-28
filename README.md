@@ -14,6 +14,18 @@ pinned: false
 
 > **Brand induk:** The Choco Studios (TCS). Proyek ini dikembangkan secara mandiri oleh Hasby Prasetya Saprudin sebagai solo developer; TCS adalah identitas branding, bukan pernyataan bahwa proyek telah berbadan hukum sebagai perusahaan.
 
+## Current web deployment and access model
+
+The current Choco AI web-app deployment target is a single Vercel project: the static interface is served from `public/`, and the chat endpoint is exposed through `api/chat.js`. The browser keeps the active conversation history locally for the current session and sends it with each chat request.
+
+- **Access:** no account or login is required.
+- **Pricing:** the web app has no paid plans, subscriptions, or payment flow.
+- **Monetization:** advertising is the intended revenue source. Ad providers may require separate configuration and approval.
+- **AI provider:** Groq is called from the server-side function; configure `GROQ_API_KEY` and optionally `GROQ_MODEL` in Vercel Environment Variables. Do not expose the API key in frontend code.
+- **Deployment branch:** migration work is being prepared on `migration/vercel-single-project`; this does not change `main` until the pull request is merged.
+
+The legacy account/database/payment files are not part of the current Vercel chat route.
+
 ## 1. Project Overview
 
 **Choco AI** adalah proyek untuk membangun sebuah AI personal yang dirancang untuk merepresentasikan Choco secara sedekat mungkin melalui:
