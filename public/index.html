@@ -1392,8 +1392,6 @@
   <div class="toast" id="toast" role="status"></div>
   <div class="login-notice" id="loginNotice" role="status" aria-live="polite"><strong>✦ Choco AI masih berkembang</strong>Identitas, pengetahuan, dan kemampuan Choco AI akan terus dikembangkan. Jawaban yang belum diketahui sebaiknya tidak ditebak.</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/auth.js" defer></script>
   <script>
     const form = document.getElementById("form");
     const input = document.getElementById("message");
@@ -1685,21 +1683,13 @@
       const waiting = addMessage("", "assistant", { typing: true });
 
       try {
-        // Tunggu pemulihan sesi dan pemuatan memori agar pesan pertama setelah refresh
-        // tidak terkirim sebelum akun siap dan kehilangan konteks tersimpan.
-        if (window.chocoSupabaseReady) await window.chocoSupabaseReady;
-        const accessToken = typeof window.chocoGetAccessToken === "function"
-          ? await window.chocoGetAccessToken()
-          : null;
-        const requestHeaders = { "Content-Type": "application/json" };
-        if (accessToken) requestHeaders.Authorization = "Bearer " + accessToken;
-        const response = await fetch("/.netlify/functions/tanya-ai", {
+        const response = await fetch("/.netlify/functions/chat", {
           method: "POST",
-          headers: requestHeaders,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message,
             history,
-            memories: typeof window.chocoGetMemories === "function" ? window.chocoGetMemories() : [],
+            memories: [],
             preferences,
             modelMode
           })
@@ -1724,13 +1714,6 @@
           return;
         }
 
-        // Notifikasi langganan kedaluwarsa berasal dari hasil validasi backend.
-        if (data.subscriptionExpired === true) {
-          const expiryNotice = "Masa aktif Choco AI Premium lu sudah habis. Akun otomatis kembali ke paket Free.";
-          if (typeof window.showToast === "function") window.showToast(expiryNotice);
-          else window.alert(expiryNotice);
-        }
-
         const reply = typeof data.reply === "string"
           ? data.reply
           : "";
@@ -1750,13 +1733,6 @@
           { role: "user", content: message },
           { role: "assistant", content: reply }
         );
-
-        const savedPair = { userMessage: message, assistantMessage: reply, title: conversationTitle || message };
-        if (window.chocoIsAuthenticated?.() && typeof window.chocoSaveMessagePair === "function") {
-          await window.chocoSaveMessagePair(savedPair);
-        } else {
-          window.dispatchEvent(new CustomEvent("choco:save-message-pair", { detail: savedPair }));
-        }
 
         // Batasi riwayat di browser agar request tidak membengkak.
         if (history.length > 40) {
