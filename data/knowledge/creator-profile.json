@@ -413,5 +413,54 @@
       "keuangan",
       "integrasi"
     ]
+  },
+  {
+    "id": "chocoscan-product-facts",
+    "title": "Produk TCS: ChocoScan",
+    "content": "ChocoScan adalah pemeriksa pola URL berbasis browser dengan desain visual yang diselaraskan dengan Choco AI. README publik menyatakan fitur saat ini: pemeriksaan lokal atas pola HTTPS, host berbasis IP, label Punycode, subdomain, pemendek URL, TLD tertentu, URL panjang, kata sensitif, encoding, dan kemungkinan penyamaran merek; hasil menyertakan penjelasan per temuan. Memory Bank menyimpan riwayat lokal di localStorage, dapat dibuka ulang setelah reload, diekspor/diimpor sebagai JSON, dan dihapus dari UI. Terdapat empat SmartLink sponsor yang diberi label iklan dan dipisahkan dari hasil keamanan. URL tidak dikirim ke server dan tidak dibuka otomatis. Ini hanya analisis string URL, bukan reputasi domain live, pemindaian isi halaman, atau vonis mutlak keamanan. ChocoScan-demo adalah proyek demo terpisah dan bukan scanner nyata. Repo: https://github.com/chocoanakbaik/ChocoScan.",
+    "category": "products",
+    "source": "README.md-reviewed",
+    "tags": [
+      "TCS",
+      "ChocoScan",
+      "URL scanner",
+      "phishing",
+      "adware",
+      "localStorage",
+      "Memory Bank",
+      "privacy"
+    ]
+  },
+  {
+    "id": "chocoscan-demo-facts",
+    "title": "Proyek demo terpisah: ChocoScan Demo",
+    "content": "ChocoScan Demo adalah demo edukasi berbasis HTML, CSS, dan JavaScript murni yang mensimulasikan hasil scan dan contoh dialog peringatan. Demo bukan scanner keamanan nyata, tidak mengumpulkan kredensial, dan tidak mengirim input pengguna. Hasil pemindaian bersifat ilustratif. Dialog harus tetap dapat ditutup; demo tidak mengunci pointer, memaksa navigasi, membuka tab tanpa permintaan, atau meminta kata sandi. Proyek ini terpisah dari produk utama ChocoScan. Repo: https://github.com/chocoanakbaik/ChocoScan-demo. README saat diperiksa mencantumkan demo Netlify: https://rainbow-strudel-540ea7.netlify.app/, https://phenomenal-cannoli-c97e71.netlify.app/, dan https://frolicking-unicorn-710456.netlify.app/. Status ketersediaan URL demo perlu diuji sebelum dijanjikan.",
+    "category": "products",
+    "source": "README.md-reviewed",
+    "tags": [
+      "TCS",
+      "ChocoScan Demo",
+      "demo edukasi",
+      "simulasi",
+      "phishing",
+      "Netlify"
+    ]
+  },
+  {
+    "id": "choco-ai-help-center-sara-facts",
+    "title": "Produk TCS: Choco AI Help Center dan Sara",
+    "content": "Choco AI Help Center adalah pusat bantuan statis untuk Choco AI dengan pencarian artikel, halaman kategori, katalog fitur, dan Sara sebagai asisten AI khusus Help Center. Repo publik mencatat 36 record artikel, terdiri dari 31 artikel yang dapat dibuka dan 5 entri rute lama yang diarahkan ke 404, serta katalog status/batasan 16 fitur Choco AI. Dokumentasi fitur dibedakan menurut status: tersedia, terdokumentasi tetapi perlu konfirmasi, perlu diverifikasi, direncanakan, dan tidak tersedia. Sara memakai Netlify Function netlify/functions/sara.js dan membutuhkan GROQ_API_KEY sebagai environment variable Netlify; GROQ_MODEL opsional. GitHub Actions menjalankan validator dan test function, tetapi workflow tidak melakukan deploy Netlify; deploy dilakukan manual. Pertanyaan pengguna dikirim ke layanan AI eksternal untuk diproses, jadi pengguna sebaiknya tidak memasukkan kata sandi, API key, atau data pribadi sensitif. Sara adalah asisten kedua setelah Choco AI, dengan peran dukungan produk yang berbeda. Repo: https://github.com/chocoanakbaik/choco-ai-help-center. URL Help Center yang pernah ditargetkan: https://choco-ai-help-center.netlify.app/; verifikasi status live sebelum menyatakan tersedia.",
+    "category": "products",
+    "source": "README.md-reviewed",
+    "tags": [
+      "TCS",
+      "Choco AI Help Center",
+      "Sara",
+      "Netlify",
+      "GROQ_API_KEY",
+      "knowledge base",
+      "fitur",
+      "support"
+    ]
   }
 ]
