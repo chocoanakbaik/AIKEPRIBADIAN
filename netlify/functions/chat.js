@@ -1,4 +1,4 @@
-import CREATOR_KNOWLEDGE from "../../data/knowledge/creator-profile.json";
+import CREATOR_KNOWLEDGE from "../../data/knowledge/creator-profile.json" with { type: "json" };
 
 const MODEL_ID = "openai/gpt-oss-20b";
 const MAX_MESSAGE_CHARS = 4000;
