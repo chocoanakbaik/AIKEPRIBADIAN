@@ -98,8 +98,11 @@ export default async (request) => {
     if (!limit.ok) return json({ error: limit.error }, limit.status);
 
     const preferences = body.preferences && typeof body.preferences === "object" ? body.preferences : {};
-    const responseLength = ["short", "balanced", "detailed"].includes(preferences.responseLength)
+    const explicitlyRequestsDetail = /\\b(detail|terperinci|lengkap|menyeluruh|mendalam|secara\\s+detail|secara\\s+lengkap|satu\\s+per\\s+satu|seluruh|semua\\s+(?:produk|fitur|bagian|poin))\\b/i.test(message);
+    const preferredResponseLength = ["short", "balanced", "detailed"].includes(preferences.responseLength)
       ? preferences.responseLength : "balanced";
+    // Permintaan eksplisit untuk penjelasan lengkap tidak boleh dipotong oleh preferensi bawaan balanced.
+    const responseLength = explicitlyRequestsDetail ? "detailed" : preferredResponseLength;
     const tone = ["formal", "casual", "adaptive"].includes(preferences.tonePreference)
       ? preferences.tonePreference : "adaptive";
     const detail = ["concise", "stepwise", "adaptive"].includes(preferences.detailPreference)
@@ -156,16 +159,55 @@ export default async (request) => {
         body: JSON.stringify({
           model: env.GROQ_MODEL || MODEL_ID,
           messages,
-          max_completion_tokens: ({ short: 350, balanced: 700, detailed: 1100 })[responseLength]
+          max_completion_tokens: ({ short: 700, balanced: 1800, detailed: 5000 })[responseLength]
         })
       });
-      const data = await response.json();
+      let data = await response.json();
       if (!response.ok) {
         return json({ error: data?.error?.message || `Groq mengembalikan HTTP ${response.status}.` }, response.status);
       }
+
+      let choice = data?.choices?.[0];
+      let reply = choice?.message?.content || "Model mengembalikan jawaban kosong.";
+      let finishReason = choice?.finish_reason || null;
+
+      // Jika Groq menghentikan keluaran karena token habis, minta satu lanjutan yang tidak mengulang jawaban.
+      if (finishReason === "length" && reply.trim()) {
+        try {
+          const continuation = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + env.GROQ_API_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: env.GROQ_MODEL || MODEL_ID,
+              messages: [
+                ...messages,
+                { role: "assistant", content: reply },
+                { role: "user", content: "Jawaban sebelumnya terhenti karena batas keluaran. Lanjutkan tepat dari bagian terakhir yang sudah ditulis. Jangan mengulang pembukaan, paragraf, atau daftar yang sudah ada. Selesaikan semua bagian yang masih belum terjawab dan akhiri dengan wajar." }
+              ],
+              max_completion_tokens: 2500
+            })
+          });
+          if (continuation.ok) {
+            const continuationData = await continuation.json();
+            const continuationChoice = continuationData?.choices?.[0];
+            const continuationText = continuationChoice?.message?.content;
+            if (typeof continuationText === "string" && continuationText.trim()) {
+              reply = reply.trimEnd() + "\\n\\n" + continuationText.trimStart();
+              finishReason = continuationChoice?.finish_reason || finishReason;
+            }
+          }
+        } catch {
+          // Jawaban pertama tetap dikembalikan jika permintaan lanjutan gagal.
+        }
+      }
+
       return json({
-        reply: data?.choices?.[0]?.message?.content || "Model mengembalikan jawaban kosong.",
-        model: data?.model || env.GROQ_MODEL || MODEL_ID
+        reply,
+        model: data?.model || env.GROQ_MODEL || MODEL_ID,
+        truncated: finishReason === "length"
       });
     } catch {
       return json({ error: "Tidak bisa menghubungi layanan Groq." }, 502);
