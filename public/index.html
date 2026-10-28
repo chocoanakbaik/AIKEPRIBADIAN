@@ -1356,10 +1356,6 @@
           <span class="sponsor-link-label">SMARTLINK · SPONSOR</span>
           <a href="https://araplhn.org/4/22bd18620139869f854d3a0c3845e378" target="_blank" rel="sponsored noopener noreferrer">Lihat penawaran sponsor <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="social-ad-note ad-placement" id="socialAdPlacement" hidden>
-          <span class="ad-placement-label">SOCIAL BAR · IKLAN MENGAMBANG</span>
-          Format ini dikendalikan penyedia iklan.
-        </div>
       </section>
     </aside>
   </div>
@@ -1749,18 +1745,6 @@
 
   </script>
 
-  <!-- Popunder tidak memiliki slot visual: skripnya membuka tab/jendela terpisah. -->
-  <script>
-    window.loadChocoPopunder = function () {
-      if (window.__chocoPopunderLoaded) return;
-      window.__chocoPopunderLoaded = true;
-      const script = document.createElement("script");
-      script.dataset.cfasync = "false";
-      script.src = "https://abscloud.org/1/1f175b1a4c444f58adbb096a2d4156df";
-      script.onerror = () => { window.__chocoPopunderLoaded = false; script.remove(); };
-      document.body.appendChild(script);
-    };
-  </script>
 
   <section class="modal-backdrop" id="sitePreferenceBackdrop" hidden>
     <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="sitePreferenceTitle" aria-describedby="sitePreferenceDescription">
@@ -1785,47 +1769,15 @@
       const reject = document.getElementById("sitePreferenceReject");
 
       const sponsorLinkSlot = document.getElementById("sponsorLinkSlot");
-      const socialAdPlacement = document.getElementById("socialAdPlacement");
       const preferencesLink = document.getElementById("openSitePreferences");
       const messages = document.getElementById("messages");
       const welcome = document.getElementById("welcome");
       let adsAllowed = false;
-      let socialBarTimer = null;
-
-      function loadSocialBarOnce() {
-        if (!adsAllowed || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) return;
-        try {
-          if (sessionStorage.getItem("choco_socialbar_loaded_session") === "true") return;
-        } catch (error) {}
-        if (socialBarTimer) clearTimeout(socialBarTimer);
-        // Delay the floating format so it does not compete with the initial page load.
-        socialBarTimer = setTimeout(() => {
-          if (!adsAllowed || document.visibilityState === "hidden" || !welcome || welcome.style.display === "none" || (messages && messages.children.length > 0)) {
-            socialBarTimer = null;
-            return;
-          }
-          let alreadyLoaded = false;
-          try {
-            alreadyLoaded = sessionStorage.getItem("choco_socialbar_loaded_session") === "true";
-          } catch (error) {}
-          if (alreadyLoaded) return;
-          const script = document.createElement("script");
-          script.dataset.cfasync = "false";
-          script.async = true;
-          script.src = "https://bauval.org/14/a1a6fd7c95c7337d627b2c6a781db97c";
-          script.onerror = () => script.remove();
-          document.head.appendChild(script);
-          if (socialAdPlacement) socialAdPlacement.hidden = false;
-          try { sessionStorage.setItem("choco_socialbar_loaded_session", "true"); } catch (error) {}
-        }, 15000);
-      }
 
       function loadAds() {
         adsAllowed = true;
         if (sponsorLinkSlot) sponsorLinkSlot.hidden = false;
         if (typeof window.loadChocoNativeAd === "function") window.loadChocoNativeAd();
-        if (typeof window.loadChocoPopunder === "function") window.loadChocoPopunder();
-        loadSocialBarOnce();
       }
 
       function saveChoice(allowed) {
@@ -1841,9 +1793,7 @@
         if (allowed) {
           loadAds();
         } else {
-          if (socialBarTimer) clearTimeout(socialBarTimer);
           if (sponsorLinkSlot) sponsorLinkSlot.hidden = true;
-          if (socialAdPlacement) socialAdPlacement.hidden = true;
           // A third-party script already loaded cannot be reliably unloaded in place.
           if (wasAllowed) window.location.reload();
         }
