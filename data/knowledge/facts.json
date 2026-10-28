@@ -1,30 +1,31 @@
 [
   {
     "id": "project-stack",
-    "title": "Arsitektur aplikasi Choco AI",
-    "content": "Frontend aplikasi berada di folder public. Endpoint percakapan berjalan melalui Netlify Functions di netlify/functions. Fungsi chat memanggil Groq API untuk inferensi dan dapat mengambil pengetahuan dari file JSON lokal serta Supabase.",
+    "title": "Arsitektur dan hosting aktif Choco AI",
+    "content": "Choco AI/AIKEPRIBADIAN saat ini ditargetkan pada satu proyek Vercel. Frontend statis berada di public/, endpoint publik api/chat.js menggunakan adapter untuk handler netlify/functions/chat.js, dan Groq dipanggil dari sisi server. Repository sumber: https://github.com/chocoanakbaik/AIKEPRIBADIAN. URL utama: https://aikepribadian-seven.vercel.app/. Environment variable rahasia GROQ_API_KEY dan GROQ_MODEL opsional dikelola di Vercel; jangan taruh rahasia di frontend atau repository.",
     "category": "architecture",
-    "source": "repository",
+    "source": "repository-and-deployment-check",
     "tags": [
-      "Netlify",
+      "Vercel",
+      "Netlify adapter",
       "Groq",
-      "Supabase",
-      "backend",
-      "frontend"
+      "GitHub",
+      "frontend",
+      "backend"
     ]
   },
   {
     "id": "rag-sources",
-    "title": "Sumber pengetahuan RAG",
-    "content": "RAG Choco AI menggabungkan dokumen lokal dari data/knowledge/facts.json, data/knowledge/concepts.json, dan data/knowledge/experiences.json dengan pencarian teks penuh Supabase jika konfigurasi dan migrasinya tersedia. Sistem lokal menggunakan pencocokan leksikal ringan, bukan pencarian vektor.",
+    "title": "Sumber pengetahuan RAG yang digunakan jalur chat",
+    "content": "Fungsi chat mengimpor data/knowledge/creator-profile.json sebagai sumber pengetahuan terstruktur, lalu menggabungkannya dengan referensi lokal yang didefinisikan dalam netlify/functions/chat.js. File facts.json, concepts.json, dan experiences.json juga didokumentasikan sebagai sumber pengetahuan repository, tetapi jangan menganggap semua file otomatis dimuat ke runtime tanpa memeriksa implementasi aktual. Pengetahuan produk TCS harus masuk ke sumber yang benar-benar dipakai oleh jalur chat.",
     "category": "knowledge",
-    "source": "docs/rag-knowledge.md",
+    "source": "repository",
     "tags": [
       "RAG",
       "retrieval",
-      "knowledge",
-      "Supabase",
-      "JSON"
+      "creator-profile.json",
+      "facts.json",
+      "knowledge"
     ]
   },
   {
@@ -66,6 +67,34 @@
       "testing",
       "evaluation",
       "MLOps"
+    ]
+  },
+  {
+    "id": "tcs-brand-contact",
+    "title": "Kontak resmi The Choco Studios",
+    "content": "Email bisnis/tim The Choco Studios adalah thechocostudio@gmail.com dan nomor kontak yang dicatat adalah +62 851-5083-5618. Email ini adalah identitas bisnis TCS, bukan Gmail pribadi. URL website resmi TCS belum tercatat dalam sumber repository yang diverifikasi; jangan mengarang domain.",
+    "category": "brand-contact",
+    "source": "curated-creator-profile",
+    "tags": [
+      "TCS",
+      "The Choco Studios",
+      "email",
+      "phone",
+      "contact"
+    ]
+  },
+  {
+    "id": "tcs-product-catalogue",
+    "title": "Katalog produk digital TCS",
+    "content": "Katalog/rencana produk TCS yang dicatat pada 27 Oktober 2026: Stock & Sales Tracker, Business Document Kit, Professional CV Kit, Social Media Business Kit, Business Presentation Kit, Finance & Cashflow Pro, UMKM Website Kit, Admin Dashboard UI Kit, Business Management System, dan Complete UMKM Suite. Katalog ini tidak membuktikan semua produk selesai atau siap dijual. README.md publik dan Manual Book pembeli diwajibkan untuk tiap produk yang dijual; READMEGPT.md merupakan cetak biru internal yang membedakan status implementasi, rencana, dan hal yang belum dipastikan.",
+    "category": "products",
+    "source": "curated-creator-profile",
+    "tags": [
+      "TCS",
+      "product catalogue",
+      "READMEGPT.md",
+      "README.md",
+      "Manual Book"
     ]
   }
 ]
