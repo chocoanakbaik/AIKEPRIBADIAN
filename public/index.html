@@ -1419,7 +1419,8 @@
     document.getElementById("accountPersonalityButton").addEventListener("click", () => { accountMenu.hidden = true; accountMenuButton.setAttribute("aria-expanded", "false"); openPanel("personality"); });
     document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => button.closest(".modal-backdrop").hidden = true));
     document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", event => { if (event.target === backdrop) backdrop.hidden = true; }));
-    document.getElementById("saveSettings").addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; });
+    const saveSettingsButton = document.getElementById("saveSettings");
+    if (saveSettingsButton) saveSettingsButton.addEventListener("click", () => { document.getElementById("settingsBackdrop").hidden = true; });
     document.getElementById("savePersonality").addEventListener("click", () => { savePreferenceFields(["tonePreference","detailPreference","humorPreference","emojiPreference"]); document.getElementById("personalityBackdrop").hidden = true; });
 
     const plusMenuButton = document.getElementById("plusMenuButton");
