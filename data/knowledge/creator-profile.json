@@ -168,18 +168,20 @@
   },
   {
     "id": "tcs-business-contact",
-    "title": "Identitas dan kontak bisnis The Choco Studios",
-    "content": "Identitas branding bisnis The Choco Studios (TCS) menggunakan email thechocostudio@gmail.com sebagai alamat bisnis/tim, bukan email pribadi. Nomor kontak bisnis yang telah dicatat untuk informasi TCS adalah +62 851-5083-5618 (format alternatif: 085150835618). Gunakan email ini untuk konteks branding, kontak tim, dukungan, dan materi README produk TCS. Jangan mengganti dengan Gmail pribadi Hasby. URL resmi website TCS belum tersedia dalam sumber pengetahuan terverifikasi ini; jangan mengarang domain atau mengklaim pernah membuka situsnya. Jika pengguna menanyakan isi website TCS, bedakan fakta identitas/kontak yang tercatat dengan halaman website yang belum berhasil diambil atau diverifikasi.",
+    "title": "Identitas, website resmi, dan kontak The Choco Studios",
+    "content": "Website informasi publik resmi TCS yang dicatat dalam source repository adalah https://the-choco-studio-information.netlify.app/. Email bisnis/tim: thechocostudio@gmail.com, bukan Gmail pribadi Hasby. Telepon: 085150835618 atau format internasional +62 851-5083-5618. Formulir kontak: https://forms.gle/LUtY9cyFQKVizA1A6. LinkedIn resmi yang dicantumkan website: https://www.linkedin.com/in/hasby-prasetya-tcs/. Choco AI: https://aikepribadian.vercel.app/. Choco AI Help Center: https://choco-ai-help-center.netlify.app/. Website menyebut target waktu balasan paling lama tiga hari. Jika ditanya kontak atau website TCS, prioritaskan sumber ini. Bedakan URL yang dicantumkan source website dari hasil pemeriksaan ketersediaan live saat ini.",
     "category": "brand-contact",
-    "source": "curated-creator-profile",
+    "source": "The-Choco-Studios-Information repository:data/site.js,index.html,components/contact.html",
     "tags": [
       "The Choco Studios",
       "TCS",
+      "website resmi",
       "email",
       "Gmail",
       "thechocostudio@gmail.com",
-      "kontak",
       "telepon",
+      "formulir kontak",
+      "LinkedIn",
       "website"
     ]
   },
@@ -461,6 +463,54 @@
       "knowledge base",
       "fitur",
       "support"
+    ]
+  },
+  {
+    "id": "tcs-official-site-profile",
+    "title": "Profil resmi, visi, misi, dan nilai The Choco Studios",
+    "content": "Menurut source website informasi publik TCS (https://the-choco-studio-information.netlify.app/) dan data/site.js: nama The Choco Studios (TCS); pendiri Hasby Prasetya Saprudin; tanggal awal perjalanan yang dicantumkan 12 Desember 2023, bermula dari proyek Chocobot Guardian. TCS dikelola mandiri oleh satu orang/solo developer dan menggunakan nama sebagai identitas branding, bukan klaim bahwa TCS adalah badan hukum atau perusahaan terdaftar. Visi: menjadi studio kreatif multisektor global yang terus berkembang melalui karya tanpa batas, dengan menjunjung tinggi kepuasan pelanggan dan kepatuhan hukum. Misi: inovasi multi-bidang; prioritas pelanggan dan kepercayaan berkelanjutan; integritas serta kepatuhan terhadap regulasi lokal dan hukum internasional; pertumbuhan berkelanjutan melalui pembelajaran. Nilai: kepuasan pelanggan, keamanan dan privasi pengguna, kepercayaan pelanggan. Pasar awal Indonesia dengan tujuan ekspansi internasional. Bahasa utama Indonesia, bahasa kedua Inggris, dan dukungan bahasa lain akan dikembangkan bertahap. Website menyatakan TCS tidak membolehkan hacking, penyebaran data ilegal, atau tindakan melanggar hukum. Produk tertentu dapat memiliki ketentuan usia masing-masing; TCS tidak menetapkan satu kelompok usia sebagai target umum.",
+    "category": "brand-profile",
+    "source": "The-Choco-Studios-Information repository:data/site.js,components/about.html",
+    "tags": [
+      "TCS",
+      "The Choco Studios",
+      "Hasby",
+      "visi",
+      "misi",
+      "nilai",
+      "solo developer",
+      "12 Desember 2023",
+      "Indonesia",
+      "internasional",
+      "privasi"
+    ]
+  },
+  {
+    "id": "tcs-public-product-catalogue",
+    "title": "Katalog publik dan status produk TCS",
+    "content": "Katalog source website resmi TCS (https://the-choco-studio-information.netlify.app/, data/products.js) mencatat 16 item dengan status berikut. Tersedia: Choco AI (asisten AI berbasis browser untuk percakapan, template pertanyaan, pengaturan, personalisasi; URL publik yang dicantumkan website https://aikepribadian.vercel.app/), Choco AI Help Center (pusat informasi dan panduan dengan Sara; https://choco-ai-help-center.netlify.app/). Dalam pengembangan: KasirKita (aplikasi kasir desktop Windows yang direncanakan untuk produk, stok, transaksi tunai, laporan penjualan); Chocobot Guardian (proyek awal TCS, belum dirilis); ChocoScan (alat pemeriksaan awal tautan); TCS UMKM Stock & Sales Tracker; TCS Business Document Kit; TCS Professional CV Kit; TCS Social Media Business Kit; TCS Business Presentation Kit; TCS Finance Cashflow Pro; TCS UMKM Website Kit; TCS Admin Dashboard UI Kit; TCS Business Management System; TCS Complete UMKM Suite. Detail menyusul: Privacy Guardian (konsep aplikasi desktop Windows untuk membantu memahami Privacy Policy, Terms of Service, Cookie Policy, dan dokumen kebijakan terkait). Status di katalog website adalah status publik pada saat source diperiksa; READMEGPT produk dapat memberikan detail implementasi yang lebih spesifik dan harus tetap membedakan fakta yang terverifikasi dari rencana. Jangan mengklaim produk berstatus tersedia jika website menyebut masih dikembangkan, atau mengklaim fitur selesai hanya berdasarkan deskripsi rencana.",
+    "category": "products",
+    "source": "The-Choco-Studios-Information repository:data/products.js",
+    "tags": [
+      "TCS",
+      "katalog produk",
+      "Choco AI",
+      "Help Center",
+      "Sara",
+      "KasirKita",
+      "Chocobot Guardian",
+      "Privacy Guardian",
+      "ChocoScan",
+      "Stock & Sales Tracker",
+      "Business Document Kit",
+      "Professional CV Kit",
+      "Social Media Business Kit",
+      "Business Presentation Kit",
+      "Finance Cashflow Pro",
+      "UMKM Website Kit",
+      "Admin Dashboard UI Kit",
+      "Business Management System",
+      "Complete UMKM Suite"
     ]
   }
 ]
