@@ -9,7 +9,6 @@ const requiredFiles = [
   "netlify.toml",
   "public/index.html",
   "netlify/functions/chat.js",
-  "netlify/functions/memory.js",
   "supabase/config.toml",
   "supabase/migrations/20261019010000_account_sync.sql",
   "supabase/migrations/20261021010000_knowledge_rag.sql"
