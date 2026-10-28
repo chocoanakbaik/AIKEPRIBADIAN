@@ -260,5 +260,158 @@
       "apps",
       "applications"
     ]
+  },
+  {
+    "id": "tcs-stock-sales-tracker",
+    "title": "Produk TCS: UMKM Stock & Sales Tracker",
+    "content": "TCS UMKM Stock & Sales Tracker ditujukan untuk pemilik warung, toko kecil, reseller, dan usaha rumahan yang membutuhkan pencatatan stok dan penjualan. Fakta yang terkonfirmasi dari repo publik: paket dua format berupa workbook Excel dengan Dashboard, Data Barang, Barang Masuk, Penjualan, Laporan Bulanan, dan Panduan, serta aplikasi browser offline opsional. Fitur tercatat meliputi SKU unik, stok awal, barang masuk, penjualan dengan validasi stok, snapshot harga jual dan modal saat transaksi, pencarian/filter, laporan rentang tanggal, ekspor CSV, dan backup/restore JSON. Browser companion menyimpan data di localStorage pada perangkat/profil browser. Tidak ada akun, backend, cloud sync, multiuser, role permissions, encrypted local storage, atau audit log. Bukan sistem POS/akuntansi penuh; tidak mencakup pajak, retur/diskon akuntansi, atau laporan keuangan teraudit. Workbook menyebut kapasitas awal 500 baris transaksi. QA checklist bukan bukti semua tes lulus; jangan menyebut produk bebas bug atau sepenuhnya diaudit. Kontak publik TCS: thechocostudio@gmail.com. Sumber: https://github.com/chocoanakbaik/TCS-UMKM-Stock-Sales-Tracker.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Stock & Sales Tracker",
+      "stok",
+      "penjualan",
+      "Excel",
+      "localStorage",
+      "CSV",
+      "JSON backup",
+      "produk UMKM"
+    ]
+  },
+  {
+    "id": "tcs-business-document-kit",
+    "title": "Produk TCS: Business Document Kit",
+    "content": "TCS Business Document Kit ditujukan untuk UMKM, freelancer, dan pelaku usaha yang membutuhkan template serta panduan dokumen bisnis yang konsisten. README publik menyebut tujuan dan cakupan yang direncanakan berupa template, panduan, contoh, dan struktur yang dapat disesuaikan. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; template, source code, manual, lisensi, dan paket rilis tidak ditemukan. Jenis dokumen, format, jumlah template, kompatibilitas, dan kesiapan jual belum terverifikasi. Jangan menyatakan dokumen tertentu tersedia tanpa artefak rilis yang dapat diperiksa. Repo: https://github.com/chocoanakbaik/TCS-Business-Document-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Business Document Kit",
+      "template bisnis",
+      "dokumen",
+      "UMKM",
+      "freelancer"
+    ]
+  },
+  {
+    "id": "tcs-professional-cv-kit",
+    "title": "Produk TCS: Professional CV Kit",
+    "content": "TCS Professional CV Kit ditujukan untuk pencari kerja, lulusan baru, dan profesional, dengan tujuan membantu menyusun CV terstruktur dan menyesuaikannya dengan lowongan. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; template, contoh, source code, manual, dan paket rilis tidak ditemukan. Format file, jumlah template, fitur ekspor, kompatibilitas ATS, dan kesiapan jual belum terverifikasi. Jangan menjanjikan CV pasti lolos ATS atau menjamin diterima bekerja. Sarankan pengguna mengisi fakta yang benar dan menjaga privasi data CV. Repo: https://github.com/chocoanakbaik/-TCS-Professional-CV-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Professional CV Kit",
+      "CV",
+      "resume",
+      "karier",
+      "pencari kerja"
+    ]
+  },
+  {
+    "id": "tcs-social-media-business-kit",
+    "title": "Produk TCS: Social Media Business Kit",
+    "content": "TCS Social Media Business Kit ditujukan untuk UMKM, kreator bisnis, dan pengelola media sosial, dengan tujuan membantu perencanaan komunikasi, ide konten, materi yang dapat disesuaikan, dan pesan promosi. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; template, aset, kalender konten, manual, source code, dan paket rilis tidak ditemukan. Jenis file, jumlah aset, platform yang dicakup, lisensi aset, dan kesiapan jual belum terverifikasi. Jangan menjamin viralitas, pertumbuhan pengikut, reach, atau penjualan. Repo: https://github.com/chocoanakbaik/-TCS-Social-Media-Business-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Social Media Business Kit",
+      "media sosial",
+      "konten",
+      "promosi",
+      "UMKM"
+    ]
+  },
+  {
+    "id": "tcs-business-presentation-kit",
+    "title": "Produk TCS: Business Presentation Kit",
+    "content": "TCS Business Presentation Kit ditujukan untuk UMKM, freelancer, tim bisnis, dan presenter yang membutuhkan kerangka presentasi terstruktur untuk kebutuhan bisnis. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; file slide, template, aset, manual, source code, dan paket rilis tidak ditemukan. Format PowerPoint/Google Slides, jumlah template, font, kompatibilitas, dan kesiapan jual belum terverifikasi. Jangan menyatakan file presentasi atau template sudah tersedia sebelum memeriksa paket rilis. Repo: https://github.com/chocoanakbaik/TCS-Business-Presentation-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Business Presentation Kit",
+      "presentasi",
+      "PowerPoint",
+      "Google Slides",
+      "bisnis"
+    ]
+  },
+  {
+    "id": "tcs-finance-cashflow-pro",
+    "title": "Produk TCS: Finance & Cashflow Pro",
+    "content": "TCS Finance & Cashflow Pro ditujukan untuk UMKM dan pemilik usaha untuk pencatatan arus kas operasional. README publik menyebut tujuan mencatat uang masuk/keluar, kategori, ringkasan periode, serta laporan/ekspor jika tersedia. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; aplikasi, spreadsheet, source code, skema database, manual, dan paket rilis tidak ditemukan. Fitur aktual, kalkulasi, backup, ekspor, keamanan, dan kesiapan jual belum terverifikasi. Jangan mengklaim sebagai sistem akuntansi lengkap, alat laporan pajak, nasihat investasi, atau sistem yang patuh standar tertentu. Repo: https://github.com/chocoanakbaik/TCS-Finance-Cashflow-Pro.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Finance & Cashflow Pro",
+      "arus kas",
+      "keuangan",
+      "UMKM"
+    ]
+  },
+  {
+    "id": "tcs-umkm-website-kit",
+    "title": "Produk TCS: UMKM Website Kit",
+    "content": "TCS UMKM Website Kit direncanakan sebagai fondasi website untuk UMKM, termasuk profil usaha, produk/layanan, kontak, dan kanal komunikasi. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; HTML/CSS/JS, template website, backend, panduan setup, dan paket rilis tidak ditemukan. Framework, responsivitas, SEO, formulir aktif, hosting, domain, integrasi, dan kesiapan jual belum terverifikasi. Jangan mengklaim backend, pembayaran, formulir aktif, atau integrasi tertentu. Repo: https://github.com/chocoanakbaik/TCS-UMKM-Website-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "UMKM Website Kit",
+      "website",
+      "UMKM",
+      "template website",
+      "hosting"
+    ]
+  },
+  {
+    "id": "tcs-admin-dashboard-ui-kit",
+    "title": "Produk TCS: Admin Dashboard UI Kit",
+    "content": "TCS Admin Dashboard UI Kit ditujukan sebagai konsep UI kit untuk dashboard atau panel administrasi, bagi developer, pelajar, dan tim produk. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; komponen, stylesheet, source code, manifest framework, contoh, dan paket rilis tidak ditemukan. Framework, daftar komponen, responsivitas, aksesibilitas, lisensi, dan kesiapan jual belum terverifikasi. UI kit tidak sama dengan backend; jangan mengklaim autentikasi, otorisasi, database, validasi server, atau keamanan data. Repo: https://github.com/chocoanakbaik/TCS-Admin-Dashboard-UI-Kit.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Admin Dashboard UI Kit",
+      "dashboard",
+      "UI kit",
+      "admin",
+      "frontend"
+    ]
+  },
+  {
+    "id": "tcs-business-management-system",
+    "title": "Produk TCS: Business Management System",
+    "content": "TCS Business Management System adalah konsep produk untuk membantu mengorganisasi aktivitas bisnis. Pelanggan, pemasok, transaksi, laporan, dan kontrol akses disebut sebagai kemungkinan area cakupan jika kelak diimplementasikan, bukan fitur yang telah terverifikasi. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; aplikasi, source code, database, konfigurasi, manual, dan paket rilis tidak ditemukan. Modul, role, autentikasi, database, API, laporan, instalasi, dan kesiapan jual belum terverifikasi. Jangan menyebutnya ERP/CRM lengkap atau mengklaim modul yang belum terbukti. Repo: https://github.com/chocoanakbaik/TCS-Business-Management-System.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Business Management System",
+      "manajemen bisnis",
+      "ERP",
+      "CRM",
+      "UMKM"
+    ]
+  },
+  {
+    "id": "tcs-complete-umkm-suite",
+    "title": "Produk TCS: Complete UMKM Suite",
+    "content": "TCS Complete UMKM Suite adalah konsep paket terpadu untuk pemilik UMKM dan tim operasional. Stok, penjualan, keuangan, dokumen, dan manajemen disebut sebagai contoh kemungkinan, bukan daftar modul terverifikasi. Saat repo diperiksa, tree hanya memuat README.md dan READMEGPT.md; modul aplikasi, source code, paket rilis, dan dokumentasi integrasi tidak ditemukan. Daftar modul, integrasi, sinkronisasi, format data, dan kesiapan jual belum terverifikasi. Nama 'Complete' bukan bukti bahwa seluruh kebutuhan bisnis tercakup. Repo: https://github.com/chocoanakbaik/TCS-Complete-UMKM-Suite.",
+    "category": "products",
+    "source": "README.md-and-READMEGPT.md-reviewed",
+    "tags": [
+      "TCS",
+      "Complete UMKM Suite",
+      "suite UMKM",
+      "stok",
+      "penjualan",
+      "keuangan",
+      "integrasi"
+    ]
   }
 ]
