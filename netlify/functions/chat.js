@@ -72,7 +72,7 @@ export default async (request) => {
       return json({ error: "Gunakan metode POST." }, 405);
     }
     if (!env.GROQ_API_KEY) {
-      return json({ error: "GROQ_API_KEY belum dipasang di environment backend Netlify." }, 503);
+      return json({ error: "GROQ_API_KEY belum dikonfigurasi di environment server." }, 503);
     }
     let body;
     try {
