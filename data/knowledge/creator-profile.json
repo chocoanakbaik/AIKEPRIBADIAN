@@ -71,8 +71,8 @@
   },
   {
     "id": "creator-projects",
-    "title": "Proyek yang dikembangkan Hasby",
-    "content": "Proyek utama yang tercatat: Choco AI/AIKEPRIBADIAN, yaitu representasi digital berbasis AI yang dikembangkan mandiri; Choco AI Help Center, pusat bantuan untuk produk Choco; dan KasirKita, aplikasi kasir yang masih dalam pengembangan. Chocobot/Chocobot Guardian adalah proyek terpisah dan tidak boleh disamakan dengan AIKEPRIBADIAN.",
+    "title": "Proyek Hasby dan hubungan antarproyek di bawah TCS",
+    "content": "Proyek dan hubungan yang tercatat di bawah The Choco Studios (TCS): (1) Choco AI/AIKEPRIBADIAN adalah representasi digital berbasis AI dari Choco yang dikembangkan secara mandiri. (2) Choco AI Help Center adalah pusat bantuan untuk produk Choco AI; asisten yang melayani pusat bantuan ini bernama Sara. Sara adalah asisten kedua setelah Choco AI dan memiliki peran berbeda: Choco AI berfokus sebagai representasi digital berbasis AI, sedangkan Sara berfokus membantu pengguna memahami produk melalui Help Center. (3) KasirKita adalah aplikasi kasir yang masih dalam tahap pengembangan. (4) Chocobot/Chocobot Guardian adalah proyek terpisah; jangan menyamakannya dengan Choco AI/AIKEPRIBADIAN atau menganggapnya bagian dari sistem representasi digital Choco. Semua ini berada di bawah payung merek personal The Choco Studios (TCS), tetapi identitas, fungsi, dan status tiap proyek tetap terpisah. Jangan mengarang status rilis atau fitur yang belum dikonfirmasi.",
     "category": "creator-profile",
     "source": "curated-creator-profile",
     "tags": [
@@ -113,6 +113,57 @@
       "monetisasi",
       "aplikasi",
       "template"
+    ]
+  },
+  {
+    "id": "tcs-brand-umbrella",
+    "title": "The Choco Studios (TCS) sebagai payung merek",
+    "content": "The Choco Studios (TCS) adalah payung merek personal yang mengelola berbagai proyek Hasby Prasetya Saprudin. TCS merupakan identitas branding yang saat ini dikelola mandiri oleh solo developer; jangan menyebutnya sebagai badan hukum atau perusahaan terdaftar tanpa bukti. Proyek yang tercatat di bawah TCS mencakup Choco AI/AIKEPRIBADIAN, Choco AI Help Center, KasirKita, serta proyek terpisah Chocobot/Chocobot Guardian. Berada di bawah payung merek yang sama tidak berarti proyek-proyek tersebut satu aplikasi atau satu sistem.",
+    "category": "projects",
+    "source": "curated-creator-profile",
+    "tags": [
+      "The Choco Studios",
+      "TCS",
+      "brand",
+      "proyek",
+      "Hasby",
+      "Choco AI",
+      "AIKEPRIBADIAN",
+      "Sara",
+      "KasirKita",
+      "Chocobot"
+    ]
+  },
+  {
+    "id": "choco-ai-help-center-sara",
+    "title": "Choco AI Help Center dan Sara",
+    "content": "Choco AI Help Center adalah pusat bantuan untuk produk Choco AI. Sara adalah asisten AI yang melayani Help Center dan merupakan asisten kedua setelah Choco AI. Peran Sara berbeda dari Choco AI: Choco AI adalah representasi digital berbasis AI dari Choco, sedangkan Sara membantu pengguna mendapatkan informasi dan bantuan terkait produk. Choco AI dan Sara perlu memahami hubungan satu sama lain serta pengetahuan proyek TCS yang relevan, tetapi tetap mempertahankan identitas, fungsi, dan gaya layanan masing-masing. Jangan mengklaim bahwa keduanya otomatis dapat membaca riwayat chat atau memori privat satu sama lain.",
+    "category": "projects",
+    "source": "curated-creator-profile",
+    "tags": [
+      "Sara",
+      "Help Center",
+      "Choco AI Help Center",
+      "asisten kedua",
+      "TCS",
+      "hubungan proyek",
+      "identitas"
+    ]
+  },
+  {
+    "id": "tcs-project-separation",
+    "title": "Pemisahan identitas proyek TCS",
+    "content": "TCS adalah payung merek, bukan alasan untuk mencampuradukkan produk. Choco AI/AIKEPRIBADIAN merupakan representasi digital berbasis AI. Choco AI Help Center adalah pusat bantuan dan menggunakan Sara sebagai asistennya. KasirKita adalah aplikasi kasir yang masih dikembangkan. Chocobot/Chocobot Guardian adalah proyek terpisah dan bukan AIKEPRIBADIAN. Saat menjawab pertanyaan tentang salah satu proyek, gunakan identitas dan status proyek yang sesuai, serta jangan memindahkan fitur, riwayat, atau klaim dari proyek lain tanpa sumber yang mendukung.",
+    "category": "projects",
+    "source": "curated-creator-profile",
+    "tags": [
+      "TCS",
+      "proyek terpisah",
+      "AIKEPRIBADIAN",
+      "Chocobot",
+      "KasirKita",
+      "Sara",
+      "Help Center"
     ]
   }
 ]
