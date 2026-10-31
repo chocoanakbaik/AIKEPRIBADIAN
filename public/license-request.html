@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b14">
+<meta name="robots" content="noindex,nofollow">
+<title>Permintaan Aktivasi | The Choco Studios</title>
+<style>
+:root{color-scheme:dark;--bg:#080b14;--panel:#111827;--line:#293248;--text:#edf2ff;--muted:#9aa6bf;--blue:#7896ff;--purple:#a77bff;--good:#42c995;--warn:#e6b65f;--bad:#f07d87}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#1b2b50 0,transparent 42%),var(--bg);color:var(--text);font:14px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.card{width:min(560px,100%);padding:30px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#141c2d,#0f1422);box-shadow:0 24px 80px #0008}
+.brand{font-size:11px;letter-spacing:2px;color:#aab8d4;font-weight:800}.brand b{color:#fff}.mark{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(130deg,#648bff,#a76cff);font-size:20px;font-weight:900;margin-bottom:18px}
+h1{font-size:25px;line-height:1.2;letter-spacing:-.7px;margin:14px 0 8px}.lead{color:var(--muted);margin:0 0 22px}
+.status{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#ffffff06;margin:18px 0}.status strong{display:block;margin-bottom:3px}.status span{color:var(--muted);font-size:12px}.status.good{border-color:#42c99555}.status.warn{border-color:#e6b65f55}.status.bad{border-color:#f07d8755}
+.field{display:grid;gap:7px;margin:18px 0}.field label{font-weight:700;font-size:12px}.field input{width:100%;padding:13px 14px;border:1px solid #39445d;border-radius:11px;background:#090f1d;color:var(--text);font:inherit}.field input:focus{outline:2px solid var(--blue);outline-offset:2px}
+button,.link{display:inline-flex;justify-content:center;align-items:center;padding:12px 16px;border:1px solid transparent;border-radius:11px;background:linear-gradient(110deg,#638cff,#9c6cff);color:white;font:inherit;font-weight:750;text-decoration:none;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}.muted-note{font-size:11px;color:var(--muted);margin:12px 0 0}.request-id{font:11px ui-monospace,monospace;color:#9aa6bf;overflow-wrap:anywhere}.footer{margin-top:24px;padding-top:17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.footer a{color:#a9baff;text-decoration:none;font-size:12px}.error{color:var(--bad)}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="mark">T</div>
+  <div class="brand">THE <b>CHOCO STUDIOS</b></div>
+  <h1>Permintaan aktivasi produk</h1>
+  <p class="lead">Portal ini digunakan untuk mengirim referensi pembelian dan memeriksa status aktivasi TCS Stock &amp; Sales Basic.</p>
+  <div class="request-id" id="request-id">Memeriksa permintaan…</div>
+  <section id="status" class="status warn" role="status" aria-live="polite">
+    <strong id="status-title">Menghubungkan ke layanan lisensi</strong>
+    <span id="status-detail">Jangan tutup halaman selama pemeriksaan berlangsung.</span>
+  </section>
+  <form id="reference-form" class="hidden">
+    <div class="field">
+      <label for="purchase-reference">Nomor pesanan / referensi pembelian</label>
+      <input id="purchase-reference" name="purchaseReference" minlength="4" maxlength="120" autocomplete="off" required placeholder="Masukkan referensi transaksi">
+    </div>
+    <button id="submit" type="submit">Kirim referensi pembelian</button>
+    <p class="muted-note">Masukkan nomor yang dapat diverifikasi oleh The Choco Studios. Jangan masukkan kata sandi, OTP, nomor kartu, atau data pembayaran rahasia.</p>
+  </form>
+  <div id="submitted-note" class="muted-note hidden">Referensi pembelian sudah diterima. Tim TCS akan memverifikasi transaksi sebelum menerbitkan lisensi.</div>
+  <div class="footer">
+    <a href="/">Kembali ke Choco AI</a>
+    <span class="muted-note">Permintaan berlaku selama 72 jam.</span>
+  </div>
+</main>
+<script>
+(() => {
+  "use strict";
+  const API = "https://jzatbvxpclwbkjflkyan.supabase.co/functions/v1/tcs-license";
+  const PUBLISHABLE_KEY = "sb_publishable_CXEBG6c3PXW8DuQTn2IOyw_y9ZQdYBz";
+  const params = new URLSearchParams(location.search);
+  const requestId = params.get("requestId") || "";
+  const requestToken = params.get("requestToken") || "";
+  const $ = (id) => document.getElementById(id);
+  let pollTimer = null;
+  let busy = false;
+  const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId);
+  const validToken = requestToken.length >= 20 && requestToken.length <= 200;
+
+  $("request-id").textContent = validId ? "ID permintaan: " + requestId : "Tautan permintaan tidak valid.";
+  function showStatus(title, detail, type = "warn") {
+    $("status").className = "status " + type;
+    $("status-title").textContent = title;
+    $("status-detail").textContent = detail;
+  }
+  async function call(action, extra = {}) {
+    const response = await fetch(API, {
+      method: "POST",
+      headers: { apikey: PUBLISHABLE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ action, requestId, requestToken, ...extra })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(data.error || "request_failed");
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  }
+  async function checkStatus() {
+    if (busy) return;
+    try {
+      const data = await call("status");
+      if (data.status === "pending") {
+        if (data.purchaseReferenceReceived) {
+          $("reference-form").classList.add("hidden");
+          $("submitted-note").classList.remove("hidden");
+          showStatus("Menunggu verifikasi pembelian", "Referensi pembelian sudah diterima. Status akan diperbarui otomatis.");
+        } else {
+          $("reference-form").classList.remove("hidden");
+          showStatus("Permintaan aktivasi dibuat", "Kirim nomor pesanan atau referensi pembelian agar tim TCS dapat memverifikasinya.");
+        }
+      } else if (data.status === "approved") {
+        $("reference-form").classList.add("hidden");
+        $("submitted-note").classList.add("hidden");
+        showStatus("Pembelian disetujui", "Lisensi sudah diterbitkan. Kunci lisensi akan disampaikan melalui kanal komunikasi TCS.", "good");
+      } else if (data.status === "rejected") {
+        $("reference-form").classList.add("hidden");
+        showStatus("Permintaan ditolak", "Transaksi belum dapat diverifikasi. Hubungi dukungan TCS jika Anda merasa ini keliru.", "bad");
+      } else {
+        $("reference-form").classList.add("hidden");
+        showStatus("Permintaan kedaluwarsa", "Buat permintaan aktivasi baru dari aplikasi TCS Stock & Sales Basic.", "bad");
+      }
+    } catch (error) {
+      if (error.status === 404) {
+        showStatus("Permintaan tidak ditemukan", "Tautan tidak valid atau token permintaan tidak cocok.", "bad");
+      } else {
+        showStatus("Layanan belum dapat dihubungi", "Periksa koneksi internet, lalu muat ulang halaman.", "bad");
+      }
+    }
+  }
+  $("reference-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy) return;
+    const input = $("purchase-reference");
+    const purchaseReference = input.value.trim();
+    if (purchaseReference.length < 4 || purchaseReference.length > 120) {
+      showStatus("Referensi tidak valid", "Masukkan nomor pesanan atau referensi pembelian minimal 4 karakter.", "bad");
+      return;
+    }
+    busy = true;
+    $("submit").disabled = true;
+    try {
+      await call("submit_purchase_reference", { purchaseReference });
+      $("reference-form").classList.add("hidden");
+      $("submitted-note").classList.remove("hidden");
+      showStatus("Referensi berhasil dikirim", "Tim TCS akan memverifikasi transaksi. Status akan diperiksa otomatis.", "good");
+    } catch (error) {
+      showStatus("Referensi belum berhasil dikirim", error.message === "purchase_reference_already_submitted"
+        ? "Referensi pembelian sebelumnya sudah dikirim."
+        : "Periksa kembali permintaan dan koneksi internet, lalu coba lagi.", "bad");
+    } finally {
+      busy = false;
+      $("submit").disabled = false;
+    }
+  });
+
+  if (!validId || !validToken) {
+    showStatus("Tautan tidak valid", "Buka kembali tautan aktivasi yang dibuat dari aplikasi.", "bad");
+    return;
+  }
+  checkStatus();
+  pollTimer = setInterval(checkStatus, 15000);
+  window.addEventListener("pagehide", () => clearInterval(pollTimer), { once: true });
+})();
+</script>
+</body>
+</html>

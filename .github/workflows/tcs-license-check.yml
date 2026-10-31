@@ -1,0 +1,37 @@
+name: Choco AI TCS Licensing Checks
+on:
+  push:
+    branches:
+      - feat/tcs-license-admin-integration
+  pull_request:
+    branches:
+      - main
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check API route syntax
+        run: node --check api/tcs-license.js
+      - name: Check customer portal script
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          for (const file of ['public/license-request.html', 'public/tcs-licensing.html']) {
+            const html = fs.readFileSync(file, 'utf8');
+            const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+            if (!scripts.length) throw new Error('No inline script found in ' + file);
+            fs.writeFileSync('/tmp/' + file.split('/').pop() + '.js', scripts.at(-1)[1]);
+          }
+          NODE
+          node --check /tmp/license-request.html.js
+          node --check /tmp/tcs-licensing.html.js
+      - name: Ensure server secrets are not shipped in public assets
+        run: |
+          if grep -R -nE 'SUPABASE_SECRET_KEY|TCS_LICENSE_ADMIN_TOKEN' public; then
+            echo "Server-only secret reference found in public assets"
+            exit 1
+          fi
