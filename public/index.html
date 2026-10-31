@@ -1456,6 +1456,42 @@
     }
     updateWelcomeGreeting();
 
+    async function handleTcsLicenseRequest() {
+      const url = new URL(window.location.href);
+      const requestId = url.searchParams.get("license_request") || "";
+      const requestToken = url.searchParams.get("license_token") || "";
+      if (!requestId && !requestToken) return;
+      url.searchParams.delete("license_request");
+      url.searchParams.delete("license_token");
+      window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) || requestToken.length < 20 || requestToken.length > 200) {
+        showToast("Tautan permintaan lisensi tidak valid.");
+        return;
+      }
+      try {
+        const response = await fetch("/.netlify/functions/license", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          body: JSON.stringify({ requestId, requestToken })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) throw new Error(data.error || "Permintaan lisensi tidak dapat diverifikasi.");
+        if (!["pending", "approved"].includes(data.status)) {
+          showToast("Status permintaan lisensi: " + String(data.status || "tidak diketahui") + ".");
+          return;
+        }
+        input.value = "Saya ingin meminta kunci validasi untuk TCS Stock & Sales Basic. ID permintaan: " + requestId + ". Status terakhir: " + data.status + ". Tolong bantu proses verifikasi pembelian.";
+        resizeInput();
+        input.focus();
+        showToast(data.status === "approved" ? "Permintaan sudah disetujui. Lanjutkan percakapan untuk menerima informasi aktivasi." : "Permintaan perangkat berhasil diverifikasi. Lengkapi informasi pembelian di percakapan ini.");
+      } catch (error) {
+        showToast(error.message || "Verifikasi permintaan lisensi gagal.");
+      }
+    }
+    handleTcsLicenseRequest();
+
+
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
