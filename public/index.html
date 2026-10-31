@@ -1458,12 +1458,14 @@
 
     async function handleTcsLicenseRequest() {
       const url = new URL(window.location.href);
-      const requestId = url.searchParams.get("license_request") || "";
-      const requestToken = url.searchParams.get("license_token") || "";
+      const fragment = new URLSearchParams(url.hash.replace(/^#/, ""));
+      const requestId = fragment.get("license_request") || url.searchParams.get("license_request") || "";
+      const requestToken = fragment.get("license_token") || url.searchParams.get("license_token") || "";
       if (!requestId && !requestToken) return;
       url.searchParams.delete("license_request");
       url.searchParams.delete("license_token");
-      window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      url.hash = "";
+      window.history.replaceState({}, document.title, url.pathname + url.search);
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) || requestToken.length < 20 || requestToken.length > 200) {
         showToast("Tautan permintaan lisensi tidak valid.");
         return;
