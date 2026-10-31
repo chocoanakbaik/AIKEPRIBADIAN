@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b14">
+<meta name="robots" content="noindex,nofollow">
+<title>TCS License Operations | Choco AI</title>
+<style>
+:root{color-scheme:dark;--bg:#080b14;--panel:#111827;--panel2:#151e30;--line:#293248;--text:#edf2ff;--muted:#9aa6bf;--blue:#7896ff;--purple:#a77bff;--good:#42c995;--warn:#e6b65f;--bad:#f07d87}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% 0,#1b2b50 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:25px max(22px,calc((100vw - 1120px)/2));border-bottom:1px solid var(--line);background:#0b1120d9;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.brand{font-size:11px;letter-spacing:2px;color:#aab8d4;font-weight:800}.brand b{color:#fff}.sub{font-size:11px;color:var(--muted)}
+main{max-width:1120px;margin:32px auto;padding:0 22px 50px}.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px}.head h1{margin:0;font-size:27px;letter-spacing:-.8px}.head p{margin:5px 0 0;color:var(--muted);font-size:12px}
+button{border:1px solid #3c4a67;border-radius:10px;padding:10px 14px;background:#19243a;color:#edf2ff;font:inherit;font-weight:700;cursor:pointer}button.primary{background:linear-gradient(110deg,#638cff,#9c6cff);border-color:transparent}button.danger{border-color:#82434b;color:#ffb0b7;background:#2a1720}button:disabled{opacity:.5;cursor:wait}
+.banner{padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:#ffffff06;color:var(--muted);font-size:12px;margin-bottom:18px}.banner.good{border-color:#42c99555;color:#b5f0d9}.banner.bad{border-color:#f07d8755;color:#ffc1c7}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat,.panel{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#141c2d,#0f1422)}.stat{padding:16px}.stat span{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:24px;margin-top:5px}
+.panel{overflow:hidden}.panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h2{font-size:14px;margin:0}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:13px 14px;border-bottom:1px solid #293248;text-align:left;vertical-align:top}th{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#9aa6bf;background:#ffffff04}td{font-size:12px}tbody tr:last-child td{border-bottom:0}.id{font:10px ui-monospace,monospace;color:#9aa6bf;overflow-wrap:anywhere;max-width:210px}.ref{font-weight:750;overflow-wrap:anywhere}.date{color:var(--muted);font-size:11px}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{padding:36px;text-align:center;color:var(--muted);font-size:12px}.empty strong{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
+.modal{position:fixed;inset:0;z-index:20;background:#020611c9;display:grid;place-items:center;padding:20px}.dialog{width:min(560px,100%);padding:23px;border:1px solid var(--line);border-radius:17px;background:#111827;box-shadow:0 28px 90px #000b}.dialog h2{font-size:18px;margin:0 0 8px}.dialog p{color:var(--muted);font-size:12px}.key{padding:14px;border:1px dashed #7188d8;border-radius:10px;background:#0a1120;font:700 15px ui-monospace,monospace;overflow-wrap:anywhere;user-select:all}.dialog-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:17px}.hidden{display:none!important}
+@media(max-width:700px){header{padding:18px 16px}.head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr}.head h1{font-size:23px}main{padding:0 14px 35px;margin-top:22px}.panel-head{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">THE <b>CHOCO STUDIOS</b></div><div class="sub">Choco AI · Internal operations</div></div>
+  <div class="sub">TCS License Operations</div>
+</header>
+<main>
+  <div class="head">
+    <div><h1>Manajemen lisensi</h1><p>Verifikasi referensi pembelian, terbitkan kunci satu kali, atau tolak permintaan.</p></div>
+    <button id="refresh" class="primary" type="button">Muat ulang</button>
+  </div>
+  <div id="banner" class="banner" role="status" aria-live="polite">Menghubungkan ke TCS Backend…</div>
+  <section class="stats">
+    <div class="stat"><span>Permintaan menunggu</span><strong id="count-pending">—</strong></div>
+    <div class="stat"><span>Memiliki referensi pembelian</span><strong id="count-reference">—</strong></div>
+    <div class="stat"><span>Produk</span><strong style="font-size:15px">Stock &amp; Sales Basic</strong></div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><h2>Permintaan aktivasi aktif</h2><span class="sub">Maksimal 100 permintaan terbaru</span></div>
+    <div id="request-list" class="empty"><strong>Memuat data…</strong>Permintaan akan tampil di sini.</div>
+  </section>
+</main>
+<div id="key-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="key-title">
+  <section class="dialog">
+    <h2 id="key-title">Kunci lisensi berhasil diterbitkan</h2>
+    <p>Kunci mentah hanya ditampilkan sekali. Salin dan kirimkan kepada pembeli melalui kanal komunikasi yang sesuai. Kunci tidak dapat dipulihkan dari database.</p>
+    <div id="issued-key" class="key"></div>
+    <div class="dialog-actions"><button id="close-modal" type="button">Tutup</button><button id="copy-key" class="primary" type="button">Salin kunci</button></div>
+  </section>
+</div>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const API = "/api/tcs-license";
+  let requests = [];
+  let busy = false;
+  function banner(message, type = "") {
+    $("banner").className = "banner " + type;
+    $("banner").textContent = message;
+  }
+  async function call(action, extra = {}) {
+    const response = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, ...extra })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "request_failed");
+    return data;
+  }
+  function formatDate(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
+  }
+  function cellText(value, className = "") {
+    const td = document.createElement("td");
+    if (className) td.className = className;
+    td.textContent = value || "—";
+    return td;
+  }
+  function render() {
+    $("count-pending").textContent = String(requests.length);
+    $("count-reference").textContent = String(requests.filter(x => x.purchase_reference).length);
+    const root = $("request-list");
+    root.innerHTML = "";
+    if (!requests.length) {
+      root.className = "empty";
+      const strong = document.createElement("strong");
+      strong.textContent = "Belum ada permintaan aktif";
+      root.append(strong, document.createTextNode("Permintaan baru akan muncul setelah pembeli mengirim formulir aktivasi."));
+      return;
+    }
+    root.className = "table-wrap";
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    ["Permintaan","Referensi pembelian","Dibuat / kedaluwarsa","Tindakan"].forEach(label => {
+      const th = document.createElement("th"); th.textContent = label; headerRow.append(th);
+    });
+    thead.append(headerRow); table.append(thead);
+    const tbody = document.createElement("tbody");
+    requests.forEach(item => {
+      const row = document.createElement("tr");
+      const identity = document.createElement("td");
+      const id = document.createElement("div"); id.className = "id"; id.textContent = item.id;
+      const product = document.createElement("div"); product.className = "date"; product.textContent = item.product_id;
+      identity.append(id, product);
+      const reference = cellText(item.purchase_reference || "Belum dikirim", item.purchase_reference ? "ref" : "date");
+      const dates = document.createElement("td");
+      const created = document.createElement("div"); created.textContent = "Dibuat: " + formatDate(item.created_at);
+      const expiry = document.createElement("div"); expiry.className = "date"; expiry.textContent = "Berlaku sampai: " + formatDate(item.expires_at);
+      dates.append(created, expiry);
+      const actionsCell = document.createElement("td");
+      const actions = document.createElement("div"); actions.className = "actions";
+      const approve = document.createElement("button"); approve.className = "primary"; approve.type = "button";
+      approve.textContent = "Terbitkan lisensi"; approve.disabled = !item.purchase_reference || busy;
+      approve.addEventListener("click", () => approveRequest(item));
+      const reject = document.createElement("button"); reject.className = "danger"; reject.type = "button";
+      reject.textContent = "Tolak"; reject.disabled = busy;
+      reject.addEventListener("click", () => rejectRequest(item));
+      actions.append(approve, reject); actionsCell.append(actions);
+      row.append(identity, reference, dates, actionsCell); tbody.append(row);
+    });
+    table.append(tbody); root.append(table);
+  }
+  async function refresh() {
+    if (busy) return;
+    $("refresh").disabled = true;
+    try {
+      const data = await call("list_pending");
+      requests = Array.isArray(data.requests) ? data.requests : [];
+      render();
+      banner("Terhubung ke TCS Backend. " + requests.length + " permintaan menunggu.", "good");
+    } catch (error) {
+      banner("Gagal memuat permintaan: " + error.message, "bad");
+    } finally {
+      $("refresh").disabled = false;
+    }
+  }
+  async function approveRequest(item) {
+    if (busy || !item.purchase_reference) return;
+    if (!confirm("Pastikan referensi pembelian sudah diverifikasi. Terbitkan satu kunci lisensi untuk perangkat ini?")) return;
+    busy = true; render();
+    try {
+      const data = await call("approve", { requestId: item.id, purchaseReference: item.purchase_reference });
+      if (!data.licenseKey) throw new Error("license_key_not_returned");
+      $("issued-key").textContent = data.licenseKey;
+      $("key-modal").classList.remove("hidden");
+      banner("Lisensi diterbitkan. Simpan kunci sebelum menutup dialog.", "good");
+      await refreshAfterBusy();
+    } catch (error) {
+      banner("Penerbitan gagal: " + error.message, "bad");
+    } finally {
+      busy = false;
+      render();
+    }
+  }
+  async function rejectRequest(item) {
+    if (busy || !confirm("Tolak permintaan aktivasi ini?")) return;
+    busy = true; render();
+    try {
+      await call("reject", { requestId: item.id, reasonCode: "purchase_not_verified" });
+      banner("Permintaan ditolak.", "good");
+      await refreshAfterBusy();
+    } catch (error) {
+      banner("Penolakan gagal: " + error.message, "bad");
+    } finally {
+      busy = false;
+      render();
+    }
+  }
+  async function refreshAfterBusy() {
+    const data = await call("list_pending");
+    requests = Array.isArray(data.requests) ? data.requests : [];
+  }
+  $("refresh").addEventListener("click", refresh);
+  $("close-modal").addEventListener("click", () => $("key-modal").classList.add("hidden"));
+  $("key-modal").addEventListener("click", event => {
+    if (event.target === $("key-modal")) $("key-modal").classList.add("hidden");
+  });
+  $("copy-key").addEventListener("click", async () => {
+    const key = $("issued-key").textContent;
+    try {
+      await navigator.clipboard.writeText(key);
+      $("copy-key").textContent = "Tersalin";
+    } catch {
+      const range = document.createRange(); range.selectNodeContents($("issued-key"));
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+      $("copy-key").textContent = "Pilih lalu salin";
+    }
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
