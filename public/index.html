@@ -1469,7 +1469,7 @@
         return;
       }
       try {
-        const response = await fetch("/.netlify/functions/license", {
+        const response = await fetch("/api/license", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           cache: "no-store",
