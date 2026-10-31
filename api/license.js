@@ -14,37 +14,45 @@ export default async function handler(req, res) {
   if (typeof body === "string") {
     try { body = JSON.parse(body); } catch { body = null; }
   }
+  const action = body?.action === "submit_purchase_reference" ? "submit_purchase_reference" : "status";
   const requestId = typeof body?.requestId === "string" ? body.requestId.trim() : "";
   const requestToken = typeof body?.requestToken === "string" ? body.requestToken.trim() : "";
   if (!UUID_RE.test(requestId) || requestToken.length < 20 || requestToken.length > 200) {
     return res.status(400).json({ error: "invalid_request" });
   }
 
+  const payload = { action, requestId, requestToken };
+  if (action === "submit_purchase_reference") {
+    const purchaseReference = typeof body?.purchaseReference === "string" ? body.purchaseReference.trim() : "";
+    if (purchaseReference.length < 4 || purchaseReference.length > 120) {
+      return res.status(400).json({ error: "invalid_purchase_reference" });
+    }
+    payload.purchaseReference = purchaseReference;
+  }
+
   try {
     const upstream = await fetch(SUPABASE_FUNCTION_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_PUBLISHABLE_KEY
-      },
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_PUBLISHABLE_KEY },
       cache: "no-store",
-      body: JSON.stringify({ action: "status", requestId, requestToken })
+      body: JSON.stringify(payload)
     });
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      const status = upstream.status === 404 ? 404 : upstream.status >= 500 ? 503 : 400;
-      return res.status(status).json({ error: result.error || "license_verification_failed" });
+      const status = upstream.status === 404 ? 404 : upstream.status >= 500 ? 503 : upstream.status;
+      return res.status(status).json({ error: result.error || "license_request_failed" });
     }
-    if (result.productId !== "tcs-stock-sales-basic" || !["pending", "approved", "rejected", "expired"].includes(result.status)) {
-      return res.status(502).json({ error: "unexpected_license_response" });
+    if (action === "status") {
+      if (result.productId !== "tcs-stock-sales-basic" || !["pending", "approved", "rejected", "expired"].includes(result.status)) {
+        return res.status(502).json({ error: "unexpected_license_response" });
+      }
+      return res.status(200).json({
+        ok: true, requestId: result.requestId, productId: result.productId,
+        status: result.status, expiresAt: result.expiresAt || null,
+        purchaseReferenceReceived: Boolean(result.purchaseReferenceReceived)
+      });
     }
-    return res.status(200).json({
-      ok: true,
-      requestId: result.requestId,
-      productId: result.productId,
-      status: result.status,
-      expiresAt: result.expiresAt || null
-    });
+    return res.status(200).json({ ok: true, submitted: Boolean(result.submitted), requestId: result.requestId });
   } catch {
     return res.status(503).json({ error: "license_service_unavailable" });
   }
